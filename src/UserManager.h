@@ -10,11 +10,21 @@
 
 class UserManager
 {
-
+    FileStorage<User> user;
 
 
 public:
-    int add_user(str c,str u,str p,str n,str m,int g);
+    UserManager()=default;
+    ~UserManager()=default;
+
+    bool add_user(str c,str u,str p,str n,str m,int g);
+    bool login(str u,str p);
+    bool logout(str u);
+    string query_profile(str c,str u);
+    string modify_profile(str c,str u);// todo
+    vector<string> query_order(str u); // If query failed, return an empty vector.
+    bool refund_ticket(str u);// todo
+    void clean();
 
 
 

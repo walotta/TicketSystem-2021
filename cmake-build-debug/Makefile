@@ -141,6 +141,33 @@ TicketSystem_2021/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\TicketSystem_2021.dir\build.make CMakeFiles/TicketSystem_2021.dir/build
 .PHONY : TicketSystem_2021/fast
 
+src/Train.obj: src/Train.cpp.obj
+
+.PHONY : src/Train.obj
+
+# target to build an object file
+src/Train.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\TicketSystem_2021.dir\build.make CMakeFiles/TicketSystem_2021.dir/src/Train.cpp.obj
+.PHONY : src/Train.cpp.obj
+
+src/Train.i: src/Train.cpp.i
+
+.PHONY : src/Train.i
+
+# target to preprocess a source file
+src/Train.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\TicketSystem_2021.dir\build.make CMakeFiles/TicketSystem_2021.dir/src/Train.cpp.i
+.PHONY : src/Train.cpp.i
+
+src/Train.s: src/Train.cpp.s
+
+.PHONY : src/Train.s
+
+# target to generate assembly for a file
+src/Train.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\TicketSystem_2021.dir\build.make CMakeFiles/TicketSystem_2021.dir/src/Train.cpp.s
+.PHONY : src/Train.cpp.s
+
 src/TrainManager.obj: src/TrainManager.cpp.obj
 
 .PHONY : src/TrainManager.obj
@@ -285,6 +312,9 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... TicketSystem_2021
+	@echo ... src/Train.obj
+	@echo ... src/Train.i
+	@echo ... src/Train.s
 	@echo ... src/TrainManager.obj
 	@echo ... src/TrainManager.i
 	@echo ... src/TrainManager.s
