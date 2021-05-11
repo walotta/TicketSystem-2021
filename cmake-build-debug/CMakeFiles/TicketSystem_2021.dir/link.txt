@@ -1,0 +1,3 @@
+"C:\Program Files\JetBrains\CLion 2020.2.1\bin\cmake\win\bin\cmake.exe" -E rm -f CMakeFiles\TicketSystem_2021.dir/objects.a
+D:\Apps\environment\mingw64\bin\ar.exe cr CMakeFiles\TicketSystem_2021.dir/objects.a @CMakeFiles\TicketSystem_2021.dir\objects1.rsp
+D:\Apps\environment\mingw64\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\TicketSystem_2021.dir/objects.a -Wl,--no-whole-archive -o TicketSystem_2021.exe -Wl,--out-implib,libTicketSystem_2021.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\TicketSystem_2021.dir\linklibs.rsp
