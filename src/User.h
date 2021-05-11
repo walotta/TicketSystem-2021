@@ -18,7 +18,8 @@ class User
     int privilege;// Z,[0,10]
 
 public:
-
+    User()=default;
+    User(str u,str p,str n,str m,int g);
 
 };
 
