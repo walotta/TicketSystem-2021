@@ -9,19 +9,25 @@
 
 class TrainManager
 {
-    vector<Train> train;
+    typedef const vector<int> & vecI;
+    typedef vector<string> vecS;
+
+    FileStorage<Train> train;
 
 public:
     TrainManager()=default;
     ~TrainManager()=default;
-    bool add_train();//todo
-    bool release_train();//todo
-    void query_train();//todo
-    void delete_train();//todo
-    void query_ticket();//todo
-    void query_transfer();//todo
-    void refund_ticket();//todo
-    void clean();//todo
+    TrainManager(str address);
+
+    bool add_train(str i,int n,int m,const vecS &s,vecI p,Time x,vecI t,vecI o,Date d_beg,Date d_end,char y);
+    bool release_train(str i);
+    vecS query_train(str i,Date d);
+    bool delete_train(str i);
+    vecS query_ticket(str s,str t,Date d,str p);
+    vecS query_transfer(str s,str t,Date d,str p);
+    string buy_ticket(str u,str i,Date d,str f,str t,int n,str q);
+    bool refund_ticket();//todo
+    bool clean();//todo
 
 
 };

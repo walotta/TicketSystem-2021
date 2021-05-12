@@ -6,16 +6,16 @@
 #define TICKETSYSTEM_2021_USERMANAGER_H
 
 #include "User.h"
-
+#include "TrainManager.h"
 
 class UserManager
 {
     FileStorage<User> user;
 
-
 public:
     UserManager()=default;
     ~UserManager()=default;
+    UserManager(str address);
 
     bool add_user(str c,str u,str p,str n,str m,int g);
     bool login(str u,str p);

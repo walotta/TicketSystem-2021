@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/TicketSystem_2021.dir/src/ManagementSystem.cpp.obj"
   "CMakeFiles/TicketSystem_2021.dir/src/Train.cpp.obj"
   "CMakeFiles/TicketSystem_2021.dir/src/TrainManager.cpp.obj"
   "CMakeFiles/TicketSystem_2021.dir/src/User.cpp.obj"
