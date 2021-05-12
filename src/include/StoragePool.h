@@ -18,8 +18,8 @@ private:
     int LastBlock=-1;//文件中的最后一块
     fstream pool;
     const int base=2*sizeof(int)+sizeof(extraBlock);
-    const string dir="StorageFile/";
-    //const string dir="";
+    //const string dir="StorageFile/";
+    const string dir="";
     const string StorageFileName;
     cachePool<1000,T> cache;
 
@@ -140,6 +140,7 @@ public:
         return tem;
     }
 
+private:
     void clearAll()
     {
         fileOpen();
@@ -161,6 +162,8 @@ public:
         fileClose();
         return LastBlock;
     }
+
+public:
 
     extraBlock readExtraBlock()
     {
