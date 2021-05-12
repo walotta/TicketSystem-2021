@@ -4,7 +4,7 @@
 
 #ifndef BOOKSTORE_ERRORMESSAGE_H
 #define BOOKSTORE_ERRORMESSAGE_H
-#include <cstring>
+#include <string>
 #include <stdexcept>
 
 class error: public std::exception
@@ -14,7 +14,7 @@ private:
 public:
     explicit error(const std::string &mes):message(mes) {}
     //error(const error &o):message(o.message) {}
-    std::string what(){return message;}
+    std::string what(){return message.c_str();}
     std::string get()const{return message;}
 };
 #endif //BOOKSTORE_ERRORMESSAGE_H
