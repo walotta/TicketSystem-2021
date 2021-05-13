@@ -230,50 +230,69 @@ template<class T,int SizeOfBpt,int SizeOfBptBlock,int CacheOfBpt,int CacheOfBptB
 class StorageManger
 {
 private:
-
+    class assistBlock
+    {
+    public:
+        int cnt=0;
+    }baseMessage;
+    const string name;
+    StoragePool<T,assistBlock,CacheOfData>* dataLibrary;
+    BPlusTree<SizeOfBpt,CacheOfBpt>* MainIndex;
+    multiBPlusTree<SizeOfBpt,SizeOfBptBlock,CacheOfBpt,CacheOfBptBlock>* TagIndex=nullptr;
 public:
     StorageManger()=delete;
-    StorageManger(const string& _name,bool has_tag)
+    StorageManger(const string& _name,bool has_tag):name(_name)
     {
-        
+        dataLibrary=new StoragePool<T,assistBlock,CacheOfData>("dataLibrary_"+name);
+        MainIndex=new BPlusTree<SizeOfBpt,CacheOfBpt>(name);
+        if(has_tag)TagIndex=new multiBPlusTree<SizeOfBpt,SizeOfBptBlock,CacheOfBpt,CacheOfBptBlock>(name);
+        baseMessage=dataLibrary->readExtraBlock();
     }
 
     ~StorageManger()
     {
-
+        dataLibrary->writeExtraBlock(baseMessage);
+        delete dataLibrary;
+        delete MainIndex;
+        if(TagIndex!=nullptr)delete TagIndex;
     }
 
-    void insert(const string& MainKey,const T& to_insert)
+    inline int size()
+    {
+        return baseMessage.cnt;
+    }
+
+    inline void insert(const string& MainKey,const T& to_insert)
     {
 
     }
 
-    void Remove(const string& MainKey)
+    inline void Remove(const string& MainKey)
     {
 
     }
 
-    void RemoveTag(const string& MainKey,const T& Tag)
+    inline void RemoveTag(const string& MainKey,const T& Tag)
+    {
+        if(TagIndex==nullptr)throw error("this StorageManger has no TagIndex");
+    }
+
+    inline vector<T> FindByTag(const string& tag)
     {
 
     }
 
-    vector<T> FindByTag(const string& tag)
+    inline T FindByKey(const string& MainKey)
     {
 
     }
 
-    T FindByKey(const string& MainKey)
+    inline void Update(const string& MainKey,const T& to_update)
     {
 
     }
 
-    void Update(const string& MainKey,const T& to_update)
-    {
-
-    }
-
-    void AddTag(const string& MainKey,const vector<string>& list)
+    inline void AddTag(const string& MainKey,const vector<string>& list)
     {
 
     }

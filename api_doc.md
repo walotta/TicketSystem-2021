@@ -58,10 +58,11 @@
 
     |                 接口                 |                    功能                     |
   | :----------------------------------: | :-----------------------------------------: |
-    |         `Insert(MainKey,T)`          |         插入一个数据，并维护主索引          |
-  |          `Remove(MainKey)`           |      根据主值删除，仅维护主值的搜索树       |
-    |       `RemoveTag(MainKey,Tag)`       |    根据给出的`MainKey`删除对应数据`Tag`     |
-  |           `FindByTag(Tag)`           | 根据提供的`Tag`寻找，返回一个对象的`vector` |
+    |               `size()`               |           返回储存的数据块的数量            |
+  |         `Insert(MainKey,T)`          |         插入一个数据，并维护主索引          |
+    |          `Remove(MainKey)`           |      根据主值删除，仅维护主值的搜索树       |
+  |       `RemoveTag(MainKey,Tag)`       |    根据给出的`MainKey`删除对应数据`Tag`     |
+    |           `FindByTag(Tag)`           | 根据提供的`Tag`寻找，返回一个对象的`vector` |
     |         `FindByKey(MainKey)`         |           根据`MianKey`v返回对象            |
     |         `Update(MainKey,T)`          |            更新`MianKey`对于的块            |
     | `AddTag(MainKey,vector<string>list)` |     为`MianKey`对应的对象增加`Tag`属性      |
@@ -73,8 +74,8 @@
   * 由一个h和cpp组成
   
     |              接口               |       功能       |
-    | :-----------------------------: | :--------------: |
-  | add_train(i,n,m,s,p,x,t,o,d,y)  | 添加一个新的车次 |
+  | :-----------------------------: | :--------------: |
+    | add_train(i,n,m,s,p,x,t,o,d,y)  | 添加一个新的车次 |
     |        release_train(i)         |     发布车次     |
     |        query_train(i,d)         |     查询车次     |
     |         delete_train(i)         |     删除车次     |
