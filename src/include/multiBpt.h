@@ -7,7 +7,7 @@
 
 #include "BPlusTree.h"
 
-template<int Size_of_bpt,int Size_of_blockList>
+template<int Size_of_bpt,int Size_of_blockList,int SizeOfBptCache,int SizeOfBlockCache>
 class multiBPlusTree
 {
 private:
@@ -37,14 +37,14 @@ private:
         {
             int x;
         };
-        StoragePool<dataBlock,assistBlock>* BlockList;
+        StoragePool<dataBlock,assistBlock,SizeOfBlockCache>* BlockList;
         const string name;
     public:
         _blockList()=delete;
         explicit _blockList(const string& _name):name(_name)
         {
             string headString="multiBptBlockList_";
-            BlockList=new StoragePool<dataBlock,assistBlock>(headString+name);
+            BlockList=new StoragePool<dataBlock,assistBlock,SizeOfBlockCache>(headString+name);
         }
         //建立一个新的块链并插入x返回新块链对应的id
         inline int add_new_list(int x)
@@ -150,7 +150,7 @@ private:
             }
         }
     };
-    BPlusTree<Size_of_bpt>* index;
+    BPlusTree<Size_of_bpt,SizeOfBptCache>* index;
     _blockList* BlockList;
     const string name;
 public:
@@ -158,7 +158,7 @@ public:
     explicit multiBPlusTree(const string& _name):name(_name)
     {
         string headString="multi_";
-        index=new BPlusTree<Size_of_bpt>(headString+name);
+        index=new BPlusTree<Size_of_bpt,SizeOfBptCache>(headString+name);
         BlockList=new _blockList(name);
     }
 
