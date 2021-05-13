@@ -11,8 +11,6 @@
 
 class ManagementSystem
 {
-    typedef const vector<int> & vecI;
-    typedef vector<string> vecS;
 
     TrainManager train;
     UserManager user;

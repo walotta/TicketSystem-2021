@@ -9,9 +9,6 @@
 
 class TrainManager
 {
-    typedef const vector<int> & vecI;
-    typedef vector<string> vecS;
-
     FileStorage<Train> train;
 
 public:

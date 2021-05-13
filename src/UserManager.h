@@ -11,6 +11,7 @@
 class UserManager
 {
     FileStorage<User> user;
+    FileStorage<Log> log;
 
 public:
     UserManager()=default;

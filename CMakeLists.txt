@@ -26,4 +26,5 @@ add_executable(TicketSystem_2021
         src/Train.cpp
         src/ManagementSystem.h
         src/ManagementSystem.cpp
+        src/base.h
         )

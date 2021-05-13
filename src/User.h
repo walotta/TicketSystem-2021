@@ -6,9 +6,8 @@
 #define TICKETSYSTEM_2021_USER_H
 
 //#include <string>
-#include "include/FileStorage.h"
+#include "base.h"
 
-typedef const std::string & str;
 
 class User
 {
@@ -24,6 +23,43 @@ public:
     User(str u,str p,str n,str m,int g,FileStorage<User> &store);
 
 };
+
+class Log
+{
+    string status;
+    string username;
+    string trainID;
+    string From,To;
+    Date leave_date,arrive_date;
+    Time leave_time,arrive_time;
+    int price,num;
+public:
+    Log()=default;
+    Log(str u,str s,str i,str f,str t,Date ld,Date ad,Time lt,Time at,int p,int n):leave_date(ld),arrive_date(ad)
+    {
+        username=u;
+        status=s;
+        trainID=i;
+        From=f; To=t;
+        leave_time=lt; arrive_time=at;
+        price=p; num=n;
+    }
+    string display()
+    {
+        string output;
+        output="["+status+"] "+trainID+" "+From+" ";
+        output+=leave_date.display()+" "+leave_time.display()+" -> ";
+        output+=To+" "+arrive_date.display()+" "+arrive_time.display()+" ";
+        output+=to_string(price)+" "+to_string(num);
+        return output;
+    }
+    void modify_status(str s)
+    {
+        status=s;
+    }
+};
+
+
 
 
 #endif //TICKETSYSTEM_2021_USER_H
