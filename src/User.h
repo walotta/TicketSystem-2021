@@ -11,10 +11,10 @@
 
 class User
 {
-    string username;// Consist of number, alphabet and '_', and its head must be alphabet, with length<=20.
-    string password;// Consist of number, alphabet and '_', with length<=30.
-    string name;// Consist of Chinese character, with 2<=length<=5.
-    string mailAddr;// Consist of number, alphabet, '@' & '.', with length<=30, needless to check its legality.
+    MyString username;// Consist of number, alphabet and '_', and its head must be alphabet, with length<=20.
+    MyString password;// Consist of number, alphabet and '_', with length<=30.
+    MyString name;// Consist of Chinese character, with 2<=length<=5.
+    MyString mailAddr;// Consist of number, alphabet, '@' & '.', with length<=30, needless to check its legality.
     int privilege;// Z,[0,10]
 
 public:
@@ -26,10 +26,10 @@ public:
 
 class Log
 {
-    string status;
-    string username;
-    string trainID;
-    string From,To;
+    MyString status;
+    MyString username;
+    MyString trainID;
+    MyString From,To;
     Date leave_date,arrive_date;
     Time leave_time,arrive_time;
     int price,num;
@@ -47,9 +47,9 @@ public:
     string display()
     {
         string output;
-        output="["+status+"] "+trainID+" "+From+" ";
+        output="["+(string)status+"] "+(string)trainID+" "+(string)From+" ";
         output+=leave_date.display()+" "+leave_time.display()+" -> ";
-        output+=To+" "+arrive_date.display()+" "+arrive_time.display()+" ";
+        output+=(string)To+" "+arrive_date.display()+" "+arrive_time.display()+" ";
         output+=to_string(price)+" "+to_string(num);
         return output;
     }

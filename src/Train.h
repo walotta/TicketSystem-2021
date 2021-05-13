@@ -13,13 +13,13 @@ class Train
 {
     struct Station
     {
-        string name;
+        MyString name;
         int price;
         int arrival,departure;
     };
 
-    vector<Station> station;
-    string trainID;
+    Station station[120];
+    MyString trainID;
     int stationNum;// Z,(1,100]
     int seatNum;// <1e5
     Time startTime;

@@ -23,7 +23,7 @@ public:
     bool logout(str u);
     string query_profile(str c,str u);
     string modify_profile(str c,str u,str p,str n,str m,int g);
-    vector<string> query_order(str u); // If query failed, return an empty vector.
+    vecS query_order(str u); // If query failed, return an empty vector.
     string buy_ticket(str u,str i,Date d,str f,str t,int n,bool q);
     bool refund_ticket(str u,int n);// todo
     void clean();
