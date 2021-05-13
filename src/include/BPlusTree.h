@@ -767,6 +767,18 @@ public:
         return ans;
     }
 
+    void clean()
+    {
+        storage->clearAll();
+        root=-1;
+        head=-1;
+        assistStore ass;
+        ass.rootStorage=root;
+        ass.headStorage=head;
+        ass.used=true;
+        storage->writeExtraBlock(ass);
+    }
+
 #ifdef Debug_Mode
     void debug()
     {

@@ -149,6 +149,11 @@ private:
                 BlockList->update(list_id,now);
             }
         }
+
+        void clean()
+        {
+            BlockList->clearAll();
+        }
     };
     BPlusTree<Size_of_bpt,SizeOfBptCache>* index;
     _blockList* BlockList;
@@ -194,6 +199,12 @@ public:
         {
             BlockList->insert(tem[0],id);
         }
+    }
+
+    void clean()
+    {
+        BlockList->clean();
+        index->clean();
     }
 };
 

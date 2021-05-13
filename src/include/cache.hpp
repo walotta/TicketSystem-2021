@@ -39,9 +39,14 @@ public:
     void update(int _id,const T& other)
     {
         int pos=find(_id);
-        if(pos==-1)return;
-        delete storage[pos];
-        storage[pos]=new T(other);
+        if(pos==-1)
+        {
+            insert(_id,other);
+        }else
+        {
+            delete storage[pos];
+            storage[pos]=new T(other);
+        }
     }
     void insert(int _id,const T& other)
     {
@@ -66,5 +71,14 @@ public:
         pos=find(_id);
         if(pos==-1)return;
         id[pos]=-2;
+    }
+    void clear()
+    {
+        for(int i=0;i<size;i++)
+        {
+            delete storage[i];
+        }
+        size=0;
+        head=-1;
     }
 };
