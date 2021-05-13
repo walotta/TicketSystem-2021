@@ -11,22 +11,11 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="03332902-decf-4f56-bc7e-bfea07acbb9d" name="Default Changelist" comment="2021.05.12 02:18&#10;Build some framework.">
-      <change afterPath="$PROJECT_DIR$/src/ManagementSystem.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ManagementSystem.h" afterDir="false" />
+    <list default="true" id="03332902-decf-4f56-bc7e-bfea07acbb9d" name="Default Changelist" comment="2021.05.12 15:22&#10;Build some framework.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TicketSystem_2021.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TicketSystem_2021.dir/DependInfo.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TicketSystem_2021.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TicketSystem_2021.dir/build.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TicketSystem_2021.dir/cmake_clean.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TicketSystem_2021.dir/cmake_clean.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TicketSystem_2021.dir/objects1.rsp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TicketSystem_2021.dir/objects1.rsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TicketSystem_2021.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TicketSystem_2021.dir/progress.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/TicketSystem_2021.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/TicketSystem_2021.cbp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Train.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Train.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ManagementSystem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ManagementSystem.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ManagementSystem.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ManagementSystem.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/TrainManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/TrainManager.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/UserManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/UserManager.h" afterDir="false" />
     </list>
@@ -80,22 +69,12 @@
     <property name="cidr.known.project.marker" value="true" />
     <property name="cmake.loaded.for.project" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="configurable.group.editor" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RunManager">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="TicketSystem_2021" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="TicketSystem_2021" TARGET_NAME="TicketSystem_2021" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="TicketSystem_2021" RUN_TARGET_NAME="TicketSystem_2021">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="GradleAppRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="com.jetbrains.cidr.cpp.gradle.execution.GradleNativeBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
   </component>
@@ -119,7 +98,9 @@
       <workItem from="1620719791712" duration="7000" />
       <workItem from="1620754450388" duration="542000" />
       <workItem from="1620755002386" duration="2140000" />
-      <workItem from="1620800170782" duration="3851000" />
+      <workItem from="1620800170782" duration="4547000" />
+      <workItem from="1620808031977" duration="2000" />
+      <workItem from="1620885550186" duration="4629000" />
     </task>
     <task id="LOCAL-00001" summary="test for lyn device">
       <created>1618228523762</created>
@@ -156,7 +137,14 @@
       <option name="project" value="LOCAL" />
       <updated>1620757138722</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="2021.05.12 15:22&#10;Build some framework.">
+      <created>1620804182029</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1620804182029</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -193,6 +181,7 @@
     <MESSAGE value="2021.05.12 01:41" />
     <MESSAGE value="????" />
     <MESSAGE value="2021.05.12 02:18&#10;Build some framework." />
-    <option name="LAST_COMMIT_MESSAGE" value="2021.05.12 02:18&#10;Build some framework." />
+    <MESSAGE value="2021.05.12 15:22&#10;Build some framework." />
+    <option name="LAST_COMMIT_MESSAGE" value="2021.05.12 15:22&#10;Build some framework." />
   </component>
 </project>
