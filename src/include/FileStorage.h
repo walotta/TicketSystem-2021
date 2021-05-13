@@ -7,13 +7,13 @@
 
 #define Bpt_Size 300
 
-#include "BPlusTree.h"
+#include "multiBpt.h"
 #include "StoragePool.h"
 #include "ErrorMessage.h"
 #include <map>
 using namespace std;
 
-template<class T>
+/*template<class T>
 class FileStorage
 {
 private:
@@ -224,6 +224,58 @@ public:
     void ClearSelect()
     {
         nowId=-1;
+    }
+};*/
+template<class T,int SizeOfBpt,int SizeOfBptBlock,int CacheOfBpt,int CacheOfBptBlock,int CacheOfData>
+class StorageManger
+{
+private:
+
+public:
+    StorageManger()=delete;
+    StorageManger(const string& _name,bool has_tag)
+    {
+        
+    }
+
+    ~StorageManger()
+    {
+
+    }
+
+    void insert(const string& MainKey,const T& to_insert)
+    {
+
+    }
+
+    void Remove(const string& MainKey)
+    {
+
+    }
+
+    void RemoveTag(const string& MainKey,const T& Tag)
+    {
+
+    }
+
+    vector<T> FindByTag(const string& tag)
+    {
+
+    }
+
+    T FindByKey(const string& MainKey)
+    {
+
+    }
+
+    void Update(const string& MainKey,const T& to_update)
+    {
+
+    }
+
+    void AddTag(const string& MainKey,const vector<string>& list)
+    {
+
     }
 };
 #endif //BOOKSTORE_FILESTORAGE_H

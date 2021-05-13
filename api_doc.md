@@ -46,9 +46,9 @@
   
   ---
   
-  ### *FileStorage*
+  ### *StorageManger*
   
-  * 由一个h和cpp组成
+  * 由一个h组成
 
   * 设计为模版类，功能为实现对文件的单或双索引储存，实例化时要求给出存储的类的类型`(T)`、给出储存文件名、给出`bool`告知是否含有`Tag`
 
@@ -56,15 +56,15 @@
 
   * 内部包含多个`BPlusTree`类对象，一个`StoragePool`类的存储类型实例，实现将数据的存入、删除、查询、修改
 
-    |                 接口                  |                    功能                     |
-  | :-----------------------------------: | :-----------------------------------------: |
-    |          `Insert(MainKey,T)`          |         插入一个数据，并维护主索引          |
-  |           `Delete(MainKey)`           |      根据主值删除，仅维护主值的搜索树       |
-    |          `DeleteTag(Tag,T)`           |          根据给出的`Tag`删除`Tag`           |
-  |           `FindByTag(Tag)`            | 根据提供的`Tag`寻找，返回一个对象的`vector` |
-    |         `FindByKey(MainKey)`          |              根据主值返回对象               |
-    |          `Update(MainKey,T)`          |      更新主值对于的块，保证不改变主值       |
-    | `AddTag(MainKey,vector<keyType>list)` | 为当前选中的对象增加`Tag`属性，不能修改主值 |
+    |                 接口                 |                    功能                     |
+  | :----------------------------------: | :-----------------------------------------: |
+    |         `Insert(MainKey,T)`          |         插入一个数据，并维护主索引          |
+  |          `Remove(MainKey)`           |      根据主值删除，仅维护主值的搜索树       |
+    |       `RemoveTag(MainKey,Tag)`       |    根据给出的`MainKey`删除对应数据`Tag`     |
+  |           `FindByTag(Tag)`           | 根据提供的`Tag`寻找，返回一个对象的`vector` |
+    |         `FindByKey(MainKey)`         |           根据`MianKey`v返回对象            |
+    |         `Update(MainKey,T)`          |            更新`MianKey`对于的块            |
+    | `AddTag(MainKey,vector<string>list)` |     为`MianKey`对应的对象增加`Tag`属性      |
   
   ---
   

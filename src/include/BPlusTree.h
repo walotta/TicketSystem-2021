@@ -14,7 +14,7 @@
 #include "ErrorMessage.h"
 #include "MyString.hpp"
 
-template<int Size>
+template<int Size,int SizeOfCache>
 class BPlusTree
 {
 private:
@@ -39,7 +39,7 @@ private:
         MyString storeKey[Size];
     };
     BStore rootBlock;
-    StoragePool<BStore,assistStore>* storage;
+    StoragePool<BStore,assistStore,SizeOfCache>* storage;
 
     //返回是否需要裂块，需要返回裂块后的新id值
     int dp_insert(int now,MyString key, const int &id){
@@ -554,7 +554,7 @@ public:
     explicit BPlusTree(const string& _name):name(_name)
     {
         string headString="BptOf_";
-        storage=new StoragePool<BStore,assistStore>(headString+name);
+        storage=new StoragePool<BStore,assistStore,SizeOfCache>(headString+name);
         assistStore ass;
         ass=storage->readExtraBlock();
         if(!ass.used)

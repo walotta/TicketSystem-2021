@@ -10,7 +10,7 @@
 #include "cache.hpp"
 using namespace std;
 
-template<class T,class extraBlock>
+template<class T,class extraBlock,int SizeOfCache>
 class StoragePool
 {
 private:
