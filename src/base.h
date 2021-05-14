@@ -5,7 +5,7 @@
 #ifndef TICKETSYSTEM_2021_BASE_H
 #define TICKETSYSTEM_2021_BASE_H
 
-#include "include/FileStorage.h"
+#include "include/StorageManger.h"
 typedef const string & str;
 typedef const vector<int> & vecI;
 typedef vector<string> vecS;
@@ -58,7 +58,7 @@ struct Time
 };
 struct Date
 {
-    const int month=0,day=0;
+    int month=0,day=0;
     Date()=default;
     ~Date()=default;
     Date(int m,int d):month(m),day(d){}
