@@ -20,7 +20,14 @@ class User
 public:
     User()=default;
     ~User()=default;
-//    User(str u,str p,str n,str m,int g,StorageManger &store);
+    User(str u,str p,str n,str m,int g): username(u),password(p),name(n),mailAddr(m),privilege(g){}
+
+    bool check_pass(str p) const { return password==p; }
+    int pri() const { return privilege; }
+    string display() const
+    {
+        return (string)username+" "+(string)name+" "+(string)mailAddr+" "+to_string(privilege);
+    }
 
 };
 

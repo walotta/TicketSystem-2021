@@ -12,11 +12,12 @@ class UserManager
 {
     StorageManger<User,300,300,300,300,300> user;
     StorageManger<Log,300,300,300,300,300> log;
+    map<string,int> loggedUser;
 
 public:
-    UserManager()=default;
+    UserManager():user("user.dat",false),log("log.dat",false){}
     ~UserManager()=default;
-    UserManager(const string &address);
+//    UserManager(const string &address);
 
     bool add_user(str c,str u,str p,str n,str m,int g);
     bool login(str u,str p);

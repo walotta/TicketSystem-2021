@@ -26,5 +26,16 @@ bool TrainManager::add_train(const string &i,int n,int m,const vecS &s,const vec
     if(tp.second) return false;
     Train temp(i,n,m,s,p,x,t,o,d_beg,d_end,y);
     train.insert(i,temp);
-    return false;
+    return true;
+}
+
+bool TrainManager::delete_train(const string &i)
+{
+    auto temp=train.FindByKey(i);
+    if(!temp.second) return false;
+    if(temp.first.if_release()) return false;
+
+    train.Remove(i);
+    //todo: Remove tag.
+    return true;
 }

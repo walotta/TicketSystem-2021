@@ -55,6 +55,8 @@ public:
             return true;
         }
     }
+
+    bool if_release() const { return If_release; }
 };
 
 
