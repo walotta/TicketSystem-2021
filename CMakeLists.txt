@@ -10,11 +10,12 @@ add_executable(TicketSystem_2021
         src/include/BPlusTree.h
         src/include/cache.hpp
         src/include/ErrorMessage.h
-        src/include/FileStorage.h
+        src/include/StorageManger.h
         src/include/HashMap.cpp
         src/include/HashMap.h
         src/include/MyString.hpp
         src/include/StoragePool.h
+
         src/main.cpp
         src/TrainManager.cpp
         src/TrainManager.h

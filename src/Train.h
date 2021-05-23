@@ -30,9 +30,31 @@ class Train
 public:
     Train()=default;
     ~Train()=default;
+    Train(str i,int n,int m,const vecS &s,vecI p,Time x,vecI t,vecI o,Date d_beg,Date d_end,char y):trainID(i),startTime(x),sale_beg(d_beg),sale_end(d_end)
+    {
+        stationNum=n;
+        seatNum=m;
+        type=y;
+        If_release=false;
 
+        for(int ii=0;ii<n;++ii)
+        {
+            station[ii].name=s[ii];
+            station[ii].price=p[ii];
+            //todo: process time.
+        }
 
+    }
 
+    bool release()
+    {
+        if(If_release) return false;
+        else
+        {
+            If_release=true;
+            return true;
+        }
+    }
 };
 
 

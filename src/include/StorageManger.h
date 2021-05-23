@@ -8,6 +8,7 @@
 #define Bpt_Size 300
 
 #include "multiBpt.h"
+#include <utility>
 #include "StoragePool.h"
 #include "ErrorMessage.h"
 #include <map>
@@ -82,15 +83,16 @@ public:
         return ansList;
     }
 
-    inline T FindByKey(const string& MainKey)
+    inline std::pair<T,bool> FindByKey(const string& MainKey)
     {
-        int find_id=MainIndex->find(MainKey);
-        return dataLibrary->get(find_id);
+        vector<int> ans_list=MainIndex->find(MainKey);
+        if(ans_list.empty())return make_pair(T(),false);
+        return make_pair(dataLibrary->get(ans_list[0]),true);
     }
 
     inline void Update(const string& MainKey,const T& to_update)
     {
-        int find_id=MainIndex->find(MainKey);
+        int find_id=MainIndex->find(MainKey)[0];
         dataLibrary->update(find_id,to_update);
     }
 

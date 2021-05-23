@@ -20,7 +20,7 @@ class User
 public:
     User()=default;
     ~User()=default;
-    User(str u,str p,str n,str m,int g,FileStorage<User> &store);
+//    User(str u,str p,str n,str m,int g,StorageManger &store);
 
 };
 

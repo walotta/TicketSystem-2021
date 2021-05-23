@@ -10,8 +10,8 @@
 
 class UserManager
 {
-    FileStorage<User> user;
-    FileStorage<Log> log;
+    StorageManger<User,300,300,300,300,300> user;
+    StorageManger<Log,300,300,300,300,300> log;
 
 public:
     UserManager()=default;

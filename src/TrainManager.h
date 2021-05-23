@@ -9,12 +9,12 @@
 
 class TrainManager
 {
-    FileStorage<Train> train;
+    StorageManger<Train,300,300,300,300,300> train;
 
 public:
-    TrainManager()=default;
+    TrainManager():train("train.dat",true){}
     ~TrainManager()=default;
-    TrainManager(str address);
+//    TrainManager(str address);
 
     bool add_train(str i,int n,int m,const vecS &s,vecI p,Time x,vecI t,vecI o,Date d_beg,Date d_end,char y);
     bool release_train(str i);
@@ -24,7 +24,7 @@ public:
     vecS query_transfer(str s,str t,Date d,str p);
     int  buy_ticket(str i,Date d,str f,str t,int n);
     bool refund_ticket();//todo
-    bool clean();//todo
+    bool clean();
 
 
 };
