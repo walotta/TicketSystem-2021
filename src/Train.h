@@ -15,7 +15,7 @@ class Train
     {
         MyString name;
         int price;
-        int arrival,departure;
+        RealTime arrival,departure;
     };
 
     Station station[120];
@@ -55,8 +55,32 @@ public:
             return true;
         }
     }
-
     bool if_release() const { return If_release; }
+
+    pair<Date,Date> date() const
+    {
+        pair<Date,Date> output(sale_beg,sale_end);
+        return output;
+    }
+
+    vecS query_train() const
+    {
+        vecS output;
+        output.push_back((string)trainID+" "+type);
+        for(int i=0;i<stationNum;++i)
+        {
+            string temp;
+            temp+=(string)station[i].name;
+            temp+=" "+station[i].arrival.display()+" -> "+station[i].departure.display();
+            //todo
+
+        }
+
+
+
+        return output;
+    }
+
 };
 
 

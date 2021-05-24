@@ -51,3 +51,20 @@ string UserManager::query_profile(const string &c,const string &u)
 
     return tp.first.display();
 }
+
+string UserManager::modify_profile(const string &c,const string &u,const string &p,const string &n,const string &m,int g)
+{
+    auto tpp=loggedUser.find(c);
+    if(tpp==loggedUser.end()) return "-1";
+
+    auto tp=user.FindByKey(u);
+    if(!tp.second) return "-1";
+    if(tp.first.pri()>tpp->second || g>=tpp->second) return "-1";
+
+    string pp=p,nn=n,mm=m;
+    if(p=="") pp=tp.first.pass();
+    if(n=="") nn=tp.first.nam();
+    if(m=="") mm=tp.first.mail();
+    if(g==-404)  g=tp.first.pri();
+    User temp(u,pp,nn,mm,g);
+}

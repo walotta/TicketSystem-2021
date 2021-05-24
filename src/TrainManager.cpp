@@ -39,3 +39,12 @@ bool TrainManager::delete_train(const string &i)
     //todo: Remove tag.
     return true;
 }
+
+vecS TrainManager::query_train(const string &i,Date d)
+{
+    vecS fail;
+    auto tp=train.FindByKey(i);
+    if(!tp.second) return fail;
+    if(d<tp.first.date().first || tp.first.date().second<d) return fail;
+    return tp.first.query_train();
+}

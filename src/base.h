@@ -74,6 +74,13 @@ struct Date
         if(d.size()==1) d="0"+d;
         return m+"-"+d;
     }
+
+    bool operator<(const Date &d) const
+    {
+        if(month!=d.month) return month<d.month;
+        return day<d.day;
+    }
+
 };
 
 // This structure records the minutes passed after 6.1 00:00.
@@ -102,6 +109,11 @@ struct RealTime
     {
         int min=minutes%(24*60);
         return Time(min/60,min%60);
+    }
+
+    string display() const
+    {
+        return date().display()+" "+time().display();
     }
 };
 

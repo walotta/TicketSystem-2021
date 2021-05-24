@@ -24,7 +24,7 @@ bool ManagementSystem::delete_train(const string &i)
     return train.delete_train(i);
 }
 
-ManagementSystem::vecS ManagementSystem::query_train(const string &i,Date d)
+vecS ManagementSystem::query_train(const string &i,Date d)
 {
     return train.query_train(i,d);
 }
@@ -35,17 +35,17 @@ bool ManagementSystem::add_user(const string &c,const string &u,const string &p,
 }
 
 bool
-ManagementSystem::add_train(const string &i,int n,int m,const ManagementSystem::vecS &s,const vector<int> &p,Time x,const vector<int> &t,const vector<int> &o,Date d_beg,Date d_end,char y)
+ManagementSystem::add_train(const string &i,int n,int m,const vecS &s,const vector<int> &p,Time x,const vector<int> &t,const vector<int> &o,Date d_beg,Date d_end,char y)
 {
     return train.add_train(i,n,m,s,p,x,t,o,d_beg,d_end,y);
 }
 
-ManagementSystem::vecS ManagementSystem::query_ticket(const string &s,const string &t,Date d,const string &p)
+vecS ManagementSystem::query_ticket(const string &s,const string &t,Date d,const string &p)
 {
     return train.query_ticket(s,t,d,p);
 }
 
-ManagementSystem::vecS ManagementSystem::query_transfer(const string &s,const string &t,Date d,const string &p)
+vecS ManagementSystem::query_transfer(const string &s,const string &t,Date d,const string &p)
 {
     return train.query_transfer(s,t,d,p);
 }
