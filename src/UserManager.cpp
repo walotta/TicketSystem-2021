@@ -6,9 +6,17 @@
 
 bool UserManager::add_user(const string &c,const string &u,const string &p,const string &n,const string &m,int g)
 {
-    //todo: When first add user...
-    auto tpp=loggedUser.find(c);
-    if(tpp==loggedUser.end() || tpp->second<=g) return false;
+    if(c=="")
+    {
+        if(!loggedUser.empty()) return false;
+        if(user.size()!=0) return false;
+        User firstUser(u,p,n,m,10);
+        user.insert(u,firstUser);
+        return true;
+    }
+
+    int pri=check_login(c);
+    if(pri==-404 || pri<=g) return false;
 
     auto tp=user.FindByKey(u);
     if(tp.second) return false;
@@ -20,14 +28,13 @@ bool UserManager::add_user(const string &c,const string &u,const string &p,const
 
 bool UserManager::login(const string &u,const string &p)
 {
-    auto tpp=loggedUser.find(u);
-    if(tpp!=loggedUser.end()) return false;
+    if(check_login(u)!=-404) return false;
 
     auto temp=user.FindByKey(u);
     if(!temp.second) return false;
     if(!temp.first.check_pass(p)) return false;
 
-    pair<string,int> add(u,temp.first.pri());
+    pair<string,pair<int,int>> add(u,pair<int,int>(temp.first.pri(),temp.first.order_number()));
     loggedUser.insert(add);
     return true;
 }
@@ -42,24 +49,24 @@ bool UserManager::logout(const string &u)
 
 string UserManager::query_profile(const string &c,const string &u)
 {
-    auto tpp=loggedUser.find(c);
-    if(tpp==loggedUser.end()) return "-1";
+    int pri=check_login(c);
+    if(pri==-404) return "-1";
 
     auto tp=user.FindByKey(u);
     if(!tp.second) return "-1";
-    if(tp.first.pri()>tpp->second) return "-1";// Access denied.
+    if(tp.first.pri()>pri) return "-1";// Access denied.
 
     return tp.first.display();
 }
 
 string UserManager::modify_profile(const string &c,const string &u,const string &p,const string &n,const string &m,int g)
 {
-    auto tpp=loggedUser.find(c);
-    if(tpp==loggedUser.end()) return "-1";
+    int pri=check_login(c);
+    if(pri==-404) return "-1";
 
     auto tp=user.FindByKey(u);
     if(!tp.second) return "-1";
-    if(tp.first.pri()>tpp->second || g>=tpp->second) return "-1";
+    if(tp.first.pri()>pri || g>=pri) return "-1";
 
     string pp=p,nn=n,mm=m;
     if(p=="") pp=tp.first.pass();
@@ -67,4 +74,42 @@ string UserManager::modify_profile(const string &c,const string &u,const string 
     if(m=="") mm=tp.first.mail();
     if(g==-404)  g=tp.first.pri();
     User temp(u,pp,nn,mm,g);
+    user.Update(u,temp);
+    return temp.display();
 }
+
+vecS UserManager::query_order(const string &u)
+{
+    if(check_login(u)==-404) return vecS();
+
+    auto temp=log.FindByTag(u);
+    vecS output;
+    for(int i=0;i<temp.size();++i) output.push_back(temp[i].display());
+    return output;
+}
+
+int UserManager::check_login(const string &u) const
+{
+    auto tpp=loggedUser.find(u);
+    if(tpp==loggedUser.end()) return -404;
+    return tpp->second.first;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

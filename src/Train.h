@@ -14,8 +14,30 @@ class Train
     struct Station
     {
         MyString name;
-        int price;
+        int price; // The "price" store the price that from the Departure station.
         RealTime arrival,departure;
+        int NUM=0;
+        int seat_remain[100];
+
+        Station()=default;
+
+        void update(str n,int p,int num,const RealTime &t1,const RealTime &t2)
+        {
+            name=n;
+            price=p;
+            NUM=num;
+            arrival=t1;
+            departure=t2;
+            for(int i=0;i<100;++i) seat_remain[i]=num;
+        }
+
+        void update(str n,int p,int num)
+        {
+            name=n;
+            price=p;
+            NUM=num;
+            for(int i=0;i<100;++i) seat_remain[i]=num;
+        }
     };
 
     Station station[120];
@@ -37,13 +59,22 @@ public:
         type=y;
         If_release=false;
 
-        for(int ii=0;ii<n;++ii)
+        // Process the name & price & time;
+        station[0].update(s[0],0,m);
+        station[0].departure=RealTime(Date(6,1),x);
+        for(int pos=0;pos<stationNum-2;++pos)
         {
-            station[ii].name=s[ii];
-            station[ii].price=p[ii];
-            //todo: process time.
+            station[pos+1].update(s[pos+1],station[pos].price+p[pos],m,station[pos].departure+t[pos],station[pos+1].arrival+o[pos]);
+            /*
+            station[pos+1].name=s[pos+1];
+            station[pos+1].price=station[pos].price+p[pos];
+            station[pos+1].arrival=station[pos].departure+t[pos];
+            station[pos+1].departure=station[pos+1].arrival+o[pos];
+             */
         }
-
+        int last=stationNum-1;
+        station[last].update(s[last],station[last-1].price+p[last-1],m);
+        station[last].arrival=station[last-1].departure+t[last-1];
     }
 
     bool release()
@@ -67,6 +98,7 @@ public:
     {
         vecS output;
         output.push_back((string)trainID+" "+type);
+        int price=0;
         for(int i=0;i<stationNum;++i)
         {
             string temp;

@@ -16,6 +16,7 @@ class User
     MyString name;// Consist of Chinese character, with 2<=length<=5.
     MyString mailAddr;// Consist of number, alphabet, '@' & '.', with length<=30, needless to check its legality.
     int privilege;// Z,[0,10]
+    int orderedNum;
 
 public:
     User()=default;
@@ -33,6 +34,8 @@ public:
     string nam()  const {return (string)name;}
     string mail() const {return (string)mailAddr;}
     int pri() const { return privilege; }
+    int order_number() const {return orderedNum;}
+    void add_order(){++orderedNum;}
 
 };
 

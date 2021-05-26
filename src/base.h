@@ -62,6 +62,7 @@ struct Time
 };
 struct Date
 {
+    constexpr static int days[4]={30,31,31,30};
     int month=0,day=0;
     Date()=default;
     ~Date()=default;
@@ -81,6 +82,13 @@ struct Date
         return day<d.day;
     }
 
+    int dayNum() const
+    {
+        int output=0;
+        for(int i=0;i<month-6;++i) output+=days[i];
+        return output+day;
+    }
+
 };
 
 // This structure records the minutes passed after 6.1 00:00.
@@ -89,10 +97,10 @@ struct RealTime
     constexpr static int days[4]={30,31,31,30};
     static const int base_mon=6;
 
-    long long minutes=0;
+    long long minutes=-404;
 
     RealTime()=default;
-    RealTime(const Date &d,const Time &t)
+    explicit RealTime(const Date &d,const Time &t)
     {
         for(int i=base_mon;i<d.month;++i) minutes+=days[i-base_mon]*24*60;
         minutes+=(d.day-1)*24*60;
@@ -113,7 +121,20 @@ struct RealTime
 
     string display() const
     {
+        if(minutes<0) return "xx-xx xx:xx";
         return date().display()+" "+time().display();
+    }
+
+    RealTime &operator=(const RealTime &r)
+    {
+        minutes=r.minutes;
+        return *this;
+    }
+
+    RealTime &operator+(const long long &l)
+    {
+        minutes+=l;
+        return *this;
     }
 };
 

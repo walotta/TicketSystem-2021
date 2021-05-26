@@ -12,7 +12,7 @@ class UserManager
 {
     StorageManger<User,300,300,300,300,300> user;
     StorageManger<Log,300,300,300,300,300> log;
-    map<string,int> loggedUser;
+    map<string,pair<int,int>> loggedUser;// map<username,pair<priority,orderNum>>
 
 public:
     UserManager():user("user.dat",false),log("log.dat",false){}
@@ -29,7 +29,7 @@ public:
     bool refund_ticket(str u,int n);// todo
     void clean();
 
-
+    int check_login(str u) const;// If the user is logged, return its priority; else return -404;
 
 };
 

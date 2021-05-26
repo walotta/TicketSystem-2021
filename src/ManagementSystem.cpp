@@ -77,7 +77,9 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
 
 string ManagementSystem::buy_ticket(const string &u,const string &i,Date d,const string &f,const string &t,int n,bool q)
 {
-    //todo: check user u is login.
+    int pri=user.check_login(u);
+    if(pri==-404) return "-1";
+
     int cost=train.buy_ticket(i,d,f,t,n);
     if(cost==-1)
     {
