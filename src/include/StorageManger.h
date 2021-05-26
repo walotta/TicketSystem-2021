@@ -114,3 +114,6 @@ public:
     }
 };
 #endif //BOOKSTORE_FILESTORAGE_H
+
+
+//TODO: to add the function that output the one int log that will be used in "OrderManager"

@@ -48,3 +48,34 @@ vecS TrainManager::query_train(const string &i,Date d)
     if(d<tp.first.date().first || tp.first.date().second<d) return fail;
     return tp.first.query_train();
 }
+
+vecS TrainManager::query_ticket(const string &s,const string &t,Date d,const string &p)
+{
+    //todo: ask what the "p" was when input without -p.
+    auto trains1=train.FindByTag(s);
+    auto trains2=train.FindByTag(t);
+    sort(trains1.begin(),trains1.end());
+    sort(trains2.begin(),trains2.end());
+
+    int i=0,j=0;
+    vector<Train> list;
+    while(i<trains1.size() && j<trains2.size())
+    {
+        if(trains1[i].train_id()==trains2[j].train_id())
+        {
+            if(trains1[i].check_date(d)) list.push_back(trains1[i]);
+            ++i; ++j;
+            continue;
+        }
+        if(trains1[i].train_id()<trains2[j].train_id()) ++i;
+        else ++j;
+    }
+    /* todo: sort the vector by the order
+     *      output their information.
+     *
+     */
+    vecS output;
+    for(int k=0; k<list.size(); ++k) output.push_back(list[k].information(s,t,d));
+
+
+}

@@ -30,7 +30,6 @@ class Train
             departure=t2;
             for(int i=0;i<100;++i) seat_remain[i]=num;
         }
-
         void update(str n,int p,int num)
         {
             name=n;
@@ -112,6 +111,66 @@ public:
 
         return output;
     }
+
+    string train_id() const {return (string)trainID;}
+
+    bool operator<(const Train &t) const
+    {
+        return trainID<t.trainID;
+    }
+
+    bool check_date(const Date &d) const
+    {
+        if(d<sale_beg || sale_end<d) return false;
+        else return true;
+    }
+
+    int get_price(str i,str f) const
+    {
+        int a=0,b=0;
+        for(int j=0;j<stationNum;++j)
+        {
+            if(i==station[j].name) a=j;
+            if(f==station[j].name)
+            {
+                b=j; break;
+            }
+        }
+        return station[b].price-station[a].price;
+    }
+
+    int get_time(str i,str f) const
+    {
+        int a=0,b=0;
+        for(int j=0;j<stationNum;++j)
+        {
+            if(i==station[j].name) a=j;
+            if(f==station[j].name)
+            {
+                b=j; break;
+            }
+        }
+        return station[b].arrival-station[a].departure;
+    }
+
+    string information(str i,str f,const Date &d) const
+    {
+        bool If_find_initial=false;
+        int a=0,b=0,seat=seatNum;
+        for(int j=0;j<stationNum;++j)
+        {
+            auto &st=station[j];
+            if(i==st.name) {a=j; If_find_initial=true;}
+            if(f==st.name) {b=j; break;}
+            if(If_find_initial) seat=min(seat,st.seat_remain[d.dayNum()]);
+        }
+        int price=station[b].price-station[a].price;
+        Time departure(station[a].departure.time()),arrival(station[b].arrival.time());
+        string output((string)trainID+" "+i+" "+departure.display());
+        output+=" -> "+f+" "+arrival.display()+" "+to_string(price)+" "+to_string(seat);
+        return output;
+    }
+
 
 };
 

@@ -8,6 +8,7 @@
 #include "include/StorageManger.h"
 #include <unordered_set>
 #include <set>
+#include <algorithm>
 
 
 typedef const string & str;
@@ -89,6 +90,11 @@ struct Date
         return output+day;
     }
 
+    int operator-(const Date &d) const
+    {
+        return dayNum()-d.dayNum();
+    }
+
 };
 
 // This structure records the minutes passed after 6.1 00:00.
@@ -131,10 +137,16 @@ struct RealTime
         return *this;
     }
 
-    RealTime &operator+(const long long &l)
+    RealTime operator+(const long long &l) const
     {
-        minutes+=l;
-        return *this;
+        RealTime temp;
+        temp.minutes=minutes+l;
+        return temp;
+    }
+
+    long long operator-(const RealTime &r) const
+    {
+        return minutes-r.minutes;
     }
 };
 
