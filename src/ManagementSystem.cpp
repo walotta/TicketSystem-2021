@@ -75,28 +75,34 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
     else return false;
 }
 
-string ManagementSystem::buy_ticket(const string &u,const string &i,Date d,const string &f,const string &t,int n,bool q)
+string ManagementSystem::buy_ticket(const string &u,const string &i,const Date &d,const string &f,const string &t,int n,bool q)
 {
+    string fail="-1",into_queue="queue";
     int pri=user.check_login(u);
-    if(pri==-404) return "-1";
+    if(pri==-404) return fail;
 
     int cost=train.buy_ticket(i,d,f,t,n);
     if(cost==-1)
     {
         if(q)
         {
-            //todo: Add to queue.
-            return "queue";
+            int num=order.plus_log();
+            vecS tag;
+            tag.push_back(u);
+//            int id=user.write_log(u,i,d,f,t,n,PENDING);
+            Order temp(num,id,u,i,d,f,t,n);
+            order.insert(to_string(num),temp);
+            order.AddTag(to_string(num),tag);
+            return into_queue;
         }
-        else return "-1";
+        else return fail;
     }
     else
     {
-        user.buy_ticket(u,i,d,f,t,n,q);
+        user.write_log(u,i,d,f,t,n,SUCCESS);
+//        user.buy_ticket(u,i,d,f,t,n,q);
         return to_string(cost);
     }
-
-
 }
 
 bool ManagementSystem::clean()
@@ -105,3 +111,22 @@ bool ManagementSystem::clean()
     train.clean();
     return true;
 }
+
+int ManagementSystem::query_user_priority(const string &u)
+{
+    return user.query_user_priority(u);
+}
+
+bool ManagementSystem::buy_ticket(const ManagementSystem::Order &ord)
+{
+    int cost=train.buy_ticket((string)ord.trainID,ord.date,(string)ord.start,(string)ord.arrive,ord.number);
+    if(cost==-1) return false;
+
+    user.write_log((string)ord.user,(string)ord.trainID,ord.date,(string)ord.start,(string)ord.arrive,ord.number,SUCCESS);
+    return true;
+}
+
+
+
+
+

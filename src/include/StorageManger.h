@@ -72,6 +72,23 @@ public:
         TagIndex->remove(Tag,remove_id);
     }
 
+    inline void RemoveTag(const string& MainKey,const vector<string>& TagList)
+    {
+        if(TagIndex==nullptr)throw error("this StorageManger has no TagIndex");
+        int remove_id=MainIndex->find(MainKey);
+        for(auto Tag:TagList)
+        {
+            TagIndex->remove(Tag,remove_id);
+        }
+    }
+
+    inline void AddTag(const string& MainKey,const string& Tag)
+    {
+        if(TagIndex==nullptr)throw error("this StorageManger has no TagIndex");
+        int find_id=MainIndex->find(MainKey);
+        TagIndex->insert(Tag,find_id);
+    }
+
     inline vector<T> FindByTag(const string& Tag)
     {
         if(TagIndex==nullptr)throw error("this StorageManger has no TagIndex");
@@ -100,7 +117,7 @@ public:
     inline void AddTag(const string& MainKey,const vector<string>& list)
     {
         if(TagIndex==nullptr)throw error("this StorageManger has no TagIndex");
-        int find_id=MainIndex->find(MainKey);
+        int find_id=MainIndex->find(MainKey)[0];
         for(auto it:list)
         {
             TagIndex->insert(it,find_id);

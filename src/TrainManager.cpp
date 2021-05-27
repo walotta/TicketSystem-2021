@@ -17,6 +17,7 @@ bool TrainManager::clean()
 {
     train.clean();
     seat.clean();
+    log.clean();
     return true;
 }
 
@@ -61,7 +62,7 @@ vecS TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_t
     {
         if(trains1[i].train_id()==trains2[j].train_id())
         {
-            if(trains1[i].check_date(d)) list.push_back(trains1[i]);
+            if(trains1[i].check_date(d) && trains1[i].if_release()) list.push_back(trains1[i]);
             ++i; ++j;
             continue;
         }
@@ -71,6 +72,6 @@ vecS TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_t
     /* todo: sort the vector by the order
      */
     vecS output;
-    for(int k=0; k<list.size(); ++k) output.push_back(list[k].information(s,t,d));
+    for(int k=0; k<list.size(); ++k) output.push_back(list[k].information(s,t,d,seat));
     return output;
 }

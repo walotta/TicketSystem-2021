@@ -11,12 +11,11 @@
 class UserManager
 {
     US user;
-    LG log;
     // map<username,pair<priority,orderNum>>
     map<string,pair<int,int>> loggedUser;
 
 public:
-    UserManager():user("user.dat",false),log("log.dat",false){}
+    UserManager():user("user.dat",false){}
     ~UserManager(){loggedUser.clear();}
 //    UserManager(const string &address);
 
@@ -31,7 +30,7 @@ public:
     bool clean();
 
     int check_login(str u) const;// If the user is logged, return its priority; else return -404;
-
+    int query_user_priority(str u);
 };
 
 

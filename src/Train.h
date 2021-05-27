@@ -9,8 +9,10 @@
 
 class Train;
 struct RemainedSeat;
+class Log;
 typedef StorageManger<Train,300,300,300,300,300> TR;
 typedef StorageManger<RemainedSeat,300,300,300,300,300> ST;
+typedef StorageManger<Log,300,300,300,300,300> LG;
 
 class RemainedSeat
 {
@@ -42,8 +44,6 @@ class Train
         MyString name;
         int price; // The "price" store the price that from the Departure station.
         RealTime arrival,departure;
-//        int NUM=0;
-//        int seat_remain[100];
 
         Station()=default;
 
@@ -116,7 +116,7 @@ public:
         return true;
     }
     bool if_release() const { return If_release; }
-
+    string train_id() const {return (string)trainID;}
     pair<Date,Date> date() const
     {
         pair<Date,Date> output(sale_beg,sale_end);
@@ -144,20 +144,11 @@ public:
         }
         return output;
     }
-
-    string train_id() const {return (string)trainID;}
-
-    bool operator<(const Train &t) const
-    {
-        return trainID<t.trainID;
-    }
-
     bool check_date(const Date &d) const
     {
         if(d<sale_beg || sale_end<d) return false;
         else return true;
     }
-
     int get_price(str i,str f) const
     {
         int a=0,b=0;
@@ -184,18 +175,18 @@ public:
         }
         return station[b].arrival-station[a].departure;
     }
-
-    string information(str i,str f,const Date &d) const
+    string information(str i,str f,const Date &d,ST &store) const
     {
-        //todo: Process the seat-number problem
         bool If_find_initial=false;
         int a=0,b=0,seat=seatNum;
+        auto seats=store.FindByKey((string)trainID+" "+d.display()).first;
         for(int j=0;j<stationNum;++j)
         {
             auto &st=station[j];
             if(i==st.name) {a=j; If_find_initial=true;}
             if(f==st.name) {b=j; break;}
-//            if(If_find_initial) seat=min(seat,st.seat_remain[d.dayNum()]);
+            if(If_find_initial) seat=min(seat,seats[j]);
+            //consider: Would un-released train use this function?
         }
         int price=station[b].price-station[a].price;
         Time departure(station[a].departure.time()),arrival(station[b].arrival.time());
@@ -204,10 +195,44 @@ public:
         return output;
     }
 
-
+    bool operator<(const Train &t) const
+    {
+        return trainID<t.trainID;
+    }
 };
 
-
+enum STATUS{SUCCESS,PENDING,REFUNDED};
+class Log
+{
+    int id; // The main-key.
+    MyString status;
+    MyString username;// The tag.
+    MyString trainID;
+    MyString From,To;
+    RealTime departure,arrive;
+    int price,num;
+public:
+    Log()=default;
+    Log(int k,str s,str u,str i,str f,str t,const RealTime &d,const RealTime &a,int p,int n):status(s),username(u),trainID(i),From(f),To(t),departure(d),arrive(a)
+    {
+        price=p; num=n; id=k;
+    }
+    string display() const
+    {
+        string output("["+(string)status+"] "+(string)trainID+" "+(string)From+" ");
+        output+=departure.display()+" -> "+(string)To+" "+arrive.display()+" ";
+        output+=to_string(price)+" "+to_string(num);
+        return output;
+    }
+    void modify_status(const STATUS &s)
+    {
+        if(s==PENDING) status="pending";
+        if(s==REFUNDED) status="refunded";
+        if(s==SUCCESS) status="success";
+    }
+    string main_key() const {return (string)username+to_string(id);}
+    string tag() const {return (string)username;}
+};
 
 
 

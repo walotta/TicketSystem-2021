@@ -11,9 +11,13 @@ class TrainManager
 {
     TR train;
     ST seat;
+    LG log;
 
+    int write_log(str u,str i,Date d,str f,str t,int n,STATUS q);
+    bool update_log(str u,int id,STATUS q);
+    //todo: To process these two private function.
 public:
-    TrainManager():train("train.dat",true),seat("seat.dat",false){}
+    TrainManager():train("train.dat",true),seat("seat.dat",false),log("log.dat",false){}
     ~TrainManager()=default;
 //    TrainManager(str address);
 

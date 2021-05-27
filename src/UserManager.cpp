@@ -103,10 +103,17 @@ int UserManager::check_login(const string &u) const
 bool UserManager::clean()
 {
     user.clean();
-    log.clean();
     loggedUser.clear();
     return true;
 }
+
+int UserManager::query_user_priority(const string &u)
+{
+    auto tp=user.FindByKey(u);
+    if(!tp.second) return -404;
+    return tp.first.pri();
+}
+
 
 
 

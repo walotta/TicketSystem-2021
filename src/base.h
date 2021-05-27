@@ -18,6 +18,8 @@ struct Time;
 struct Date;
 struct RealTime;
 
+
+
 struct Time
 {
     int day=0,hour=0,minute=0;
