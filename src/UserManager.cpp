@@ -95,6 +95,14 @@ int UserManager::check_login(const string &u) const
     return tpp->second.first;
 }
 
+bool UserManager::clean()
+{
+    user.clean();
+    log.clean();
+    loggedUser.clear();
+    return true;
+}
+
 
 
 

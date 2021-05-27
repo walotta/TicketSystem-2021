@@ -8,6 +8,12 @@
 //#include <string>
 #include "base.h"
 
+class User;
+class Log;
+typedef StorageManger<User,300,300,300,300,300> US;
+typedef StorageManger<Log,300,300,300,300,300> LG;
+
+
 
 class User
 {

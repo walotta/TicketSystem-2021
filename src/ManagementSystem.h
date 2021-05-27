@@ -23,8 +23,8 @@ public:
     bool release_train(str i);
     vecS query_train(str i,Date d);
     bool delete_train(str i);
-    vecS query_ticket(str s,str t,Date d,str p);
-    vecS query_transfer(str s,str t,Date d,str p);
+    vecS query_ticket(str s,str t,Date d,bool If_time);
+    vecS query_transfer(str s,str t,Date d,bool If_time);
     string buy_ticket(str u,str i,Date d,str f,str t,int n,bool q);
 
 

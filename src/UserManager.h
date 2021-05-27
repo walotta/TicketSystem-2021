@@ -10,13 +10,14 @@
 
 class UserManager
 {
-    StorageManger<User,300,300,300,300,300> user;
-    StorageManger<Log,300,300,300,300,300> log;
-    map<string,pair<int,int>> loggedUser;// map<username,pair<priority,orderNum>>
+    US user;
+    LG log;
+    // map<username,pair<priority,orderNum>>
+    map<string,pair<int,int>> loggedUser;
 
 public:
     UserManager():user("user.dat",false),log("log.dat",false){}
-    ~UserManager()=default;
+    ~UserManager(){loggedUser.clear();}
 //    UserManager(const string &address);
 
     bool add_user(str c,str u,str p,str n,str m,int g);
@@ -27,7 +28,7 @@ public:
     vecS query_order(str u); // If query failed, return an empty vector.
     string buy_ticket(str u,str i,Date d,str f,str t,int n,bool q);
     bool refund_ticket(str u,int n);// todo
-    void clean();
+    bool clean();
 
     int check_login(str u) const;// If the user is logged, return its priority; else return -404;
 

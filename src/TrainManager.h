@@ -9,19 +9,20 @@
 
 class TrainManager
 {
-    StorageManger<Train,300,300,300,300,300> train;
+    TR train;
+    ST seat;
 
 public:
-    TrainManager():train("train.dat",true){}
+    TrainManager():train("train.dat",true),seat("seat.dat",false){}
     ~TrainManager()=default;
 //    TrainManager(str address);
 
     bool add_train(str i,int n,int m,const vecS &s,vecI p,Time x,vecI t,vecI o,Date d_beg,Date d_end,char y);
-    bool release_train(str i);
+    bool release_train(str i);// Only after we release the train when we could check its seat number.
     vecS query_train(str i,Date d);
     bool delete_train(str i);
-    vecS query_ticket(str s,str t,Date d,str p);
-    vecS query_transfer(str s,str t,Date d,str p);
+    vecS query_ticket(str s,str t,Date d,bool If_time);
+    vecS query_transfer(str s,str t,Date d,bool If_time);
     int  buy_ticket(str i,Date d,str f,str t,int n);
     bool refund_ticket();//todo
     bool clean();

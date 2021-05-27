@@ -7,6 +7,10 @@
 
 #include "base.h"
 
+class Train;
+struct RemainedSeat;
+typedef StorageManger<Train,300,300,300,300,300> TR;
+typedef StorageManger<RemainedSeat,300,300,300,300,300> ST;
 
 
 class Train
@@ -16,8 +20,8 @@ class Train
         MyString name;
         int price; // The "price" store the price that from the Departure station.
         RealTime arrival,departure;
-        int NUM=0;
-        int seat_remain[100];
+//        int NUM=0;
+//        int seat_remain[100];
 
         Station()=default;
 
@@ -25,21 +29,21 @@ class Train
         {
             name=n;
             price=p;
-            NUM=num;
+//            NUM=num;
             arrival=t1;
             departure=t2;
-            for(int i=0;i<100;++i) seat_remain[i]=num;
+//            for(int i=0;i<100;++i) seat_remain[i]=num;
         }
         void update(str n,int p,int num)
         {
             name=n;
             price=p;
-            NUM=num;
-            for(int i=0;i<100;++i) seat_remain[i]=num;
+//            NUM=num;
+//            for(int i=0;i<100;++i) seat_remain[i]=num;
         }
     };
 
-    Station station[120];
+    Station station[102];
     MyString trainID;
     int stationNum;// Z,(1,100]
     int seatNum;// <1e5
@@ -76,14 +80,18 @@ public:
         station[last].arrival=station[last-1].departure+t[last-1];
     }
 
-    bool release()
+    bool release(ST &store)
     {
         if(If_release) return false;
-        else
+        If_release=true;
+        //todo: To Process the station & date.
+        for(int i=0;i<stationNum;++i)
         {
-            If_release=true;
-            return true;
+
         }
+
+
+        return true;
     }
     bool if_release() const { return If_release; }
 
@@ -138,7 +146,6 @@ public:
         }
         return station[b].price-station[a].price;
     }
-
     int get_time(str i,str f) const
     {
         int a=0,b=0;
@@ -155,6 +162,7 @@ public:
 
     string information(str i,str f,const Date &d) const
     {
+        //todo: Process the seat-number problem
         bool If_find_initial=false;
         int a=0,b=0,seat=seatNum;
         for(int j=0;j<stationNum;++j)
@@ -162,7 +170,7 @@ public:
             auto &st=station[j];
             if(i==st.name) {a=j; If_find_initial=true;}
             if(f==st.name) {b=j; break;}
-            if(If_find_initial) seat=min(seat,st.seat_remain[d.dayNum()]);
+//            if(If_find_initial) seat=min(seat,st.seat_remain[d.dayNum()]);
         }
         int price=station[b].price-station[a].price;
         Time departure(station[a].departure.time()),arrival(station[b].arrival.time());
@@ -173,6 +181,23 @@ public:
 
 
 };
+
+struct RemainedSeat
+{
+    MyString trainIDate; // This is the mainKey of this class.
+    int seat_remained[102];
+
+    int min_seat(const int &start,const int &end) const
+    {
+        int output=seat_remained[start];
+        for(int i=start;i<end;++i)
+        {
+            output=min(output,seat_remained[i]);
+        }
+        return output;
+    }
+};
+
 
 
 #endif //TICKETSYSTEM_2021_TRAIN_H

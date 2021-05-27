@@ -8,7 +8,7 @@ bool TrainManager::release_train(const string &i)
 {
     auto temp=train.FindByKey(i);
     if(!temp.second) return false;
-    if(!temp.first.release()) return false;
+    if(!temp.first.release(seat)) return false;
 
     train.Update(i,temp.first);
     return true;
@@ -17,6 +17,7 @@ bool TrainManager::release_train(const string &i)
 bool TrainManager::clean()
 {
     train.clean();
+    seat.clean();
     return true;
 }
 
@@ -49,9 +50,8 @@ vecS TrainManager::query_train(const string &i,Date d)
     return tp.first.query_train();
 }
 
-vecS TrainManager::query_ticket(const string &s,const string &t,Date d,const string &p)
+vecS TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_time)
 {
-    //todo: ask what the "p" was when input without -p.
     auto trains1=train.FindByTag(s);
     auto trains2=train.FindByTag(t);
     sort(trains1.begin(),trains1.end());

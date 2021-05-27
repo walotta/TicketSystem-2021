@@ -40,14 +40,14 @@ ManagementSystem::add_train(const string &i,int n,int m,const vecS &s,const vect
     return train.add_train(i,n,m,s,p,x,t,o,d_beg,d_end,y);
 }
 
-vecS ManagementSystem::query_ticket(const string &s,const string &t,Date d,const string &p)
+vecS ManagementSystem::query_ticket(const string &s,const string &t,Date d,bool If_time)
 {
-    return train.query_ticket(s,t,d,p);
+    return train.query_ticket(s,t,d,If_time);
 }
 
-vecS ManagementSystem::query_transfer(const string &s,const string &t,Date d,const string &p)
+vecS ManagementSystem::query_transfer(const string &s,const string &t,Date d,bool If_time)
 {
-    return train.query_transfer(s,t,d,p);
+    return train.query_transfer(s,t,d,If_time);
 }
 
 vector<string> ManagementSystem::query_order(const string &u)
