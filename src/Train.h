@@ -12,6 +12,28 @@ struct RemainedSeat;
 typedef StorageManger<Train,300,300,300,300,300> TR;
 typedef StorageManger<RemainedSeat,300,300,300,300,300> ST;
 
+class RemainedSeat
+{
+    MyString trainIDate; // This is the mainKey of this class.
+    int seat_remained[102];
+public:
+    RemainedSeat(str mainKey):trainIDate(mainKey){}
+
+    int min_seat(const int &start,const int &end) const
+    {
+        int output=seat_remained[start];
+        for(int i=start;i<end;++i)
+        {
+            output=min(output,seat_remained[i]);
+        }
+        return output;
+    }
+    int &operator[](const int &index)
+    {
+        return seat_remained[index];
+    }
+
+};
 
 class Train
 {
@@ -84,13 +106,13 @@ public:
     {
         if(If_release) return false;
         If_release=true;
-        //todo: To Process the station & date.
-        for(int i=0;i<stationNum;++i)
+        for(auto i=sale_beg;i<sale_end;++i)
         {
-
+            string main_key=(string)trainID+" "+i.display();
+            RemainedSeat seat(main_key);
+            for(int j=0;j<stationNum;++j) seat[j]=seatNum;
+            store.insert(main_key,seat);
         }
-
-
         return true;
     }
     bool if_release() const { return If_release; }
@@ -101,22 +123,25 @@ public:
         return output;
     }
 
-    vecS query_train() const
+    vecS query_train(const Date &d,ST &store) const
     {
         vecS output;
         output.push_back((string)trainID+" "+type);
-        int price=0;
+        auto seat=store.FindByKey((string)trainID+" "+d.display()).first;
         for(int i=0;i<stationNum;++i)
         {
             string temp;
             temp+=(string)station[i].name;
             temp+=" "+station[i].arrival.display()+" -> "+station[i].departure.display();
-            //todo
-
+            temp+=" "+to_string(station[i].price)+" ";
+            if(i==stationNum-1) temp+="x";
+            else
+            {
+                if(!If_release) temp+=to_string(seatNum);
+                else temp+=to_string(seat[i]);
+            }
+            output.push_back(temp);
         }
-
-
-
         return output;
     }
 
@@ -182,21 +207,7 @@ public:
 
 };
 
-struct RemainedSeat
-{
-    MyString trainIDate; // This is the mainKey of this class.
-    int seat_remained[102];
 
-    int min_seat(const int &start,const int &end) const
-    {
-        int output=seat_remained[start];
-        for(int i=start;i<end;++i)
-        {
-            output=min(output,seat_remained[i]);
-        }
-        return output;
-    }
-};
 
 
 

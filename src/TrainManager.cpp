@@ -9,7 +9,6 @@ bool TrainManager::release_train(const string &i)
     auto temp=train.FindByKey(i);
     if(!temp.second) return false;
     if(!temp.first.release(seat)) return false;
-
     train.Update(i,temp.first);
     return true;
 }
@@ -37,7 +36,6 @@ bool TrainManager::delete_train(const string &i)
     if(temp.first.if_release()) return false;
 
     train.Remove(i);
-    //todo: Remove tag.
     return true;
 }
 
@@ -47,7 +45,7 @@ vecS TrainManager::query_train(const string &i,Date d)
     auto tp=train.FindByKey(i);
     if(!tp.second) return fail;
     if(d<tp.first.date().first || tp.first.date().second<d) return fail;
-    return tp.first.query_train();
+    return tp.first.query_train(d,seat);
 }
 
 vecS TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_time)
@@ -71,11 +69,8 @@ vecS TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_t
         else ++j;
     }
     /* todo: sort the vector by the order
-     *      output their information.
-     *
      */
     vecS output;
     for(int k=0; k<list.size(); ++k) output.push_back(list[k].information(s,t,d));
-
-
+    return output;
 }

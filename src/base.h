@@ -14,10 +14,14 @@
 typedef const string & str;
 typedef const vector<int> & vecI;
 typedef vector<string> vecS;
+struct Time;
+struct Date;
+struct RealTime;
 
 struct Time
 {
     int day=0,hour=0,minute=0;
+
     Time()=default;
     ~Time()=default;
     explicit Time(int h,int m):hour(h),minute(m){}
@@ -61,14 +65,17 @@ struct Time
         return h+":"+m;
     }
 };
+
 struct Date
 {
     constexpr static int days[4]={30,31,31,30};
     int month=0,day=0;
+
     Date()=default;
     ~Date()=default;
     explicit Date(int m,int d):month(m),day(d){}
     Date(const Date &d)=default;
+
     string display() const
     {
         string m=to_string(month),d=to_string(day);
@@ -76,13 +83,6 @@ struct Date
         if(d.size()==1) d="0"+d;
         return m+"-"+d;
     }
-
-    bool operator<(const Date &d) const
-    {
-        if(month!=d.month) return month<d.month;
-        return day<d.day;
-    }
-
     int dayNum() const
     {
         int output=0;
@@ -90,13 +90,25 @@ struct Date
         return output+day;
     }
 
+    bool operator<(const Date &d) const
+    {
+        if(month!=d.month) return month<d.month;
+        return day<d.day;
+    }
     int operator-(const Date &d) const
     {
         return dayNum()-d.dayNum();
     }
-
+    Date &operator++()
+    {
+        ++day;
+        if(day>days[month-6])
+        {
+            day=1; ++month;
+        }
+        return *this;
+    }
 };
-
 // This structure records the minutes passed after 6.1 00:00.
 struct RealTime
 {
@@ -112,6 +124,7 @@ struct RealTime
         minutes+=(d.day-1)*24*60;
         minutes+=t.hour*60+t.minute;
     }
+
     Date date() const
     {
         auto day=minutes/(24*60);
@@ -124,7 +137,6 @@ struct RealTime
         int min=minutes%(24*60);
         return Time(min/60,min%60);
     }
-
     string display() const
     {
         if(minutes<0) return "xx-xx xx:xx";
@@ -136,18 +148,18 @@ struct RealTime
         minutes=r.minutes;
         return *this;
     }
-
     RealTime operator+(const long long &l) const
     {
         RealTime temp;
         temp.minutes=minutes+l;
         return temp;
     }
-
     long long operator-(const RealTime &r) const
     {
         return minutes-r.minutes;
     }
+
+
 };
 
 

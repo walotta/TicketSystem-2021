@@ -49,24 +49,28 @@ bool UserManager::logout(const string &u)
 
 string UserManager::query_profile(const string &c,const string &u)
 {
+    string fail="-1";
+
     int pri=check_login(c);
-    if(pri==-404) return "-1";
+    if(pri==-404) return fail;// Un-logged user "c".
 
     auto tp=user.FindByKey(u);
-    if(!tp.second) return "-1";
-    if(tp.first.pri()>pri) return "-1";// Access denied.
+    if(!tp.second) return fail;// Nonexistent user.
+    if(tp.first.pri()>pri) return fail;// Access denied.
 
     return tp.first.display();
 }
 
 string UserManager::modify_profile(const string &c,const string &u,const string &p,const string &n,const string &m,int g)
 {
+    string fail="-1";
+
     int pri=check_login(c);
-    if(pri==-404) return "-1";
+    if(pri==-404) return fail;// Un-logged user "c".
 
     auto tp=user.FindByKey(u);
-    if(!tp.second) return "-1";
-    if(tp.first.pri()>pri || g>=pri) return "-1";
+    if(!tp.second) return fail; // Nonexistent user "u".
+    if(tp.first.pri()>pri || g>=pri) return fail;// Access denied.
 
     string pp=p,nn=n,mm=m;
     if(p=="") pp=tp.first.pass();
@@ -80,7 +84,8 @@ string UserManager::modify_profile(const string &c,const string &u,const string 
 
 vecS UserManager::query_order(const string &u)
 {
-    if(check_login(u)==-404) return vecS();
+    vecS fail;
+    if(check_login(u)==-404) return fail;
 
     auto temp=log.FindByTag(u);
     vecS output;

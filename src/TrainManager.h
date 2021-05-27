@@ -24,7 +24,7 @@ public:
     vecS query_ticket(str s,str t,Date d,bool If_time);
     vecS query_transfer(str s,str t,Date d,bool If_time);
     int  buy_ticket(str i,Date d,str f,str t,int n);
-    bool refund_ticket();//todo
+    bool refund_ticket();//todo: Add the parameter.
     bool clean();
 
 
