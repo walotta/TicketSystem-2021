@@ -22,6 +22,7 @@ private:
     {
     public:
         int cnt=0;
+        int log=0;
     }baseMessage;
     const string name;
     StoragePool<T,assistBlock,CacheOfData>* dataLibrary;
@@ -111,6 +112,26 @@ public:
         dataLibrary->clearAll();
         MainIndex->clean();
         if(TagIndex!=nullptr)TagIndex->clean();
+    }
+
+    inline int read_log()
+    {
+        return baseMessage.log;
+    }
+
+    inline void write_log(int new_log)
+    {
+        baseMessage.log=new_log;
+    }
+
+    inline int log_plus()
+    {
+        return baseMessage.log++;
+    }
+
+    inline int plus_log()
+    {
+        return ++(baseMessage.log);
     }
 };
 #endif //BOOKSTORE_FILESTORAGE_H
