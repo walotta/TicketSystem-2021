@@ -82,17 +82,6 @@ string UserManager::modify_profile(const string &c,const string &u,const string 
     return temp.display();
 }
 
-vecS UserManager::query_order(const string &u)
-{
-    vecS fail;
-    if(check_login(u)==-404) return fail;
-
-    auto temp=log.FindByTag(u);
-    vecS output;
-    for(int i=0;i<temp.size();++i) output.push_back(temp[i].display());
-    return output;
-}
-
 int UserManager::check_login(const string &u) const
 {
     auto tpp=loggedUser.find(u);

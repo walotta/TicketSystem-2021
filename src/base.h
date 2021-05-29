@@ -7,6 +7,7 @@
 
 #include "include/StorageManger.h"
 #include <unordered_set>
+#include <unordered_map>
 #include <set>
 #include <algorithm>
 
@@ -120,6 +121,8 @@ struct RealTime
     long long minutes=-404;
 
     RealTime()=default;
+    explicit RealTime(const long long &m):minutes(m){}
+    RealTime(const RealTime &r):minutes(r.minutes){}
     explicit RealTime(const Date &d,const Time &t)
     {
         for(int i=base_mon;i<d.month;++i) minutes+=days[i-base_mon]*24*60;
@@ -161,7 +164,16 @@ struct RealTime
         return minutes-r.minutes;
     }
 
-
+    RealTime &add_day(int d=1)
+    {
+        minutes+=d*24*60;
+        return *this;
+    }
+    RealTime &add_hour(int h=1)
+    {
+        minutes+=h*60;
+        return *this;
+    }
 };
 
 

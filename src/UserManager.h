@@ -12,7 +12,7 @@ class UserManager
 {
     US user;
     // map<username,pair<priority,orderNum>>
-    map<string,pair<int,int>> loggedUser;
+    unordered_map<string,pair<int,int>> loggedUser;
 
 public:
     UserManager():user("user.dat",false){}
@@ -24,7 +24,6 @@ public:
     bool logout(str u);
     string query_profile(str c,str u);
     string modify_profile(str c,str u,str p,str n,str m,int g);
-    vecS query_order(str u); // If query failed, return an empty vector.
     string buy_ticket(str u,str i,Date d,str f,str t,int n,bool q);
     bool refund_ticket(str u,int n);// todo: Add the parameter.
     bool clean();

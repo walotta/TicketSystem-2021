@@ -199,6 +199,14 @@ public:
     {
         return trainID<t.trainID;
     }
+    string station_name(const int &pos) const
+    {
+        return (string)station[pos].name;
+    }
+
+    int station_number() const {return stationNum;}
+
+
 };
 
 enum STATUS{SUCCESS,PENDING,REFUNDED};
@@ -213,8 +221,11 @@ class Log
     int price,num;
 public:
     Log()=default;
-    Log(int k,str s,str u,str i,str f,str t,const RealTime &d,const RealTime &a,int p,int n):status(s),username(u),trainID(i),From(f),To(t),departure(d),arrive(a)
+    Log(int k,STATUS s,str u,str i,str f,str t,const RealTime &d,const RealTime &a,int p,int n):username(u),trainID(i),From(f),To(t),departure(d),arrive(a)
     {
+        if(s==PENDING) status="pending";
+        if(s==SUCCESS) status="success";
+        if(s==REFUNDED)status="refunded";
         price=p; num=n; id=k;
     }
     string display() const
@@ -234,6 +245,17 @@ public:
     string tag() const {return (string)username;}
 };
 
+struct TrainSort
+{
+    Train train;
+    int value;
+
+    explicit TrainSort(const Train &t,int v):train(t),value(v){}
+    bool operator<(const TrainSort &t) const
+    {
+        return value<t.value;
+    }
+};
 
 
 #endif //TICKETSYSTEM_2021_TRAIN_H
