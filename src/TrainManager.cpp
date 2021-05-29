@@ -115,24 +115,40 @@ vecS TrainManager::query_transfer(const string &s,const string &t,Date d,bool If
 
     bool If_find=false;
     int cost_minimal;
-    string train1_name,train2_name;
+    string train1_min,train2_min;
 
     for(int i=0;i<trains1.size();++i)
     {
+        auto &train1=trains1[i];
         unordered_map<string,int> station1;
         for(int k=0;k<trains1[i].station_number();++k) station1.insert({trains1[i].station_name(k),k});
         for(int j=0;j<trains2.size();++j)
         {
+            auto &train2=trains2[j];
             for(int k=0;k<trains2[j].station_number();++k)
             {
+                string st=trains2[j].station_name(k);//consider: not to use "&".
                 if(station1.count(trains2[j].station_name(k))!=0)
                 {
-                    int cost=0;
                     //todo: Process after select
-                    if(!If_find)
+
+                    int cost=0;
+                    if(If_time)
                     {
-                        If_find=true;
+
                     }
+                    else
+                    {
+                        cost=train1.get_price(s,st)+train2.get_price(st,t);
+                    }
+                    if(!If_find || cost<cost_minimal)
+                    {
+                        //todo: to check if train2 is later than train1.
+                        If_find=true;
+                        cost_minimal=cost;
+                        train1_min=train1.train_id(); train2_min=train2.train_id();
+                    }
+
                 }
             }
 

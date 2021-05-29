@@ -205,6 +205,8 @@ public:
     }
 
     int station_number() const {return stationNum;}
+    RealTime station_departure(const int &pos) const {return station[pos].departure;}
+    RealTime station_arrival(const int &pos) const {return station[pos].arrival;}
 
 
 };
