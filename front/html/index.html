@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome!</title>
+    <meta name="keywords" content="TicketSystem">
+    <meta name="author" content="walotta & Fourest">
+    <meta name="description" content="TicketSystem">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="shortcut icon" href="/image/main.ico">
+    <!--计时器-->
+    <link href="https://fonts.font.im/css?family=Monoton" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/index.css">
+    <!--按钮css-->
+    <style>
+      @import url("https://fonts.googleapis.com/css?family=Roboto");
+      .box {
+          position: relative;
+          width: 600px;
+          height: 50px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin: 30px;
+          color: #ACD4F7;
+      }
+      .item {
+          text-transform: uppercase;
+          letter-spacing: 2px;
+          font-size: 14px;
+          z-index: 99;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          transition: 0.4s all ease;
+      }
+      .one:before,
+      .one:after {
+          position: absolute;
+          content: '';
+          width: 100%;
+          height: 2px;
+          background: #ACD4F7;
+          transition: 0.4s all ease;
+      }
+      .one:before {
+          top: 0;
+      }
+      .one:after {
+          bottom: 0;
+      }
+      .one .item:before,
+      .one .item:after {
+          position: absolute;
+          top: 0;
+          content: '';
+          height: 100%;
+          width: 2px;
+          background: #ACD4F7;
+          transition: 0.4s all ease;
+          z-index: -1;
+      }
+      .one .item:before {
+          left: 0;
+      }
+      .one .item:after {
+          right: 0;
+      }
+      .one:hover:before,
+      .one:hover:after {
+          transition: 0.4s all ease;
+      }
+      .one:hover:before {
+          transform: translateY(-10px);
+      }
+      .one:hover:after {
+          transform: translateY(10px);
+      }
+      .one:hover .item {
+          color: white;
+      }
+      .one:hover .item:before,
+      .one:hover .item:after {
+          width: 100%;
+          transition: 0.4s all ease;
+      }
+      .two {
+          box-sizing: border-box;
+          border: 2px solid #ACD4F7;
+          position: relative;
+      }
+      .two:before {
+          position: absolute;
+          content: '';
+          width: 0;
+          height: 50px;
+          transition: 0.4s all ease;
+          background: #ACD4F7;
+          left: 0;
+          z-index: -1;
+      }
+      .two:hover {
+          color: white;
+      }
+      .two:hover:before {
+          width: 100%;
+          transition: 0.4s all ease;
+      }
+      a{
+        color: #F7E22C;
+        text-decoration: none;
+      }
+      </style>
+</head>
+<body>
+  <div class="neon-wrap">
+    <div class="neon-text">
+        <span class="neon-blink">W</span>ELC<span class="neon-blink">O</span>ME&nbsp&nbsp&nbsp&nbsp&nbsp<span class="neon-blink">T</span>O&nbsp&nbsp&nbsp&nbsp&nbspTIC<span class="neon-blink">K</span>ETSY<span class="neon-blink">S</span>TEM
+    </div>
+    <div class="neon-clock">
+      <span class="timer-num">1</span>
+      <span class="timer-num">2</span>
+      <span class="timer-sep">:</span>
+      <span class="timer-num">4</span>
+      <span class="timer-num">5</span>
+      <span class="timer-sep">:</span>
+      <span class="timer-num">7</span>
+      <span class="timer-num">8</span>
+    </div>
+
+    <center>
+      <div class="box one">
+        <div class="item">
+          <a href="/html/search.html">Search</a>
+        </div>
+      </div>
+      <div class="box two">
+        <div class="item" >
+          <a href="/html/login.html">Login or SignUp</a>
+        </div>
+      </div>
+    </center>
+    <div class="neon-by">by ©️walotta</div>
+  </div>
+
+  <script>
+    (function(w, d){
+
+      var timerCache = '',  //时间缓存
+          timerNum = d.querySelectorAll('.timer-num');  //取得dom对象
+
+      // 计时器，200ms执行一次
+      setInterval(timerUpdata, 200);
+
+      // 时间更新
+      function timerUpdata(){
+        var timerArr = timerHandler(new Date());
+        // 时间不变时立即返回
+        if(timerArr == null){
+          return;
+        }
+        //时间更新 dom
+        timerNum.forEach(function(element, index){
+          element.innerHTML = timerArr ? timerArr[index] : '-';//三元运算符，数组存在就替换
+        });
+      }
+
+      /**
+      * 时间数据处理
+      * @param {dateObj} 形参时间对象
+      * @returns {Array} 返回时间数组
+      */
+      function timerHandler(dateObj){
+        var hours = ('0' + dateObj.getHours()).slice(-2); //加 0 防止出现一位数
+        var min = ('0' + dateObj.getMinutes()).slice(-2); //通过slice 截取最后两位
+        var sec = ('0' + dateObj.getSeconds()).slice(-2);
+        var timerStr = hours + min + sec;
+        // 时间不变时返回null
+        if(timerStr == timerCache) {
+          return null;
+        }
+        timerCache = timerStr;//时间改变，更新缓存
+        return timerStr.split(''); //字符串转换数组，并返回
+      }
+    })(window, document);
+  </script>
+
+  <script type="text/javascript" src="https://wow.techbrood.com/libs/jquery/jquery-2.1.1.min.js"></script>
+</body>
+</html>

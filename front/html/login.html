@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link  rel="stylesheet" type="text/css" href='/css/login.css'>
+        <title>Login or SignUp</title>
+        <meta name="keywords" content="TicketSystem">
+        <meta name="author" content="walotta & Fourest">
+        <meta name="description" content="TicketSystem">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <link rel="shortcut icon" href="/image/main.ico">
+        <!--ajax-->
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
+        <script src="http://malsup.github.com/jquery.form.js"></script>
+    </head>
+
+    <body>
+        <script type="text/javascript" src="https://wow.techbrood.com/libs/jquery/jquery-2.1.1.min.js"></script>
+        <script src="https://wow.techbrood.com/libs/jquery/jquery-1.11.1.min.js"></script>
+        <div class="cotn_principal">
+            <div class="cont_centrar">
+
+                <div class="cont_login">
+                    <div class="cont_info_log_sign_up">
+                        <div class="col_md_login">
+                            <h2>LOGIN</h2>
+                            <p>已有账号，点击登陆</p>
+                            <button class="btn_login" onclick="cambiar_login()">PRESS TO LOGIN</button>
+                        </div>
+                        <div class="col_md_sign_up">
+                            <h2>SIGN UP</h2>
+                            <p>没有账号，点击注册</p>
+                            <button class="btn_sign_up" onclick="cambiar_sign_up()">PRESS TO SIGN UP</button>
+                        </div>
+                    </div>
+        
+        
+                    <div class="cont_back_info">
+                        <div class="cont_img_back_grey">
+                            <img src="https://images.unsplash.com/42/U7Fc1sy5SCUDIu4tlJY3_NY_by_PhilippHenzler_philmotion.de.jpg?ixlib=rb-0.3.5&q=50&fm=jpg&crop=entropy&s=7686972873678f32efaf2cd79671673d" alt="" />
+                        </div>
+                    </div>
+
+                    <div class="cont_forms">
+
+                        <div class="cont_img_back_">
+                            <img src="https://images.unsplash.com/42/U7Fc1sy5SCUDIu4tlJY3_NY_by_PhilippHenzler_philmotion.de.jpg?ixlib=rb-0.3.5&q=50&fm=jpg&crop=entropy&s=7686972873678f32efaf2cd79671673d" alt="" />
+                        </div>
+
+                        <div class="cont_form_login">
+                            <a href="#" onclick="ocultar_login_sign_up()"><i class="material-icons">&#xE5C4;</i></a>
+                            <h2>LOGIN</h2>
+                            <input type="text" id="login_id" placeholder="UserId" />
+                            <input type="password" id="login_psw" placeholder="Password" />
+                            <button class="btn_login" id="login_button" onclick="login_to_php()">LOGIN</button>
+                        </div>
+        
+                        <div class="cont_form_sign_up">
+                            <a href="#" onclick="ocultar_login_sign_up()"><i class="material-icons">&#xE5C4;</i></a>
+                            <h2>SIGN UP</h2>
+                            <input type="text" id="sign_id" placeholder="UserId" />
+                            <input type="text" id="sign_name" placeholder="Name" />
+                            <input type="text" id="sign_mail" placeholder="Mail" />
+                            <input type="password" id="sign_psw" placeholder="Password" />
+                            <!--<input type="password" id="sign_psw_repeat" placeholder="Confirm Password" />-->
+                            <button class="btn_sign_up" id="sign_button" onclick="sign_to_php()">SIGN UP</button>
+                        </div>
+        
+                    </div>
+        
+                </div>
+            </div>
+        </div>
+        <script>
+        /* ------------------------------------ Click on login and Sign Up to  changue and view the effect
+        ---------------------------------------
+        */
+        
+        function cambiar_login() {
+            document.querySelector('.cont_forms').className = "cont_forms cont_forms_active_login";
+            document.querySelector('.cont_form_login').style.display = "block";
+            document.querySelector('.cont_form_sign_up').style.opacity = "0";
+        
+            setTimeout(function() {
+                document.querySelector('.cont_form_login').style.opacity = "1";
+            }, 400);
+        
+            setTimeout(function() {
+                document.querySelector('.cont_form_sign_up').style.display = "none";
+            }, 200);
+        }
+        
+        function cambiar_sign_up(at) {
+            document.querySelector('.cont_forms').className = "cont_forms cont_forms_active_sign_up";
+            document.querySelector('.cont_form_sign_up').style.display = "block";
+            document.querySelector('.cont_form_login').style.opacity = "0";
+        
+            setTimeout(function() {
+                document.querySelector('.cont_form_sign_up').style.opacity = "1";
+            }, 100);
+        
+            setTimeout(function() {
+                document.querySelector('.cont_form_login').style.display = "none";
+            }, 400);
+        
+        
+        }
+        
+        
+        
+        function ocultar_login_sign_up() {
+        
+            document.querySelector('.cont_forms').className = "cont_forms";
+            document.querySelector('.cont_form_sign_up').style.opacity = "0";
+            document.querySelector('.cont_form_login').style.opacity = "0";
+        
+            setTimeout(function() {
+                document.querySelector('.cont_form_sign_up').style.display = "none";
+                document.querySelector('.cont_form_login').style.display = "none";
+            }, 500);
+        
+        }
+        
+        function login_to_php()
+        {
+            var xmlhttp=new XMLHttpRequest();
+
+            var userId=document.getElementById("login_id").value;
+            var psw=document.getElementById("login_psw").value;
+            xmlhttp.open("POST","/php/login.php",true);
+            xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xmlhttp.onreadystatechange=function()
+            {
+                document.getElementById("login_button").innerHTML='LOADING . . .';
+                if (xmlhttp.readyState==4)
+                {
+                    if(xmlhttp.status==200)
+                    {
+                        var return_msg=xmlhttp.responseText;
+                        //alert(return_msg);
+                        if(return_msg=="0"||return_msg=="-1")document.getElementById("login_button").innerHTML='TRY AGAIN';
+                        else document.getElementById("login_button").innerHTML="PASSED";
+                        if(return_msg=="1")window.location.href('/html/person.html');
+                        else window.location.href('/html/admin.html')
+                    }else
+                    {
+                        document.getElementById("login_button").innerHTML="ERROR OCCUR";
+                    }
+                }
+            }
+            document.getElementById("login_button").innerHTML='LOADING . . .';
+            xmlhttp.send("userId="+userId+"&psw="+psw);
+        }
+
+        function sign_to_php()
+        {
+            var xmlhttp=new XMLHttpRequest();
+            //alert("1");
+            var userId=document.getElementById("sign_id").value;
+            var name=document.getElementById("sign_name").value;
+            var psw=document.getElementById("sign_psw").value;
+            //var psw_rep=document.getElementById("sign_psw_repeat").value;
+            var mail=document.getElementById("sign_mail").value;
+            if(userId!=""&&psw!=""&&mail!=""&&name!="")
+            {
+                xmlhttp.open("POST","/php/sign.php",true);
+                xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xmlhttp.onreadystatechange=function()
+                {
+                    document.getElementById("sign_button").innerHTML='LOADING . . .';
+                    if (xmlhttp.readyState==4)
+                    {
+                        if(xmlhttp.status==200)
+                        {
+                            var return_msg=xmlhttp.responseText;
+                            //alert(return_msg);
+                            if(return_msg!="1")document.getElementById("sign_button").innerHTML='TRY AGAIN';
+                            else document.getElementById("sign_button").innerHTML="PASSED";
+                            window.location.href('/html/person.html');
+                        }else
+                        {
+                            document.getElementById("sign_button").innerHTML="ERROR OCCUR";
+                        }
+                    }
+                }
+                document.getElementById("sign_button").innerHTML='LOADING . . .';
+                xmlhttp.send("userId="+userId+"&psw="+psw+"&name="+name+"&mail="+mail);
+            }else
+            {
+                document.getElementById("sign_button").innerHTML='INVALID';
+            }
+        }
+        </script>
+        
+    </body>
+</html>

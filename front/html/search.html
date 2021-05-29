@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Search!</title>
+        <meta name="keywords" content="TicketSystem">
+        <meta name="author" content="walotta & Fourest">
+        <meta name="description" content="TicketSystem">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <link rel="shortcut icon" href="/image/main.ico">
+        <!-- MDUI CSS -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/mdui@1.0.1/dist/css/mdui.min.css"
+            integrity="sha384-cLRrMq39HOZdvE0j6yBojO4+1PrHfB7a9l5qLcmRm/fiWXYY+CndJPmyu5FV/9Tw"
+            crossorigin="anonymous"
+        />
+    </head>
+
+    <body class="mdui-theme-layout-dark">
+        <div class="mdui-container mdui-shadow-8 mdui-hoverable mdui-m-t-3">
+
+            <div class="mdui-row">
+                <div class="mdui-tab mdui-tab-full-width mdui-ripple-blue " mdui-tab>
+                    <a href="#example6-tab1" class="mdui-ripple" onclick="set_query_ticket()">
+                        <i class="mdui-icon material-icons">confirmation_number</i>
+                        <label>Tickets</label>
+                    </a>
+                    <a href="#example6-tab2" class="mdui-ripple" onclick="set_query_train()">
+                        <i class="mdui-icon material-icons">directions_transit</i>
+                        <label>Trains</label>
+                    </a>
+                </div>
+            </div>
+
+            <div class="mdui-row">
+                <div class="mdui-p-a-3" id="search_contain">
+                </div>
+            </div>
+            <div class="mdui-row">
+                <div class="mdui-p-a-3 mdui-float-right">
+                    <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-light-blue-900 mdui-hoverable mdui-shadow-8" mdui-tooltip="{content: '点击开始搜索'}" onclick="run_search()" id="search_botton">Search</button>
+                </div>
+            </div>
+
+        </div>
+        
+
+        <!-- MDUI JavaScript -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/mdui@1.0.1/dist/js/mdui.min.js"
+            integrity="sha384-gCMZcshYKOGRX9r6wbDrvF+TcCCswSHFucUzUPwka+Gr+uHgjlYvkABr95TCOz3A"
+            crossorigin="anonymous"
+        ></script>
+        <!--my JS-->
+        <script>
+            var now_at="ticket";
+            function set_query_ticket()
+            {
+                now_at="ticket";
+                document.getElementById("search_contain").innerHTML='\
+                <div class="mdui-textfield mdui-textfield-floating-label"><label class="mdui-textfield-label">Start Station</label>\
+                <input class="mdui-textfield-input" type="txt" id="start_station"/></div>\
+                <div class="mdui-textfield mdui-textfield-floating-label"><label class="mdui-textfield-label">Terminal Station</label>\
+                <input class="mdui-textfield-input" type="txt" id="terminal_station"/></div>\
+                <div class="mdui-row-xs-2">\
+                        <div class="mdui-col">\
+                            <div class="mdui-textfield mdui-textfield-floating-label">\
+                                <label class="mdui-textfield-label">Start Month</label>\
+                                <input class="mdui-textfield-input" type="txt" id="start_month"/>\
+                            </div>\
+                        </div>\
+                        <div class="mdui-col">\
+                            <div class="mdui-textfield mdui-textfield-floating-label">\
+                                <label class="mdui-textfield-label">Start Day</label>\
+                                <input class="mdui-textfield-input" type="txt" id="start_day"/>\
+                            </div>\
+                        </div>\
+                    </div>\
+                </div>\
+                <div class="mdui-row-xs-6">\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center mdui-valign">\
+                            <label class="mdui-radio" id="sort_time">\
+                                <input type="radio" name="group1" checked/>\
+                                <i class="mdui-radio-icon"></i>\
+                                排序依据: 时间\
+                            </label>\
+                        </div>\
+                        <div class="mdui-col mdui-center mdui-valign">\
+                            <label class="mdui-radio" id="sort_cost">\
+                                <input type="radio" name="group1"/>\
+                                <i class="mdui-radio-icon"></i>\
+                                排序依据: 花费\
+                            </label>\
+                        </div>\
+                    </div>\
+                </div>\
+                <div class="mdui-row-xs-8">\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center mdui-valign">\
+                        </div>\
+                        <div class="mdui-col mdui-center mdui-valign">\
+                            <i>接受换乘</i>\
+                            <label class="mdui-switch mdui-center">\
+                                <input type="checkbox" id="can_transfer"/>\
+                                <i class="mdui-switch-icon"></i>\
+                            </label>\
+                        </div>\
+                    </div>\
+                </div>\
+                ';
+            }
+            function set_query_train()
+            {
+                now_at="train";
+                document.getElementById("search_contain").innerHTML='\
+                <div class="mdui-textfield mdui-textfield-floating-label"><label class="mdui-textfield-label">Train Id</label>\
+                <input class="mdui-textfield-input" type="txt" id="train_id"/></div>\
+                <div class="mdui-row-xs-2">\
+                        <div class="mdui-col">\
+                            <div class="mdui-textfield mdui-textfield-floating-label">\
+                                <label class="mdui-textfield-label">Start Month</label>\
+                                <input class="mdui-textfield-input" type="txt" id="start_month"/>\
+                            </div>\
+                        </div>\
+                        <div class="mdui-col">\
+                            <div class="mdui-textfield mdui-textfield-floating-label">\
+                                <label class="mdui-textfield-label">Start Day</label>\
+                                <input class="mdui-textfield-input" type="txt" id="start_day"/>\
+                            </div>\
+                        </div>\
+                    </div>\
+                </div>\
+                ';
+            }
+            set_query_ticket();
+            mdui.mutation();
+        </script>
+    </body>
+</html>
