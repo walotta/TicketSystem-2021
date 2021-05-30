@@ -142,6 +142,14 @@ public:
         }
         return Date();
     }
+    Time departure_time(str station_name) const
+    {
+        for(int i=0;i<stationNum;++i)
+        {
+            if(station[i].name==station_name) return station[i].departure.time();
+        }
+        return Time();
+    }
     Date date_for_record(str station_name,const Date &d) const
     {
         for(int i=0;i<stationNum;++i)
@@ -234,7 +242,7 @@ public:
         return station[b].arrival-station[a].departure;
     } // Use for comparing the cost.
 
-    // pair<time_cost,transfer_date>
+    // pair<time_cost_between_transfer,transfer_date>
     pair<int,Date> check_if_later(const Train &train,const Date &start_date,str start_station,str transfer_station) const
     {
         auto ids=get_id(start_station,transfer_station);
@@ -243,8 +251,26 @@ public:
         auto arrival_time=station[ids.second].arrival.time();
         RealTime arrival(arrival_date,arrival_time);
 
+        auto last_sale_date=train.departure_date(transfer_station,sale_end);
+        auto d_time=train.departure_time(transfer_station);
+        if(last_sale_date<arrival_date) return {-1,Date()};
+        if(arrival_date==last_sale_date && d_time<arrival_time) return {-1,Date()};
 
+        auto first_sale_date=train.departure_date(transfer_station,sale_beg);
+        int time_cost_between_transfer=0;
+        Date d_date;
+        for(auto i=first_sale_date;i<=last_sale_date;++i)
+        {
+            RealTime temp=RealTime(i,d_time);
+            if(arrival<temp)
+            {
+                time_cost_between_transfer=temp-arrival;
+                d_date=i;
+                break;
+            }
+        }
 
+        return {time_cost_between_transfer,d_date};
     }
     int check_seat(str i,str f,const Date &d,ST &store) const
     {

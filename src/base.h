@@ -67,6 +67,11 @@ struct Time
         if(m.size()==1) m="0"+m;
         return h+":"+m;
     }
+    bool operator<(const Time &t) const
+    {
+        if(hour!=t.hour) return hour<t.hour;
+        return minute<t.minute;
+    }
 };
 
 struct Date
@@ -99,6 +104,8 @@ struct Date
         if(month!=d.month) return month<d.month;
         return day<d.day;
     }
+    bool operator==(const Date &d) const {return month==d.month && day==d.day;}
+    bool operator<=(const Date &d) const {return *this<d || *this==d;}
     int operator-(const Date &d) const
     {
         return dayNum()-d.dayNum();
@@ -199,6 +206,8 @@ struct RealTime
         minutes+=h*60;
         return *this;
     }
+
+    bool operator<(const RealTime &t) const {return minutes<t.minutes;}
 };
 
 

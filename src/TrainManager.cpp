@@ -122,6 +122,7 @@ vecS TrainManager::query_transfer(const string &s,const string &t,Date d,bool If
     {
         auto &train1=trains1[i];
         if(!train1.if_release()) continue;
+        if(!train1.check_date(d,s)) continue;
 
         unordered_map<string,int> station1;
         bool start_add=false;
@@ -145,7 +146,7 @@ vecS TrainManager::query_transfer(const string &s,const string &t,Date d,bool If
 
                     int cost=0;
                     if(!If_time) cost=train1.get_price(s,st)+train2.get_price(st,t);
-                    else cost=temp.first;
+                    else cost=train1.get_time(s,st)+temp.first+train2.get_time(st,t);
 
                     if(!If_find || cost<cost_minimal)
                     {
