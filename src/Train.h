@@ -189,7 +189,7 @@ public:
     {
         bool If_find_initial=false;
         int a=0,b=0,seat=seatNum;
-        auto seats=store.FindByKey((string)trainID+" "+d.display()).first;
+        auto seats=store.FindByKey((string)trainID+" "+date_for_record(i,d).display()).first;
         for(int j=0;j<stationNum;++j)
         {
             auto &st=station[j];
@@ -234,20 +234,17 @@ public:
         return station[b].arrival-station[a].departure;
     } // Use for comparing the cost.
 
-    bool check_later(const Train &train,const Date &start_date,str start_station,str transfer_station) const
+    // pair<time_cost,transfer_date>
+    pair<int,Date> check_if_later(const Train &train,const Date &start_date,str start_station,str transfer_station) const
     {
-        RealTime t;
-        for(int i=0;i<stationNum;++i)
-        {
-            if(station[i].name==start_station) t=station[i].departure;
-            if(station[i].name==transfer_station)
-            {
-                //todo:
-                break;
-            }
-        }
+        auto ids=get_id(start_station,transfer_station);
+        int date_gap=station[ids.second].arrival.date()-station[ids.first].departure.date();
+        auto arrival_date=start_date+date_gap;
+        auto arrival_time=station[ids.second].arrival.time();
+        RealTime arrival(arrival_date,arrival_time);
 
-        return true;
+
+
     }
     int check_seat(str i,str f,const Date &d,ST &store) const
     {

@@ -16,7 +16,6 @@ class TrainManager
 
     bool update_log(str u,int id,STATUS s);
     int write_log(int id,STATUS s,str u,str i,str f,str t,const RealTime &d,const RealTime &a,int p,int n);
-    //todo: To process these two private function.
 public:
     TrainManager():train("train.dat",true),seat("seat.dat",false),log("log.dat",false){}
     ~TrainManager()=default;

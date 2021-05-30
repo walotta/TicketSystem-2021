@@ -113,59 +113,60 @@ vecS TrainManager::query_transfer(const string &s,const string &t,Date d,bool If
     auto trains1=train.FindByTag(s);
     auto trains2=train.FindByTag(t);
 
-
     bool If_find=false;
-    int cost_minimal;
-    string train1_min,train2_min;
+    int cost_minimal,train1_id,train2_id;
+    string transfer_station;
+    Date date_of_transfer;
 
     for(int i=0;i<trains1.size();++i)
     {
         auto &train1=trains1[i];
+        if(!train1.if_release()) continue;
+
         unordered_map<string,int> station1;
-        for(int k=0;k<trains1[i].station_number();++k) station1.insert({trains1[i].station_name(k),k});
+        bool start_add=false;
+        for(int k=0;k<trains1[i].station_number();++k)
+        {
+            if(start_add) station1.insert({trains1[i].station_name(k),k});
+            if(trains1[i].station_name(k)==s) start_add=true;
+        }
+
         for(int j=0;j<trains2.size();++j)
         {
             auto &train2=trains2[j];
+            if(!train2.if_release()) continue;
             for(int k=0;k<trains2[j].station_number();++k)
             {
-                string st=trains2[j].station_name(k);//consider: Can't use "&".
-                if(station1.count(trains2[j].station_name(k))!=0)
+                const string &st=trains2[j].station_name(k);
+                if(station1.count(st)!=0 && st!=t)
                 {
-                    //todo: Process after select
-                    int cost=0;
-                    if(If_time)
-                    {
+                    auto temp=train1.check_if_later(train2,d,s,st);
+                    if(temp.first<0) continue;
 
-                    }
-                    else
-                    {
-                        cost=train1.get_price(s,st)+train2.get_price(st,t);
-                    }
+                    int cost=0;
+                    if(!If_time) cost=train1.get_price(s,st)+train2.get_price(st,t);
+                    else cost=temp.first;
+
                     if(!If_find || cost<cost_minimal)
                     {
-                        //todo: to check if train2 is later than train1.
                         If_find=true;
                         cost_minimal=cost;
-                        train1_min=train1.train_id(); train2_min=train2.train_id();
+                        train1_id=i; train2_id=j;
+                        transfer_station=st;
+                        date_of_transfer=temp.second;
                     }
-
                 }
             }
-
-
         }
-
     }
-
-
-    if(!If_find)
+    vecS output;
+    if(!If_find) output.push_back("0");
+    else
     {
-        vecS fail_output;
-        fail_output.push_back("0");
-        return fail_output;
+        output.push_back(trains1[train1_id].information(s,transfer_station,d,seat));
+        output.push_back(trains2[train2_id].information(transfer_station,t,date_of_transfer,seat));
     }
-
-    return vecS();
+    return output;
 }
 
 int TrainManager::buy_ticket(const string &i,Date d,const string &f,const string &t,int n,int id,const string &u,bool q)

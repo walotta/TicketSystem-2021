@@ -25,7 +25,7 @@ public:
     string query_profile(str c,str u);
     string modify_profile(str c,str u,str p,str n,str m,int g);
 //    string buy_ticket(str u,str i,Date d,str f,str t,int n,bool q);
-    bool refund_ticket(str u,int n);// todo: Add the parameter.
+//    bool refund_ticket(str u,int n);
     bool clean();
 
     int check_login(str u) const;// If the user is logged, return its priority; else return -404;

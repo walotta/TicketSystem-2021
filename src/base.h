@@ -72,6 +72,7 @@ struct Time
 struct Date
 {
     constexpr static int days[4]={30,31,31,30};
+
     int month=base_mon,day=1;
 
     Date()=default;
@@ -117,6 +118,13 @@ struct Date
             day=1; ++month;
         }
         return *this;
+    }
+    Date operator+(const int &d) const
+    {
+        Date temp(*this);
+        temp.day+=d;
+        while(temp.day>days[month-base_mon]) temp.day-=days[temp.month++];
+        return temp;
     }
 };
 // This structure records the minutes passed after 6.1 00:00.

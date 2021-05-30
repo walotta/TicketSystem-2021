@@ -34,8 +34,7 @@ bool ManagementSystem::add_user(const string &c,const string &u,const string &p,
     return user.add_user(c,u,p,n,m,g);
 }
 
-bool
-ManagementSystem::add_train(const string &i,int n,int m,const vecS &s,const vector<int> &p,Time x,const vector<int> &t,const vector<int> &o,Date d_beg,Date d_end,char y)
+bool ManagementSystem::add_train(const string &i,int n,int m,const vecS &s,const vector<int> &p,Time x,const vector<int> &t,const vector<int> &o,Date d_beg,Date d_end,char y)
 {
     return train.add_train(i,n,m,s,p,x,t,o,d_beg,d_end,y);
 }
