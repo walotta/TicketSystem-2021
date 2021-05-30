@@ -117,6 +117,40 @@ public:
         station[last].arrival=station[last-1].departure+t[last-1];
     }
 
+    bool operator<(const Train &t) const
+    {
+        return trainID<t.trainID;
+    }
+
+    bool if_release() const { return If_release; }
+    string train_id() const {return (string)trainID;}
+    pair<Date,Date> date() const {return {sale_beg,sale_end};}
+    int station_number() const {return stationNum;}
+    string station_name(const int &pos) const {return (string)station[pos].name;}
+    RealTime station_departure(const int &pos) const {return station[pos].departure;}
+    RealTime station_arrival(const int &pos) const {return station[pos].arrival;}
+    // The "Date" in the parameter represents the date of the train's departure from the departure-station.
+    Date departure_date(str station_name,const Date &d) const
+    {
+        for(int i=0;i<stationNum;++i)
+        {
+            if(station[i].name==station_name)
+            {
+                RealTime temp=station[i].departure+RealTime(d);
+                return temp.date();
+            }
+        }
+        return Date();
+    }
+    Date date_for_record(str station_name,const Date &d) const
+    {
+        for(int i=0;i<stationNum;++i)
+        {
+            if(station[i].name==station_name) return d-station[i].departure.date().dayNum();
+        }
+        return Date();
+    }
+
     bool release(ST &store)
     {
         if(If_release) return false;
@@ -130,14 +164,6 @@ public:
         }
         return true;
     }
-    bool if_release() const { return If_release; }
-    string train_id() const {return (string)trainID;}
-    pair<Date,Date> date() const
-    {
-        pair<Date,Date> output(sale_beg,sale_end);
-        return output;
-    }
-
     vecS query_train(const Date &d,ST &store) const
     {
         vecS output;
@@ -159,34 +185,6 @@ public:
         }
         return output;
     }
-    bool check_date(const Date &d) const
-    {
-        if(d<sale_beg || sale_end<d) return false;
-        else return true;
-    }
-    int get_price(str i,str f,int n=1) const
-    {
-        int a=0,b=0;
-        for(int j=0;j<stationNum;++j)
-        {
-            if(i==station[j].name) a=j;
-            if(f==station[j].name) {b=j; break;}
-        }
-        return (station[b].price-station[a].price)*n;
-    }
-    int get_time(str i,str f) const
-    {
-        int a=0,b=0;
-        for(int j=0;j<stationNum;++j)
-        {
-            if(i==station[j].name) a=j;
-            if(f==station[j].name)
-            {
-                b=j; break;
-            }
-        }
-        return station[b].arrival-station[a].departure;
-    }
     string information(str i,str f,const Date &d,ST &store) const
     {
         bool If_find_initial=false;
@@ -206,19 +204,36 @@ public:
         output+=" -> "+f+" "+arrival.display()+" "+to_string(price)+" "+to_string(seat);
         return output;
     }
-
-    bool operator<(const Train &t) const
+    bool check_date(const Date &d,str station_name) const
     {
-        return trainID<t.trainID;
+        auto temp=date_for_record(station_name,d);
+        if(temp<sale_beg || sale_end<temp) return false;
+        return true;
     }
-    string station_name(const int &pos) const
+    int get_price(str i,str f,int n=1) const
     {
-        return (string)station[pos].name;
-    }
+        int a=0,b=0;
+        for(int j=0;j<stationNum;++j)
+        {
+            if(i==station[j].name) a=j;
+            if(f==station[j].name) {b=j; break;}
+        }
+        return (station[b].price-station[a].price)*n;
+    }// Only for comparing the cost.
+    int get_time(str i,str f) const
+    {
+        int a=0,b=0;
+        for(int j=0;j<stationNum;++j)
+        {
+            if(i==station[j].name) a=j;
+            if(f==station[j].name)
+            {
+                b=j; break;
+            }
+        }
+        return station[b].arrival-station[a].departure;
+    } // Use for comparing the cost.
 
-    int station_number() const {return stationNum;}
-    RealTime station_departure(const int &pos) const {return station[pos].departure;}
-    RealTime station_arrival(const int &pos) const {return station[pos].arrival;}
     bool check_later(const Train &train,const Date &start_date,str start_station,str transfer_station) const
     {
         RealTime t;
@@ -234,7 +249,6 @@ public:
 
         return true;
     }
-
     int check_seat(str i,str f,const Date &d,ST &store) const
     {
         auto id=get_id(i,f);
@@ -255,20 +269,23 @@ public:
         seats.de_seat(start,end,n);
         store.Update(main_key,seats);
     }
-    pair<RealTime,RealTime> check_time(str i,str f,const Date &d)
+    pair<RealTime,RealTime> obtain_time(str i,str f,const Date &d)
     {
         auto id=get_id(i,f);
         int start=id.first,end=id.second;
-
         return {station[start].departure+RealTime(d),station[end].arrival+RealTime(d)};
+    }
+    void increase_seat(str i,str f,const Date &d,int n,ST &store)
+    {
+        decrease_seat(i,f,date_for_record(i,d),-n,store);
     }
 };
 
-enum STATUS{SUCCESS,PENDING,REFUNDED};
+enum STATUS{SUCCESS=1,PENDING=0,REFUNDED=-1};
 class Log
 {
     int id; // The main-key.
-    MyString status;
+    STATUS status;
     MyString username;// The tag.
     MyString trainID;
     MyString From,To;
@@ -276,28 +293,32 @@ class Log
     int price,num;
 public:
     Log()=default;
-    Log(int k,STATUS s,str u,str i,str f,str t,const RealTime &d,const RealTime &a,int p,int n):username(u),trainID(i),From(f),To(t),departure(d),arrive(a)
+    Log(int k,STATUS s,str u,str i,str f,str t,const RealTime &d,const RealTime &a,int p,int n):username(u),trainID(i),From(f),To(t),departure(d),arrive(a),status(s)
     {
-        if(s==PENDING) status="pending";
-        if(s==SUCCESS) status="success";
-        if(s==REFUNDED)status="refunded";
         price=p; num=n; id=k;
     }
     string display() const
     {
-        string output("["+(string)status+"] "+(string)trainID+" "+(string)From+" ");
+        string output("["+status_string()+"] "+(string)trainID+" "+(string)From+" ");
         output+=departure.display()+" -> "+(string)To+" "+arrive.display()+" ";
         output+=to_string(price)+" "+to_string(num);
         return output;
     }
-    void modify_status(const STATUS &s)
-    {
-        if(s==PENDING) status="pending";
-        if(s==REFUNDED) status="refunded";
-        if(s==SUCCESS) status="success";
-    }
+    void modify_status(const STATUS &s) {status=s;}
     string main_key() const {return (string)username+to_string(id);}
     string tag() const {return (string)username;}
+    string user() const {return (string)username;}
+    STATUS status_now() const {return status;}
+    string status_string() const
+    {
+        if(status==PENDING) return "pending";
+        if(status==SUCCESS) return "success";
+        return "refunded";
+    }
+    string train() const {return (string)trainID;}
+    pair<string,string> stations() const {return {(string)From,(string)To};}
+    pair<RealTime,RealTime> times() const {return {departure,arrive};}
+    int number() const {return num;}
 };
 
 

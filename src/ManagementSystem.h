@@ -17,13 +17,15 @@ class ManagementSystem
         int serial_number;
         int id;// Represent the number of the order in its user's list.
         MyString user;
-        MyString trainID;// The
+        MyString trainID;// The tag
         Date date;
         MyString start;
         MyString arrive;
         int number;
 
+        Order()=default;
         Order(int k,int _id,str u,str i,const Date &d,str f,str t,const int &n):serial_number(k),id(_id),user(u),trainID(u),date(d),start(f),arrive(t),number(n){}
+        bool operator<(const Order &o) const {return serial_number<o.serial_number;}
     };
     typedef StorageManger<Order,300,300,300,300,300> OD;
 

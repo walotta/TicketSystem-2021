@@ -68,7 +68,7 @@ public:
     inline void RemoveTag(const string& MainKey,const string& Tag)
     {
         if(TagIndex==nullptr)throw error("this StorageManger has no TagIndex");
-        int remove_id=MainIndex->find(MainKey);
+        int remove_id=MainIndex->find(MainKey)[0];
         TagIndex->remove(Tag,remove_id);
     }
 

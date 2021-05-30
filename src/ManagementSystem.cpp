@@ -52,7 +52,7 @@ vecS ManagementSystem::query_transfer(const string &s,const string &t,Date d,boo
 
 vector<string> ManagementSystem::query_order(const string &u)
 {
-    if(!user.check_login(u)) return vecS();
+    if(user.check_login(u)==-404) return vecS();
     return train.query_order(u);
 }
 
@@ -68,12 +68,45 @@ string ManagementSystem::modify_profile(const string &c,const string &u,const st
 
 bool ManagementSystem::refund_ticket(const string &u,int n)
 {
-    if(train.refund_ticket())//todo
+    bool fail=false,success=true;
+    if(user.check_login(u)==-404) return fail;
+    int number=user.query_order_number(u)+1-n;
+    if(number<=0) return fail;
+
+    auto back=train.refund_ticket(u,number);
+    if(back.second==-1) return fail;
+
+    auto temp=order.FindByTag(back.first);
+    if(back.second==0)
     {
-        user.refund_ticket(u,n);
-        return true;
+        for(int i=0;i<temp.size();++i)
+        {
+            if(temp[i].id==number)
+            {
+                string main_key(to_string(temp[i].serial_number)),tag(temp[i].trainID);
+                order.RemoveTag(main_key,tag);
+                order.Remove(main_key);
+                break;
+            }
+        }
     }
-    else return false;
+    else
+    {
+        // Process pending after refund.
+        sort(temp.begin(),temp.end());
+        for(int i=0;i<temp.size();++i)
+        {
+            auto &t=temp[i];
+            bool If_success=train.re_buy_ticket((string)t.trainID,t.date,(string)t.start,(string)t.arrive,t.number,t.id,(string)t.user);
+            if(If_success)
+            {
+                string main_key(to_string(t.serial_number)),tag(t.trainID);
+                order.RemoveTag(main_key,tag);
+                order.Remove(main_key);
+            }
+        }
+    }
+    return success;
 }
 
 string ManagementSystem::buy_ticket(const string &u,const string &i,const Date &d,const string &f,const string &t,int n,bool q)
@@ -82,7 +115,7 @@ string ManagementSystem::buy_ticket(const string &u,const string &i,const Date &
     int pri=user.check_login(u);
     if(pri==-404) return fail;
 
-    int number=user.query_order_number(u);
+    int number=user.query_order_number(u); //consider: This place could optimize.
     int cost=train.buy_ticket(i,d,f,t,n,number+1,u,q);
     if(cost>0)
     {

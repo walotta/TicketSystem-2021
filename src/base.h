@@ -72,7 +72,7 @@ struct Time
 struct Date
 {
     constexpr static int days[4]={30,31,31,30};
-    int month=0,day=0;
+    int month=base_mon,day=1;
 
     Date()=default;
     ~Date()=default;
@@ -101,6 +101,13 @@ struct Date
     int operator-(const Date &d) const
     {
         return dayNum()-d.dayNum();
+    }
+    Date operator-(const int &d) const
+    {
+        Date temp(*this);
+        temp.day-=d;
+        while(temp.day<=0) temp.day+=days[--temp.month];
+        return temp;
     }
     Date &operator++()
     {

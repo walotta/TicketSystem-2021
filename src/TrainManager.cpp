@@ -46,8 +46,9 @@ vecS TrainManager::query_train(const string &i,Date d)
     vecS fail;
     auto tp=train.FindByKey(i);
     if(!tp.second) return fail;
-    if(d<tp.first.date().first || tp.first.date().second<d) return fail;
-    return tp.first.query_train(d,seat);
+    auto &t=tp.first;
+    if(d<t.date().first || t.date().second<d) return fail;
+    return t.query_train(d,seat);
 }
 
 vecS TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_time)
@@ -63,7 +64,7 @@ vecS TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_t
         auto &train_t=trains2[i];
         if(station1.count(train_t.train_id())!=0)
         {
-            if(train_t.check_date(d) && train_t.if_release())
+            if(train_t.check_date(d,s) && train_t.if_release())
             {
                 int value;
                 if(If_time) value=train_t.get_time(s,t);
@@ -173,26 +174,57 @@ int TrainManager::buy_ticket(const string &i,Date d,const string &f,const string
     if(!search.second) return -404;
     auto &train_find=search.first;
     if(!train_find.if_release()) return -404;
-    if(!train_find.check_date(d)) return -404;
+    if(!train_find.check_date(d,f)) return -404;
 
     auto seat_remain=train_find.check_seat(f,t,d,seat);
     int total_price=train_find.get_price(f,t,n);
+    auto time=train_find.obtain_time(f,t,d);
     if(seat_remain>n)
     {
-        train_find.decrease_seat(f,t,d,n,seat);
-        auto time=train_find.check_time(f,t,d);
+        train_find.decrease_seat(f,t,train_find.date_for_record(f,d),n,seat);
         write_log(id,SUCCESS,u,i,f,t,time.first,time.second,total_price,n);
         return total_price;
     }
     else
     {
-        if(q)
-        {
-            auto time=train_find.check_time(f,t,d);
-            write_log(id,PENDING,u,i,f,t,time.first,time.second,total_price,n);
-        }
+        if(q) write_log(id,PENDING,u,i,f,t,time.first,time.second,total_price,n);
         return 0;
     }
+}
+
+pair<string,int> TrainManager::refund_ticket(const string &u,const int &n)
+{
+    pair<string,int> output("fail",-1);
+    string main_key=u+to_string(n);
+    auto temp_log=log.FindByKey(main_key);
+    if(!temp_log.second) return output;
+    if(temp_log.first.status_now()==REFUNDED) return output;
+
+    auto &log1=temp_log.first;
+    auto t=train.FindByKey(log1.train()).first;
+    auto stations=log1.stations();
+    t.increase_seat(stations.first,stations.second,log1.times().first.date(),log1.number(),seat);
+    train.Update(t.train_id(),t);
+
+    output.first=t.train_id();
+    if(log1.status_now()==PENDING) output.second=0;
+    else output.second=1;// success -> refunded.
+    log1.modify_status(REFUNDED);
+    log.Update(main_key,log1);
+    return output;
+}
+
+bool TrainManager::re_buy_ticket(const string &i,Date d,const string &f,const string &t,int n,int id,const string &u)
+{
+    auto train_find=train.FindByKey(i).first;
+    auto seat_remain=train_find.check_seat(f,t,d,seat);
+    if(seat_remain>n)
+    {
+        train_find.decrease_seat(f,t,train_find.date_for_record(f,d),n,seat);
+        update_log(u,id,SUCCESS);
+        return true;
+    }
+    return false;
 }
 
 
