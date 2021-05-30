@@ -85,7 +85,7 @@ public:
     inline void AddTag(const string& MainKey,const string& Tag)
     {
         if(TagIndex==nullptr)throw error("this StorageManger has no TagIndex");
-        int find_id=MainIndex->find(MainKey);
+        int find_id=MainIndex->find(MainKey)[0];
         TagIndex->insert(Tag,find_id);
     }
 

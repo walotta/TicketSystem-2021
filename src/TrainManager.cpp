@@ -127,11 +127,10 @@ vecS TrainManager::query_transfer(const string &s,const string &t,Date d,bool If
             auto &train2=trains2[j];
             for(int k=0;k<trains2[j].station_number();++k)
             {
-                string st=trains2[j].station_name(k);//consider: not to use "&".
+                string st=trains2[j].station_name(k);//consider: Can't use "&".
                 if(station1.count(trains2[j].station_name(k))!=0)
                 {
                     //todo: Process after select
-
                     int cost=0;
                     if(If_time)
                     {
@@ -160,11 +159,49 @@ vecS TrainManager::query_transfer(const string &s,const string &t,Date d,bool If
 
     if(!If_find)
     {
-        vecS temp;
-        temp.push_back("0");
-        return temp;
+        vecS fail_output;
+        fail_output.push_back("0");
+        return fail_output;
     }
 
     return vecS();
 }
+
+int TrainManager::buy_ticket(const string &i,Date d,const string &f,const string &t,int n,int id,const string &u,bool q)
+{
+    auto search=train.FindByKey(i);
+    if(!search.second) return -404;
+    auto &train_find=search.first;
+    if(!train_find.if_release()) return -404;
+    if(!train_find.check_date(d)) return -404;
+
+    auto seat_remain=train_find.check_seat(f,t,d,seat);
+    int total_price=train_find.get_price(f,t,n);
+    if(seat_remain>n)
+    {
+        train_find.decrease_seat(f,t,d,n,seat);
+        auto time=train_find.check_time(f,t,d);
+        write_log(id,SUCCESS,u,i,f,t,time.first,time.second,total_price,n);
+        return total_price;
+    }
+    else
+    {
+        if(q)
+        {
+            auto time=train_find.check_time(f,t,d);
+            write_log(id,PENDING,u,i,f,t,time.first,time.second,total_price,n);
+        }
+        return 0;
+    }
+}
+
+
+
+
+
+
+
+
+
+
 

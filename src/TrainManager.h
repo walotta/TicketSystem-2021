@@ -13,8 +13,9 @@ class TrainManager
     ST seat;
     LG log;
 
-    int write_log(int id,STATUS s,str u,str i,str f,str t,const RealTime &d,const RealTime &a,int p,int n);
+
     bool update_log(str u,int id,STATUS s);
+    int write_log(int id,STATUS s,str u,str i,str f,str t,const RealTime &d,const RealTime &a,int p,int n);
     //todo: To process these two private function.
 public:
     TrainManager():train("train.dat",true),seat("seat.dat",false),log("log.dat",false){}
@@ -27,11 +28,11 @@ public:
     vecS query_ticket(str s,str t,Date d,bool If_time);
     vecS query_transfer(str s,str t,Date d,bool If_time);
     vecS query_order(str u); // If query failed, return an empty vector.
-    int  buy_ticket(str i,Date d,str f,str t,int n,int id,str u);
+    int  buy_ticket(str i,Date d,str f,str t,int n,int id,str u,bool q);// If but_ticket failed, return 0; If no such train, return -404;
     bool refund_ticket();//todo: Add the parameter.
     bool clean();
 
-
+    bool re_buy_ticket(str i,Date d,str f,str t,int n,int id,str u);// If success, return true;
 };
 
 

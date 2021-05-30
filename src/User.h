@@ -39,7 +39,7 @@ public:
     string mail() const {return (string)mailAddr;}
     int pri() const { return privilege; }
     int order_number() const {return orderedNum;}
-    void add_order(){++orderedNum;}
+    void add_order() {++orderedNum;}
 
 };
 

@@ -17,7 +17,7 @@ class ManagementSystem
         int serial_number;
         int id;// Represent the number of the order in its user's list.
         MyString user;
-        MyString trainID;
+        MyString trainID;// The
         Date date;
         MyString start;
         MyString arrive;
@@ -36,6 +36,7 @@ class ManagementSystem
 
 
     bool buy_ticket(const Order &order);
+    void add_order(int id,str u,str i,const Date &d,str f,str t,const int &n);
 
 public:
     ManagementSystem():order("order.dat",true){}

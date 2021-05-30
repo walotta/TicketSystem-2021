@@ -82,27 +82,23 @@ string ManagementSystem::buy_ticket(const string &u,const string &i,const Date &
     int pri=user.check_login(u);
     if(pri==-404) return fail;
 
-    int cost=train.buy_ticket(i,d,f,t,n);
-    if(cost==-1)
+    int number=user.query_order_number(u);
+    int cost=train.buy_ticket(i,d,f,t,n,number+1,u,q);
+    if(cost>0)
     {
-        if(q)
-        {
-            int num=order.plus_log();
-            vecS tag;
-            tag.push_back(u);
-//            int id=user.write_log(u,i,d,f,t,n,PENDING);
-            Order temp(num,id,u,i,d,f,t,n);
-            order.insert(to_string(num),temp);
-            order.AddTag(to_string(num),tag);
-            return into_queue;
-        }
-        else return fail;
+        user.add_order_number(u);
+        return to_string(cost);
     }
     else
     {
-        user.write_log(u,i,d,f,t,n,SUCCESS);
-//        user.buy_ticket(u,i,d,f,t,n,q);
-        return to_string(cost);
+        if(cost==-404) return fail;
+        if(q)
+        {
+            user.add_order_number(u);
+            add_order(number+1,u,i,d,f,t,n);
+            return into_queue;
+        }
+        else return fail;
     }
 }
 
@@ -120,11 +116,18 @@ int ManagementSystem::query_user_priority(const string &u)
 
 bool ManagementSystem::buy_ticket(const ManagementSystem::Order &ord)
 {
-    int cost=train.buy_ticket((string)ord.trainID,ord.date,(string)ord.start,(string)ord.arrive,ord.number);
-    if(cost==-1) return false;
+    bool If_queue_success=train.re_buy_ticket((string)ord.trainID,ord.date,(string)ord.start,(string)ord.arrive,ord.number,ord.id,(string)ord.user);
+    if(If_queue_success) return true;
+    else return false;
+}
 
-    user.write_log((string)ord.user,(string)ord.trainID,ord.date,(string)ord.start,(string)ord.arrive,ord.number,SUCCESS);
-    return true;
+void ManagementSystem::add_order(int id,const string &u,const string &i,const Date &d,const string &f,const string &t,const int &n)
+{
+    auto number=order.read_log();
+    Order new_order(number+1,id,u,i,d,f,t,n);
+    order.insert(to_string(number+1),new_order);
+    order.AddTag(to_string(number+1),i);
+    order.plus_log();
 }
 
 

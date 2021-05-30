@@ -103,6 +103,24 @@ int UserManager::query_user_priority(const string &u)
     return tp.first.pri();
 }
 
+int UserManager::query_order_number(const string &u) const
+{
+    auto temp=loggedUser.find(u);
+    return temp->second.second;
+}
+
+bool UserManager::add_order_number(const string &u)
+{
+    auto t=user.FindByKey(u);
+    if(!t.second) return false;
+    t.first.add_order();
+    user.Update(u,t.first);
+
+    auto temp=loggedUser.find(u);
+    if(loggedUser.end()!=temp) temp->second.second++;
+    return true;
+}
+
 
 
 

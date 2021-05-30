@@ -18,7 +18,7 @@ typedef vector<string> vecS;
 struct Time;
 struct Date;
 struct RealTime;
-
+const int base_mon=6;
 
 
 struct Time
@@ -89,7 +89,7 @@ struct Date
     int dayNum() const
     {
         int output=0;
-        for(int i=0;i<month-6;++i) output+=days[i];
+        for(int i=0;i<month-base_mon;++i) output+=days[i];
         return output+day;
     }
 
@@ -105,7 +105,7 @@ struct Date
     Date &operator++()
     {
         ++day;
-        if(day>days[month-6])
+        if(day>days[month-base_mon])
         {
             day=1; ++month;
         }
@@ -116,7 +116,6 @@ struct Date
 struct RealTime
 {
     constexpr static int days[4]={30,31,31,30};
-    static const int base_mon=6;
 
     long long minutes=-404;
 
@@ -129,6 +128,13 @@ struct RealTime
         minutes+=(d.day-1)*24*60;
         minutes+=t.hour*60+t.minute;
     }
+    explicit RealTime(const Date &d)
+    {
+        for(int i=base_mon;i<d.month;++i) minutes+=days[i-base_mon]*24*60;
+        minutes+=(d.day-1)*24*60;
+    }
+    explicit RealTime(const Time &t):minutes(t.hour*60+t.minute) {}
+
 
     Date date() const
     {
@@ -155,8 +161,12 @@ struct RealTime
     }
     RealTime operator+(const long long &l) const
     {
-        RealTime temp;
-        temp.minutes=minutes+l;
+        RealTime temp(minutes+l);
+        return temp;
+    }
+    RealTime operator+(const RealTime &r) const
+    {
+        RealTime temp(minutes+r.minutes);
         return temp;
     }
     long long operator-(const RealTime &r) const
