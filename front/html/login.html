@@ -74,6 +74,24 @@
         /* ------------------------------------ Click on login and Sign Up to  changue and view the effect
         ---------------------------------------
         */
+        function getCookie(cname)
+        {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) 
+        {
+            var c = ca[i].trim();
+            if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+        }
+        return "";
+        }
+        function setCookie(cname,cvalue,exdays)
+        {
+        var d = new Date();
+        d.setTime(d.getTime()+(exdays*24*60*60*1000));
+        var expires = "expires="+d.toGMTString();
+        document.cookie = cname + "=" + cvalue + "; " + expires;
+        }
         
         function cambiar_login() {
             document.querySelector('.cont_forms').className = "cont_forms cont_forms_active_login";
@@ -138,9 +156,14 @@
                         var return_msg=xmlhttp.responseText;
                         //alert(return_msg);
                         if(return_msg=="0"||return_msg=="-1")document.getElementById("login_button").innerHTML='TRY AGAIN';
-                        else document.getElementById("login_button").innerHTML="PASSED";
-                        if(return_msg=="1")window.location.href('/html/person.html');
-                        else window.location.href('/html/admin.html')
+                        else 
+                        {
+                            document.getElementById("login_button").innerHTML="PASSED";
+                            setCookie("userId",userId,365);
+                            setCookie("pri",return_msg,365);
+                            if(return_msg=="1")window.location.href='/html/person.html';
+                            else window.location.href='/html/admin.html';
+                        }
                     }else
                     {
                         document.getElementById("login_button").innerHTML="ERROR OCCUR";
@@ -174,8 +197,13 @@
                             var return_msg=xmlhttp.responseText;
                             //alert(return_msg);
                             if(return_msg!="1")document.getElementById("sign_button").innerHTML='TRY AGAIN';
-                            else document.getElementById("sign_button").innerHTML="PASSED";
-                            window.location.href('/html/person.html');
+                            else
+                            {
+                                document.getElementById("sign_button").innerHTML="PASSED";
+                                setCookie("userId",userId,365);
+                                setCookie("pri","1",365);
+                                window.location.href='/html/person.html';
+                            }
                         }else
                         {
                             document.getElementById("sign_button").innerHTML="ERROR OCCUR";
@@ -189,6 +217,17 @@
                 document.getElementById("sign_button").innerHTML='INVALID';
             }
         }
+        
+        var userId=getCookie("userId");
+        //alert(userId);
+        if(userId!="")
+        {
+            var pri=getCookie("pri");
+            //alert(pri);
+            if(pri=="1")window.location.href='/html/person.html';
+            else window.location.href='/html/admin.html';
+        }
+
         </script>
         
     </body>

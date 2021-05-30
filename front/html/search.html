@@ -39,8 +39,11 @@
 
             <div class="mdui-row">
                 <div class="mdui-p-a-3 mdui-float-right">
+                    <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-light-blue-900 mdui-hoverable mdui-shadow-8" mdui-tooltip="{content: '点击前往个人页面'}" onclick="change_to_personal_page()">My Home Page</button>
+                
                     <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-light-blue-900 mdui-hoverable mdui-shadow-8" mdui-tooltip="{content: '点击开始搜索'}" onclick="run_search()" id="search_botton">Search</button>
-                </div>
+                
+                    </div>
             </div>
 
             <div class="mdui-row" id="resault_display">
@@ -422,6 +425,10 @@
                     alert(trainId+'\n'+start_date);
                 }
                 mdui.mutation();
+            }
+            function change_to_personal_page()
+            {
+                window.location.href='/html/person.html';
             }
         </script>
     </body>

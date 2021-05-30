@@ -18,12 +18,12 @@
         {
             //set cookie
             $privilege=query_privilege($id);
-            ini_set('session.gc_maxlifetime', 3600);
-            $expire = ini_get('session.gc_maxlifetime');
-            session_start();
-            setcookie('PHPSESSID', session_id(), time() + $expire);
-            setcookie('username', $id, time() + $expire);
-            setcookie('privilege', $privilege, time() + $expire);
+            //ini_set('session.gc_maxlifetime', 3600);
+            //$expire = 3600;//ini_get('session.gc_maxlifetime');
+            //setcookie('username', $id, time() + $expire);
+            //setcookie('PHPSESSID', session_id(), time() + $expire);
+            //setcookie('privilege', $privilege, time() + $expire);
+            /*session_start();
             if(isset($_SESSION['username']) && ($_SESSION['username'] == $username))
             {
  			 	exit("您已经登入了，请不要重新登入！用户名：".$_SESSION['username']."{$expire}");
@@ -32,7 +32,7 @@
             {
  				$_SESSION['username'] = $username_cookie;
                 $_SESSION['privilege'] = $privilege;
- 			}
+ 			}*/
             echo "$privilege";
         }else
         {

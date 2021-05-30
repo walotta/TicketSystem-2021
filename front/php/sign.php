@@ -19,13 +19,13 @@
         {
             //set cookie
             $privilege=1;
-            ini_set('session.gc_maxlifetime', 3600);
-            $expire = ini_get('session.gc_maxlifetime');
-            session_start();
-            setcookie('PHPSESSID', session_id(), time() + $expire);
-            setcookie('username', $id, time() + $expire);
-            setcookie('privilege', $privilege, time() + $expire);
-            if(isset($_SESSION['username']) && ($_SESSION['username'] == $username))
+            //ini_set('session.gc_maxlifetime', 3600);
+            //$expire = ini_get('session.gc_maxlifetime');
+            //session_start();
+            //setcookie('PHPSESSID', session_id(), time() + $expire);
+            //setcookie('username', $id, time() + $expire);
+            //setcookie('privilege', $privilege, time() + $expire);
+            /*if(isset($_SESSION['username']) && ($_SESSION['username'] == $username))
             {
  			 	exit("您已经登入了，请不要重新登入！用户名：".$_SESSION['username']."{$expire}");
  			}
@@ -33,7 +33,7 @@
             {
  				$_SESSION['username'] = $username_cookie;
                 $_SESSION['privilege'] = $privilege;
- 			}
+ 			}*/
             //login
             $cmd="login -u $id -p $psw";
             $socket = socket_create(AF_INET,SOCK_STREAM,SOL_TCP);
