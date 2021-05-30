@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>RUN COMMAND!</title>
+        <meta name="keywords" content="TicketSystem">
+        <meta name="author" content="walotta & Fourest">
+        <meta name="description" content="TicketSystem">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <link rel="shortcut icon" href="/image/main.ico">
+        <!-- MDUI CSS -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/mdui@1.0.1/dist/css/mdui.min.css"
+            integrity="sha384-cLRrMq39HOZdvE0j6yBojO4+1PrHfB7a9l5qLcmRm/fiWXYY+CndJPmyu5FV/9Tw"
+            crossorigin="anonymous"
+        />
+    </head>
+
+    <body class="mdui-theme-layout-dark">
+        <div class="mdui-container mdui-shadow-8 mdui-hoverable mdui-m-t-3">
+
+            <div class="mdui-row">
+                <div class="mdui-p-a-3" id="search_contain">
+                </div>
+            </div>
+            <div class="mdui-row">
+                <div class="mdui-p-a-3 mdui-float-right">
+                    <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-light-blue-900 mdui-hoverable mdui-shadow-8" mdui-tooltip="{content: '点击关闭服务器'}" onclick="close_server()" id="close_botton">STOP SERVER</button>
+                    <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-light-blue-900 mdui-hoverable mdui-shadow-8" mdui-tooltip="{content: '点击开始运行'}" onclick="run_search()" id="search_botton">RUN</button>
+                </div>
+            </div>
+
+        </div>
+        
+
+        <!-- MDUI JavaScript -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/mdui@1.0.1/dist/js/mdui.min.js"
+            integrity="sha384-gCMZcshYKOGRX9r6wbDrvF+TcCCswSHFucUzUPwka+Gr+uHgjlYvkABr95TCOz3A"
+            crossorigin="anonymous"
+        ></script>
+        <!--my JS-->
+        <script>
+            var now_at="ticket";
+            function set_query_ticket()
+            {
+                now_at="ticket";
+                document.getElementById("search_contain").innerHTML='\
+                <div class="mdui-textfield mdui-textfield-floating-label"><label class="mdui-textfield-label">Start Station</label>\
+                <input class="mdui-textfield-input" type="txt" id="start_station"/></div>\
+                <div class="mdui-textfield mdui-textfield-floating-label"><label class="mdui-textfield-label">Terminal Station</label>\
+                <input class="mdui-textfield-input" type="txt" id="terminal_station"/></div>\
+                <div class="mdui-row-xs-2">\
+                        <div class="mdui-col">\
+                            <div class="mdui-textfield mdui-textfield-floating-label">\
+                                <label class="mdui-textfield-label">Start Month</label>\
+                                <input class="mdui-textfield-input" type="txt" id="start_month"/>\
+                            </div>\
+                        </div>\
+                        <div class="mdui-col">\
+                            <div class="mdui-textfield mdui-textfield-floating-label">\
+                                <label class="mdui-textfield-label">Start Day</label>\
+                                <input class="mdui-textfield-input" type="txt" id="start_day"/>\
+                            </div>\
+                        </div>\
+                    </div>\
+                </div>\
+                <div class="mdui-row-xs-6">\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center mdui-valign">\
+                            <label class="mdui-radio"">\
+                                <input type="radio" name="sort" id="sort_time" value="true" checked/>\
+                                <i class="mdui-radio-icon"></i>\
+                                排序依据: 时间\
+                            </label>\
+                        </div>\
+                        <div class="mdui-col mdui-center mdui-valign">\
+                            <label class="mdui-radio">\
+                                <input type="radio" name="sort" id="sort_cost" value="true" />\
+                                <i class="mdui-radio-icon"></i>\
+                                排序依据: 花费\
+                            </label>\
+                        </div>\
+                    </div>\
+                </div>\
+                <div class="mdui-row-xs-8">\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center mdui-valign">\
+                        </div>\
+                        <div class="mdui-col mdui-center mdui-valign">\
+                            <i>接受换乘</i>\
+                            <label class="mdui-switch mdui-center">\
+                                <input type="checkbox" id="can_transfer"/>\
+                                <i class="mdui-switch-icon"></i>\
+                            </label>\
+                        </div>\
+                    </div>\
+                </div>\
+                ';
+            }
+            function set_query_train()
+            {
+                now_at="train";
+                document.getElementById("search_contain").innerHTML='\
+                <div class="mdui-textfield mdui-textfield-floating-label"><label class="mdui-textfield-label">CMD</label>\
+                <input class="mdui-textfield-input" type="txt" id="cmd"/></div>\
+                ';
+            }
+            set_query_train();
+            mdui.mutation();
+            function run_search()
+            {
+                var cmd=document.getElementById("cmd").value;
+                var xmlhttp=new XMLHttpRequest();
+                xmlhttp.open("POST","/php/debug.php",true);
+                xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xmlhttp.onreadystatechange=function()
+                {
+                    if (xmlhttp.readyState==4)
+                    {
+                        if(xmlhttp.status==200)
+                        {
+                            var return_msg=xmlhttp.responseText;
+                            //alert(return_msg);
+                            document.getElementById("search_botton").innerHTML='RUN';
+                            mdui.alert(return_msg,'run ans:')
+                            //if(return_msg=="0"||return_msg=="-1")document.getElementById("search_botton").innerHTML='TRY AGAIN';
+                            //else document.getElementById("search_botton").innerHTML="PASSED";
+                            //if(return_msg=="1")window.location.href('/html/person.html');
+                            //else window.location.href('/html/admin.html')
+                        }else
+                        {
+                            document.getElementById("search_botton").innerHTML="ERROR OCCUR";
+                        }
+                    }
+                }
+                document.getElementById("search_botton").innerHTML='LOADING . . .';
+                xmlhttp.send("cmd="+cmd);
+            }
+            function close_server()
+            {
+                var cmd="exit";
+                var xmlhttp=new XMLHttpRequest();
+                xmlhttp.open("POST","/php/debug.php",true);
+                xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xmlhttp.onreadystatechange=function()
+                {
+                    if (xmlhttp.readyState==4)
+                    {
+                        if(xmlhttp.status==200)
+                        {
+                            var return_msg=xmlhttp.responseText;
+                            //alert(return_msg);
+                            document.getElementById("close_botton").innerHTML='SERVER STOPPED';
+                            mdui.alert(return_msg,'run ans:')
+                            //if(return_msg=="0"||return_msg=="-1")document.getElementById("search_botton").innerHTML='TRY AGAIN';
+                            //else document.getElementById("search_botton").innerHTML="PASSED";
+                            //if(return_msg=="1")window.location.href('/html/person.html');
+                            //else window.location.href('/html/admin.html')
+                        }else
+                        {
+                            document.getElementById("close_botton").innerHTML="ERROR OCCUR";
+                        }
+                    }
+                }
+                document.getElementById("close_botton").innerHTML='LOADING . . .';
+                xmlhttp.send("cmd="+cmd);
+            }
+        </script>
+    </body>
+</html>
