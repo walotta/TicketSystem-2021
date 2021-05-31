@@ -109,7 +109,8 @@ public:
         station[0].departure=RealTime(Date(6,1),x);
         for(int pos=0;pos<stationNum-2;++pos)
         {
-            station[pos+1].update(s[pos+1],station[pos].price+p[pos],m,station[pos].departure+t[pos],station[pos+1].arrival+o[pos]);
+            RealTime arrival(station[pos].departure+t[pos]);
+            station[pos+1].update(s[pos+1],station[pos].price+p[pos],m,arrival,arrival+o[pos]);
             /*
             station[pos+1].name=s[pos+1];
             station[pos+1].price=station[pos].price+p[pos];
@@ -168,7 +169,7 @@ public:
     {
         if(If_release) return false;
         If_release=true;
-        for(auto i=sale_beg;i<sale_end;++i)
+        for(auto i=sale_beg;i<=sale_end;++i)
         {
             string main_key=(string)trainID+" "+i.display();
             RemainedSeat seat(main_key,stationNum,seatNum);
@@ -212,7 +213,8 @@ public:
             //          This part could be optimized.
         }
         int price=station[b].price-station[a].price;
-        Time departure(station[a].departure.time()),arrival(station[b].arrival.time());
+        int time_gap=station[b].arrival-station[a].departure;
+        RealTime departure(d,station[a].departure.time()),arrival(departure+time_gap);
         string output((string)trainID+" "+i+" "+departure.display());
         output+=" -> "+f+" "+arrival.display()+" "+to_string(price)+" "+to_string(seat);
         return output;
@@ -282,7 +284,7 @@ public:
         auto id=get_id(i,f);
         int start=id.first,end=id.second;
 
-        string main_key(i+" "+d.display());
+        string main_key((string)trainID+" "+d.display());
         auto seats=store.FindByKey(main_key).first;
         return seats.min_seat(start,end);
     }
@@ -292,7 +294,7 @@ public:
         auto id=get_id(i,f);
         int start=id.first,end=id.second;
 
-        string main_key(i+" "+d.display());
+        string main_key((string)trainID+" "+d.display());
         auto seats=store.FindByKey(main_key).first;
         seats.de_seat(start,end,n);
         store.Update(main_key,seats);

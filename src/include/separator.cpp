@@ -58,8 +58,8 @@ namespace Fourest
         std::string input;
         getline(_is,input);
         process(input);
-        if(_is.eof()) return true;
-        return false;
+        if(_is.eof()) return false;
+        return true;
     }
 
     std::vector<str> separator::content() const

@@ -52,7 +52,7 @@ vecS ManagementSystem::query_transfer(const string &s,const string &t,Date d,boo
 vector<string> ManagementSystem::query_order(const string &u)
 {
     if(user.check_login(u)==-404) return vecS();
-    return train.query_order(u);
+    return vecS({to_string(user.query_order_number(u))});
 }
 
 string ManagementSystem::query_profile(const string &c,const string &u)
@@ -126,8 +126,8 @@ string ManagementSystem::buy_ticket(const string &u,const string &i,const Date &
         if(cost==-404) return fail;
         if(q)
         {
-            user.add_order_number(u);
             add_order(number+1,u,i,d,f,t,n);
+            user.add_order_number(u);
             return into_queue;
         }
         else return fail;
@@ -155,10 +155,10 @@ bool ManagementSystem::buy_ticket(const ManagementSystem::Order &ord)
 
 void ManagementSystem::add_order(int id,const string &u,const string &i,const Date &d,const string &f,const string &t,const int &n)
 {
-    auto number=order.read_log();
-    Order new_order(number+1,id,u,i,d,f,t,n);
-    order.insert(to_string(number+1),new_order);
-    order.AddTag(to_string(number+1),i);
+    auto number=1+order.read_log();
+    Order new_order(number,id,u,i,d,f,t,n);
+    order.insert(to_string(number),new_order);
+    order.AddTag(to_string(number),i);
     order.plus_log();
 }
 

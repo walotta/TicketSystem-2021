@@ -12,13 +12,13 @@ private:
     ManagementSystem sys;
     Fourest::separator words;
     stringstream split;
-    int to_int(const string& o)
+    int to_int(const string& input)
     {
         int ans=0;
-        for(int i=o.size()-1;i>=0;i--)
+        for(int i=0; i<input.size(); ++i)
         {
             ans*=10;
-            ans+=o[i]-'0';
+            ans+=input[i]-'0';
         }
         return ans;
     }
@@ -39,7 +39,7 @@ private:
     }
     Date to_date(str input)
     {
-        Fourest::separator processor(".");
+        Fourest::separator processor("-");
         processor.process(input);
         return Date(to_int(processor[0]),to_int(processor[1]));
     }
@@ -85,9 +85,10 @@ private:
         }
     }
 public:
+    cmd():words(" "){}
     void run(std::istream &is, std::ostream &os)
     {
-        while(!words.readLine(is))
+        while(words.readLine(is))
         {
             auto tokens=words.content();
             auto &command=tokens[0];

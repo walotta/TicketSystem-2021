@@ -1,6 +1,11 @@
 #include "cmd.hpp"
 #include <iostream>
 
+ifstream in("in.txt");
+ofstream out("output.txt");
+
+
+
 int main(int argc,char *argv[])
 {
     bool run_with_io=true;
@@ -11,7 +16,7 @@ int main(int argc,char *argv[])
     cmd ticketLibrary;
     if(run_with_io)
     {
-        ticketLibrary.run(std::cin,std::cout);
+        ticketLibrary.run(in,out);
     }else
     {
         stringstream sin,sout;

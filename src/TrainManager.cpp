@@ -178,12 +178,14 @@ int TrainManager::buy_ticket(const string &i,Date d,const string &f,const string
     if(!train_find.if_release()) return -404;
     if(!train_find.check_date(d,f)) return -404;
 
-    auto seat_remain=train_find.check_seat(f,t,d,seat);
+    auto date=train_find.date_for_record(f,d);
+    auto seat_remain=train_find.check_seat(f,t,date,seat);
     int total_price=train_find.get_price(f,t,n);
-    auto time=train_find.obtain_time(f,t,d);
+    auto time=train_find.obtain_time(f,t,date);
+
     if(seat_remain>n)
     {
-        train_find.decrease_seat(f,t,train_find.date_for_record(f,d),n,seat);
+        train_find.decrease_seat(f,t,date,n,seat);
         write_log(id,SUCCESS,u,i,f,t,time.first,time.second,total_price,n);
         return total_price;
     }

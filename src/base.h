@@ -95,7 +95,7 @@ struct Date
     {
         int output=0;
         for(int i=0;i<month-base_mon;++i) output+=days[i];
-        return output+day;
+        return output+day-1;
     }
 
     bool operator<(const Date &d) const
@@ -113,7 +113,11 @@ struct Date
     {
         Date temp(*this);
         temp.day-=d;
-        while(temp.day<=0) temp.day+=days[--temp.month];
+        while(temp.day<=0)
+        {
+            temp.day+=days[temp.month-1-base_mon];
+            --temp.month;
+        }
         return temp;
     }
     Date &operator++()
@@ -129,7 +133,11 @@ struct Date
     {
         Date temp(*this);
         temp.day+=d;
-        while(temp.day>days[month-base_mon]) temp.day-=days[temp.month++];
+        while(temp.day>days[month-base_mon])
+        {
+            temp.day-=days[temp.month-base_mon];
+            ++temp.month;
+        }
         return temp;
     }
 };
@@ -143,12 +151,14 @@ struct RealTime
     RealTime(const RealTime &r):minutes(r.minutes){}
     explicit RealTime(const Date &d,const Time &t)
     {
+        minutes=0;
         for(int i=base_mon;i<d.month;++i) minutes+=days[i-base_mon]*24*60;
         minutes+=(d.day-1)*24*60;
         minutes+=t.hour*60+t.minute;
     }
     explicit RealTime(const Date &d)
     {
+        minutes=0;
         for(int i=base_mon;i<d.month;++i) minutes+=days[i-base_mon]*24*60;
         minutes+=(d.day-1)*24*60;
     }
@@ -157,7 +167,7 @@ struct RealTime
 
     Date date() const
     {
-        auto day=minutes/(24*60);
+        auto day=minutes/(24*60)+1;
         int month=0;
         while(day>days[month]) day-=days[month++];
         return Date(month+base_mon,day);
