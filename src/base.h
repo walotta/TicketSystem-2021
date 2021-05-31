@@ -19,6 +19,7 @@ struct Time;
 struct Date;
 struct RealTime;
 const int base_mon=6;
+constexpr static int days[4]={30,31,31,30};
 
 
 struct Time
@@ -76,8 +77,6 @@ struct Time
 
 struct Date
 {
-    constexpr static int days[4]={30,31,31,30};
-
     int month=base_mon,day=1;
 
     Date()=default;
@@ -137,8 +136,6 @@ struct Date
 // This structure records the minutes passed after 6.1 00:00.
 struct RealTime
 {
-    constexpr static int days[4]={30,31,31,30};
-
     long long minutes=-404;
 
     RealTime()=default;
