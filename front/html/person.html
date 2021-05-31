@@ -16,16 +16,76 @@
         />
     </head>
 
-    <body class="mdui-theme-layout-dark">
-        <div class="mdui-appbar">
+    <body class="mdui-theme-layout-dark mdui-drawer-body-left mdui-appbar-with-toolbar">
+        <!--顶部栏-->
+        <div class="mdui-appbar mdui-appbar-fixed">
             <div class="mdui-toolbar mdui-color-theme">
-              <a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">menu</i></a>
-              <a href="javascript:;" class="mdui-typo-headline">MDUI</a>
-              <a href="javascript:;" class="mdui-typo-title">Title</a>
+              <a id="toggle" class="mdui-btn mdui-btn-icon"  mdui-drawer="{target: '#drawer'}" mdui-drawer-toggle><i class="mdui-icon material-icons">menu</i></a>
+              <a href="javascript:;" class="mdui-typo-headline mdui-text-color-white-secondary">TicketSystem</a>
+              <a id="nameHolder" class="mdui-typo-title mdui-text-color-white-secondary"></a>
               <div class="mdui-toolbar-spacer"></div>
               <a href="javascript:window.location.href='/html/search.html';" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>
               <a href="javascript:location.reload();" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">refresh</i></a>
+              <a href="javascript:window.location.href='http://ticket.walotta.top';" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">home</i></a>
             </div>
+        </div>
+
+        <!--侧拉列表-->
+        <div class="mdui-drawer " id="drawer">
+            <ul class="mdui-list">
+              <li class="mdui-list-item mdui-ripple" onclick="show_ticket()">
+                <i class="mdui-list-item-icon mdui-icon material-icons">confirmation_number</i>
+                <div class="mdui-list-item-content">查找车票</div>
+              </li>
+              <li class="mdui-list-item mdui-ripple" onclick="show_train()">
+                <i class="mdui-list-item-icon mdui-icon material-icons">directions_transit</i>
+                <div class="mdui-list-item-content">火车信息</div>
+              </li>
+              <li class="mdui-list-item mdui-ripple" onclick="show_friends()">
+                <i class="mdui-list-item-icon mdui-icon material-icons">group</i>
+                <div class="mdui-list-item-content">其他用户</div>
+              </li>
+              <li class="mdui-list-item mdui-ripple" onclick="show_order()">
+                <i class="mdui-list-item-icon mdui-icon material-icons">local_offer</i>
+                <div class="mdui-list-item-content">我的订单</div>
+              </li>
+              <li class="mdui-subheader">Personal area</li>
+              <li class="mdui-list-item mdui-ripple" onclick="show_myself()">
+                <i class="mdui-list-item-icon mdui-icon material-icons">account_circle</i>
+                <div class="mdui-list-item-content" id="logout_btn">我的信息</div>
+              </li>
+              <li class="mdui-list-item mdui-ripple" onclick="logout()">
+                <i class="mdui-list-item-icon mdui-icon material-icons">power_settings_new</i>
+                <div class="mdui-list-item-content" id="logout_btn">退出登录</div>
+              </li>
+            </ul>
+        </div>
+
+        <!--用户仪表盘-->
+        <div class="mdui-container mdui-shadow-8 mdui-hoverable mdui-m-t-3">
+
+            <!--标题-->
+            <div class="mdui-row">
+                <div class="mdui-p-t-1" style="font-weight: 400; font-style: italic;">
+                    <h1 class="mdui-text-center mdui-text-uppercase mdui-text-color-white-secondary" id="contain_title"></h1>
+                </div>
+            </div>
+
+            <!--搜索条件区-->
+            <div class="mdui-row">
+                <div class="mdui-p-b-3 mdui-p-x-3" id="search_contain">
+                </div>
+            </div>
+
+            <!--用户按钮-->
+            <div class="mdui-row">
+                <div class="mdui-p-a-3 mdui-float-right" id="user_btn">
+                </div>
+            </div>
+
+            <div class="mdui-p-a-3 mdui-row" id="resault_display">
+            </div>
+
         </div>
 
 
@@ -37,7 +97,581 @@
         ></script>
         <!--my JS-->
         <script>
+            var now_at;
+
+            function getCookie(cname)
+            {
+                var name = cname + "=";
+                var ca = document.cookie.split(';');
+                for(var i=0; i<ca.length; i++) 
+                {
+                    var c = ca[i].trim();
+                    if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+                }
+                return "";
+            }
+            function setCookie(cname,cvalue,exdays)
+            {
+                var d = new Date();
+                d.setTime(d.getTime()+(exdays*24*60*60*1000));
+                var expires = "expires="+d.toGMTString();
+                document.cookie = cname + "=" + cvalue + "; " + expires;
+            }
             
+            function run_search()
+            {
+                document.getElementById("resault_display").innerHTML='';
+                if(now_at=="ticket")
+                {
+                    var start_station=document.getElementById("start_station").value;
+                    var terminal_station=document.getElementById("terminal_station").value;
+                    var start_month=document.getElementById("start_month").value;
+                    var start_day=document.getElementById("start_day").value;
+                    var is_time=(document.getElementsByName("sort"))[0].checked;
+                    var is_transfer=document.getElementById("can_transfer").checked;
+                    //alert(start_station+"\n"+terminal_station+"\n"+start_month+"\n"+start_day+"\n"+is_time+"\n"+is_transfer);
+                    if(is_transfer==true)
+                    {
+                        //alert("transfer");
+                        var xmlhttp=new XMLHttpRequest();
+                        xmlhttp.open("POST","/php/query_transfer.php",true);
+                        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xmlhttp.onreadystatechange=function()
+                        {
+                            if (xmlhttp.readyState==4)
+                            {
+                                if(xmlhttp.status==200)
+                                {
+                                    document.getElementById("search_botton").innerHTML="FINISHED";
+                                    var return_msg=xmlhttp.responseText;
+                                    //alert(return_msg);
+                                    ansJson=JSON.parse(return_msg);
+                                    if(Object.keys(ansJson).length==0||return_msg=="empty msg")
+                                    {
+                                        mdui.alert("查找失败，请更改条件后再次查询！","TRANSFER NOT FOUND");
+                                    }else{
+                                        mdui.snackbar({
+                                            message: "成功为您找到了换乘的最优火车票",
+                                            position: 'right-bottom'
+                                        });
+                                        document.getElementById("resault_display").innerHTML='\
+                                        <div class="mdui-divider mdui-color-blue-grey-500"></div>\
+                                        <div class="mdui-table-fluid">\
+                                            <table class="mdui-table mdui-table-hoverable">\
+                                                <thead>\
+                                                <tr>\
+                                                    <th>#</th>\
+                                                    <th>Train Id</th>\
+                                                    <th>FROM</th>\
+                                                    <th>LEAVING DATE</th>\
+                                                    <th>LEAVING TIME</th>\
+                                                    <th>TO</th>\
+                                                    <th>ARRIVING DATE</th>\
+                                                    <th>ARRIVING TIME</th>\
+                                                    <th>PRICE</th>\
+                                                    <th>SEAT</th>\
+                                                </tr>\
+                                                </thead>\
+                                                <tbody id="table_inner">\
+                                                </tbody>\
+                                            </table>\
+                                        </div>\
+                                        ';
+                                    var i=0;
+                                    var new_inner=document.createElement("tr");
+                                        new_inner.innerHTML='\
+                                                                <td>first</td>'+'\
+                                                                <td>'+ansJson[2*i]["trainId"]+'</td>\
+                                                                <td>'+ansJson[2*i]["from"]+'</td>\
+                                                                <td>'+ansJson[2*i]["leaving_date"]+'</td>\
+                                                                <td>'+ansJson[2*i]["leaving_time"]+'</td>\
+                                                                <td>'+ansJson[2*i]["to"]+'</td>\
+                                                                <td>'+ansJson[2*i]["arriving_date"]+'</td>\
+                                                                <td>'+ansJson[2*i]["arriving_time"]+'</td>\
+                                                                <td>'+ansJson[2*i]["price"]+'</td>\
+                                                                <td>'+ansJson[2*i]["seat"]+'</td>'
+                                        document.getElementById("table_inner").appendChild(new_inner);
+                                        var new_inner_1=document.createElement("tr");
+                                        new_inner_1.innerHTML='\
+                                                                <td>second</td>'+'\
+                                                                <td>'+ansJson[2*i+1]["trainId"]+'</td>\
+                                                                <td>'+ansJson[2*i+1]["from"]+'</td>\
+                                                                <td>'+ansJson[2*i+1]["leaving_date"]+'</td>\
+                                                                <td>'+ansJson[2*i+1]["leaving_time"]+'</td>\
+                                                                <td>'+ansJson[2*i+1]["to"]+'</td>\
+                                                                <td>'+ansJson[2*i+1]["arriving_date"]+'</td>\
+                                                                <td>'+ansJson[2*i+1]["arriving_time"]+'</td>\
+                                                                <td>'+ansJson[2*i+1]["price"]+'</td>\
+                                                                <td>'+ansJson[2*i+1]["seat"]+'</td>'
+                                        document.getElementById("table_inner").appendChild(new_inner_1);
+                                    }
+                                    
+                                }else
+                                {
+                                    document.getElementById("search_botton").innerHTML="ERROR OCCUR";
+                                }
+                            }
+                        }
+                        document.getElementById("search_botton").innerHTML='LOADING . . .';
+                        xmlhttp.send("start_station="+start_station+"&terminal_station="+terminal_station+"&start_month="+start_month+"&start_day="+start_day+"&is_time="+is_time);
+                    
+                    }else{
+                        var xmlhttp=new XMLHttpRequest();
+                        xmlhttp.open("POST","/php/query_ticket.php",true);
+                        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xmlhttp.onreadystatechange=function()
+                        {
+                            if (xmlhttp.readyState==4)
+                            {
+                                if(xmlhttp.status==200)
+                                {
+                                    document.getElementById("search_botton").innerHTML="FINISHED";
+                                    var return_msg=xmlhttp.responseText;
+                                    //alert(return_msg);
+                                    if(return_msg=="empty msg"||return_msg=="failed query")
+                                    {
+                                        mdui.alert("查找失败，请更改条件后再次查询！","TRAIN NOT FOUND");
+                                    }else
+                                    {
+                                        var ansJson=JSON.parse(return_msg);
+                                        if(Object.keys(ansJson).length==0)
+                                        {
+                                            mdui.alert("查找失败，请更改条件后再次查询！","TRAIN NOT FOUND");
+                                        }else
+                                        {
+                                            mdui.snackbar({
+                                            message: "为您找到了"+Object.keys(ansJson).length+"张直达票",
+                                            position: 'right-bottom'
+                                            });
+                                            document.getElementById("resault_display").innerHTML='\
+                                            <div class="mdui-divider mdui-color-blue-grey-500"></div>\
+                                            <div class="mdui-table-fluid">\
+                                                <table class="mdui-table mdui-table-hoverable">\
+                                                    <thead>\
+                                                    <tr>\
+                                                        <th>#</th>\
+                                                        <th>Train Id</th>\
+                                                        <th>FROM</th>\
+                                                        <th>LEAVING DATE</th>\
+                                                        <th>LEAVING TIME</th>\
+                                                        <th>TO</th>\
+                                                        <th>ARRIVING DATE</th>\
+                                                        <th>ARRIVING TIME</th>\
+                                                        <th>PRICE</th>\
+                                                        <th>SEAT</th>\
+                                                    </tr>\
+                                                    </thead>\
+                                                    <tbody id="table_inner">\
+                                                    </tbody>\
+                                                </table>\
+                                            </div>\
+                                            ';
+                                            for(var i=0;i<Object.keys(ansJson).length;i++)
+                                            {
+                                                var new_inner=document.createElement("tr");
+                                                new_inner.innerHTML='\
+                                                                        <td>'+i+'</td>'+'\
+                                                                        <td>'+ansJson[i]["trainId"]+'</td>\
+                                                                        <td>'+ansJson[i]["from"]+'</td>\
+                                                                        <td>'+ansJson[i]["leaving_date"]+'</td>\
+                                                                        <td>'+ansJson[i]["leaving_time"]+'</td>\
+                                                                        <td>'+ansJson[i]["to"]+'</td>\
+                                                                        <td>'+ansJson[i]["arriving_date"]+'</td>\
+                                                                        <td>'+ansJson[i]["arriving_time"]+'</td>\
+                                                                        <td>'+ansJson[i]["price"]+'</td>\
+                                                                        <td>'+ansJson[i]["seat"]+'</td>'
+                                                document.getElementById("table_inner").appendChild(new_inner);
+                                            }
+                                        }
+                                    }
+                                }else
+                                {
+                                    document.getElementById("search_botton").innerHTML="ERROR OCCUR";
+                                }
+                            }
+                        }
+                        document.getElementById("search_botton").innerHTML='LOADING . . .';
+                        xmlhttp.send("start_station="+start_station+"&terminal_station="+terminal_station+"&start_month="+start_month+"&start_day="+start_day+"&is_time="+is_time);
+                    }
+                }else if(now_at=="train")
+                {
+                    var trainId=document.getElementById("train_id").value;
+                    var start_month=document.getElementById("start_month").value;
+                    var start_day=document.getElementById("start_day").value;
+
+                    var xmlhttp=new XMLHttpRequest();
+                    xmlhttp.open("POST","/php/query_train.php",true);
+                    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                    xmlhttp.onreadystatechange=function()
+                    {
+                        if (xmlhttp.readyState==4)
+                        {
+                            if(xmlhttp.status==200)
+                            {
+                                document.getElementById("search_botton").innerHTML="FINISHED";
+                                var return_msg=xmlhttp.responseText;
+                                //alert(return_msg);
+                                if(return_msg=="empty msg"||return_msg=="failed query")
+                                {
+                                    mdui.alert("查找失败，请更改条件后再次查询！","TRAIN NOT FOUND");
+                                }else
+                                {
+                                    var ansJson=JSON.parse(return_msg);
+                                    if(Object.keys(ansJson).length==0)
+                                    {
+                                        mdui.alert("查找失败，请更改条件后再次查询！","TRAIN NOT FOUND");
+                                    }else
+                                    {
+                                        mdui.snackbar({
+                                        message: "成功为您找到了对应的火车信息",
+                                        position: 'right-bottom'
+                                        });
+                                        document.getElementById("resault_display").innerHTML='\
+                                        <div class="mdui-divider mdui-color-blue-grey-500"></div>\
+                                        <div class="mdui-table-fluid">\
+                                            <table class="mdui-table mdui-table-hoverable">\
+                                                <thead>\
+                                                <tr>\
+                                                    <th></th>\
+                                                    <th></th>\
+                                                    <th></th>\
+                                                    <th>Train Id</th>\
+                                                    <th><i class="mdui-text-color-blue-accent">'+trainId+'</i></th>\
+                                                    <th>Train Type</th>\
+                                                    <th><i class="mdui-text-color-blue-accent">'+ansJson['type']+'</i></th>\
+                                                    <th></th>\
+                                                    <th></th>\
+                                                    <th></th>\
+                                                </tr>\
+                                                </thead>\
+                                                <tbody>\
+                                                </tbody>\
+                                            </table>\
+                                        </div>\
+                                        <div class="mdui-shadow-8 mdui-m-a-1"><div class="mdui-divider mdui-color-grey"></div></div>\
+                                        <div class="mdui-table-fluid">\
+                                            <table class="mdui-table mdui-table-hoverable">\
+                                                <thead>\
+                                                <tr>\
+                                                    <th>#</th>\
+                                                    <th>FROM</th>\
+                                                    <th>ARRIVING DATE</th>\
+                                                    <th>ARRIVING TIME</th>\
+                                                    <th></th>\
+                                                    <th>LEAVING DATE</th>\
+                                                    <th>LEAVING TIME</th>\
+                                                    <th>PRICE</th>\
+                                                    <th>SEAT</th>\
+                                                </tr>\
+                                                </thead>\
+                                                <tbody id="table_inner">\
+                                                </tbody>\
+                                            </table>\
+                                        </div>\
+                                        ';
+                                        for(var i=0;i<ansJson['station'].length;i++)
+                                        {
+                                            if(ansJson['station'][i]["arrive_date"]=="xx-xx")ansJson['station'][i]["arrive_date"]="-";
+                                            if(ansJson['station'][i]["arrive_time"]=="xx:xx")ansJson['station'][i]["arrive_time"]="-";
+                                            if(ansJson['station'][i]["leaving_date"]=="xx-xx")ansJson['station'][i]["leaving_date"]="-";
+                                            if(ansJson['station'][i]["leaving_time"]=="xx:xx")ansJson['station'][i]["leaving_time"]="-";
+                                            if(ansJson['station'][i]["seat"]=="x")ansJson['station'][i]["seat"]="-";
+                                            var new_inner=document.createElement("tr");
+                                            new_inner.innerHTML='\
+                                                                    <td>'+i+'</td>'+'\
+                                                                    <td>'+ansJson['station'][i]["station"]+'</td>\
+                                                                    <td>'+ansJson['station'][i]["arrive_date"]+'</td>\
+                                                                    <td>'+ansJson['station'][i]["arrive_time"]+'</td>\
+                                                                    <td><i class="mdui-icon material-icons">arrow_forward</i></td>\
+                                                                    <td>'+ansJson['station'][i]["leaving_date"]+'</td>\
+                                                                    <td>'+ansJson['station'][i]["leaving_time"]+'</td>\
+                                                                    <td>'+ansJson['station'][i]["price"]+'</td>\
+                                                                    <td>'+ansJson['station'][i]["seat"]+'</td>'
+                                            document.getElementById("table_inner").appendChild(new_inner);
+                                        }
+                                    }
+                                }
+                            }else
+                            {
+                                document.getElementById("search_botton").innerHTML="ERROR OCCUR";
+                            }
+                        }
+                    }
+                    document.getElementById("search_botton").innerHTML='LOADING . . .';
+                    xmlhttp.send("trainId="+trainId+"&start_month="+start_month+"&start_day="+start_day);
+                    //alert(trainId+'\n'+start_date);
+                }else if(now_at=="friends")
+                {
+                    //mdui.alert("你居然还想有朋友","白日梦警告");
+                    var friend_id=document.getElementById("friend_id").value;
+                    var xmlhttp=new XMLHttpRequest();
+                    xmlhttp.open("POST","/php/query_profile.php",true);
+                    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                    xmlhttp.onreadystatechange=function()
+                    {
+                        if (xmlhttp.readyState==4)
+                        {
+                            if(xmlhttp.status==200)
+                            {
+                                document.getElementById("search_botton").innerHTML="FINISHED";
+                                var return_msg=xmlhttp.responseText;
+                                //alert(return_msg);
+                                if(return_msg=="empty msg"||return_msg=="failed query")
+                                {
+                                    mdui.alert("朋友的ID都记错了呢，你真的有朋友吗（笑","FRIEND NOT FOUND");
+                                }else
+                                {
+                                    var ansJson=JSON.parse(return_msg);
+                                    if(Object.keys(ansJson).length==0)
+                                    {
+                                        mdui.alert("朋友的ID都记错了呢，你真的有朋友吗（笑","FRIEND NOT FOUND");
+                                    }else
+                                    {
+                                        mdui.snackbar({
+                                        message: "成功为您找到了对应的用户信息",
+                                        position: 'right-bottom'
+                                        });
+                                        document.getElementById("resault_display").innerHTML='\
+                                        <div class="mdui-divider mdui-color-blue-grey-500"></div>\
+                                        <div class="mdui-table-fluid">\
+                                            <table class="mdui-table mdui-table-hoverable">\
+                                                <thead>\
+                                                <tr>\
+                                                    <th>#</th>\
+                                                    <th>USER ID</th>\
+                                                    <th>USER NAME</th>\
+                                                    <th>MAIL ADDRESS</th>\
+                                                    <th>ROLE</th>\
+                                                    <th>FOLLOWERS NUMBER</th>\
+                                                    <th></th>\
+                                                </tr>\
+                                                </thead>\
+                                                <tbody id="table_inner">\
+                                                </tbody>\
+                                            </table>\
+                                        </div>\
+                                        ';
+                                        var follers=parseInt(Math.random()*1000,10);
+                                        var role;
+                                        if(ansJson['pri']=="1")role="nomal user";
+                                        else role="Admin";
+                                        if(ansJson['userId']=="walotta")role="web author";
+                                        if(ansJson['userId']=="Fourest")
+                                        {
+                                            role="system author";
+                                            mdui.alert("掌声欢迎lyn同学登场！","恭喜发现彩蛋");
+                                        }
+                                        if(ansJson['userId']=="ivy")
+                                        {
+                                            role="a lovely deer";
+                                            mdui.alert("Congratulations on discovering a lovely deer!","恭喜发现彩蛋");
+                                        }
+                                        var new_inner=document.createElement("tr");
+                                        new_inner.innerHTML='\
+                                                                <td></td>'+'\
+                                                                <td>'+ansJson["userId"]+'</td>\
+                                                                <td>'+ansJson["userName"]+'</td>\
+                                                                <td>'+ansJson["mail"]+'</td>\
+                                                                <td>'+role+'</td>\
+                                                                <td mdui-tooltip="{content: \'这个东西就是在扯淡\'}">'+follers+'</td>\
+                                                                <td><button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-grey mdui-hoverable mdui-shadow-8" mdui-tooltip="{content: \'点击添加好友\'}" onclick="add_friend()"><i class="mdui-icon material-icons">person_add</i></button></td>\
+                                                                '
+                                        document.getElementById("table_inner").appendChild(new_inner);
+                                    }
+                                }
+                            }else
+                            {
+                                document.getElementById("search_botton").innerHTML="ERROR OCCUR";
+                            }
+                        }
+                    }
+                    document.getElementById("search_botton").innerHTML='LOADING . . .';
+                    xmlhttp.send("userId="+friend_id);
+                }
+                mdui.mutation();
+            }
+            
+            function show_ticket()
+            {
+                now_at="ticket";
+                document.getElementById("contain_title").innerHTML='search for tickets';
+                document.getElementById("resault_display").innerHTML='';
+                document.getElementById("user_btn").innerHTML='<button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-light-blue-900 mdui-hoverable mdui-shadow-8" mdui-tooltip="{content: \'点击开始搜索\'}" onclick="run_search()" id="search_botton">Search</button>';
+                document.getElementById("search_botton").innerHTML="SEARCH";
+                document.getElementById("search_contain").innerHTML='\
+                <div class="mdui-textfield mdui-textfield-floating-label"><label class="mdui-textfield-label">Start Station</label>\
+                <input class="mdui-textfield-input" type="txt" id="start_station"/></div>\
+                <div class="mdui-textfield mdui-textfield-floating-label"><label class="mdui-textfield-label">Terminal Station</label>\
+                <input class="mdui-textfield-input" type="txt" id="terminal_station"/></div>\
+                <div class="mdui-row-xs-2">\
+                        <div class="mdui-col">\
+                            <div class="mdui-textfield mdui-textfield-floating-label">\
+                                <label class="mdui-textfield-label">Start Month</label>\
+                                <input class="mdui-textfield-input" type="txt" id="start_month"/>\
+                            </div>\
+                        </div>\
+                        <div class="mdui-col">\
+                            <div class="mdui-textfield mdui-textfield-floating-label">\
+                                <label class="mdui-textfield-label">Start Day</label>\
+                                <input class="mdui-textfield-input" type="txt" id="start_day"/>\
+                            </div>\
+                        </div>\
+                    </div>\
+                </div>\
+                <div class="mdui-row-xs-6">\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center mdui-valign">\
+                            <label class="mdui-radio"">\
+                                <input type="radio" name="sort" id="sort_time" value="true" checked/>\
+                                <i class="mdui-radio-icon"></i>\
+                                排序依据: 时间\
+                            </label>\
+                        </div>\
+                        <div class="mdui-col mdui-center mdui-valign">\
+                            <label class="mdui-radio">\
+                                <input type="radio" name="sort" id="sort_cost" value="true" />\
+                                <i class="mdui-radio-icon"></i>\
+                                排序依据: 花费\
+                            </label>\
+                        </div>\
+                    </div>\
+                </div>\
+                <div class="mdui-row-xs-8">\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center">\
+                        </div>\
+                        <div class="mdui-col mdui-center mdui-valign">\
+                        </div>\
+                        <div class="mdui-col mdui-center mdui-valign">\
+                            <i>查询换乘票</i>\
+                            <label class="mdui-switch mdui-center">\
+                                <input type="checkbox" id="can_transfer"/>\
+                                <i class="mdui-switch-icon"></i>\
+                            </label>\
+                        </div>\
+                    </div>\
+                </div>\
+                '
+            }
+
+            function show_train()
+            {
+                now_at="train";
+                document.getElementById("resault_display").innerHTML='';
+                document.getElementById("contain_title").innerHTML='search for trains';
+                document.getElementById("user_btn").innerHTML='<button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-light-blue-900 mdui-hoverable mdui-shadow-8" mdui-tooltip="{content: \'点击开始搜索\'}" onclick="run_search()" id="search_botton">Search</button>';
+                document.getElementById("search_botton").innerHTML="SEARCH";
+                document.getElementById("search_contain").innerHTML='\
+                <div class="mdui-textfield mdui-textfield-floating-label"><label class="mdui-textfield-label">Train Id</label>\
+                <input class="mdui-textfield-input" type="txt" id="train_id"/></div>\
+                <div class="mdui-row-xs-2">\
+                        <div class="mdui-col">\
+                            <div class="mdui-textfield mdui-textfield-floating-label">\
+                                <label class="mdui-textfield-label">Start Month</label>\
+                                <input class="mdui-textfield-input" type="txt" id="start_month"/>\
+                            </div>\
+                        </div>\
+                        <div class="mdui-col">\
+                            <div class="mdui-textfield mdui-textfield-floating-label">\
+                                <label class="mdui-textfield-label">Start Day</label>\
+                                <input class="mdui-textfield-input" type="txt" id="start_day"/>\
+                            </div>\
+                        </div>\
+                    </div>\
+                </div>\
+                ';
+            }
+
+            function show_friends()
+            {
+                now_at="friends";
+                document.getElementById("resault_display").innerHTML='';
+                document.getElementById("contain_title").innerHTML='looking for friends';
+                document.getElementById("user_btn").innerHTML='<button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-light-blue-900 mdui-hoverable mdui-shadow-8" mdui-tooltip="{content: \'点击开始搜索\'}" onclick="run_search()" id="search_botton">Search</button>';
+                document.getElementById("search_botton").innerHTML="SEARCH";
+                document.getElementById("search_contain").innerHTML='\
+                <div class="mdui-textfield mdui-textfield-floating-label">\
+                    <label class="mdui-textfield-label">ENTER YOUR FRIENDS\' ID</label>\
+                    <input class="mdui-textfield-input" type="txt" id="friend_id"/>\
+                </div>\
+                ';
+            }
+
+            function show_order()
+            {
+
+            }
+            
+            function show_myself()
+            {
+
+            }
+
+            function logout()
+            {
+                var xmlhttp=new XMLHttpRequest();
+                xmlhttp.open("POST","/php/logout.php",true);
+                xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xmlhttp.onreadystatechange=function()
+                {
+                    if(xmlhttp.readyState==4&&xmlhttp.status==200)
+                    {
+                        var returnMsg=xmlhttp.responseText;
+                        if(returnMsg=="1")
+                        {
+                            document.getElementById("logout_btn").innerHTML='success';
+                            document.cookie='pri=-1;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+                            document.cookie='userId=-1;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+                            window.location.href='http://ticket.walotta.top';
+                        }else
+                        {
+                            document.getElementById("logout_btn").innerHTML='try again';
+                        }
+                    }
+                }
+                document.getElementById("logout_btn").innerHTML='loading...';
+                xmlhttp.send("userId="+id);
+            }
+
+            function init()
+            {
+                show_ticket()
+                mdui.mutation();
+            }
+
+           function add_friend()
+           {
+               mdui.alert("这是一个火车票系统，为什么你觉得会有好友系统（笑","你在想peach")
+           }
+            
+            var id=getCookie("userId");
+            var xmlhttp=new XMLHttpRequest();
+            xmlhttp.open("POST","/php/query_profile.php",true);
+            xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xmlhttp.onreadystatechange=function()
+            {
+                if(xmlhttp.readyState==4&&xmlhttp.status==200)
+                {
+                    var returnMsg=xmlhttp.responseText;
+                    var ansJson=JSON.parse(returnMsg);
+                    document.getElementById("nameHolder").innerHTML=" welcome, "+ansJson['userName']+"!";
+                }
+            }
+            xmlhttp.send("userId="+id);
+            init();
+            mdui.mutation();
         </script>
     </body>
 </html>
