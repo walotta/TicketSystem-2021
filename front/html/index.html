@@ -131,14 +131,14 @@
     </div>
 
     <center>
-      <div class="box one">
+      <div class="box one" onclick="switch_to_search()">
         <div class="item">
-          <a href="/html/search.html">Search</a>
+          <a>Search</a>
         </div>
       </div>
-      <div class="box two">
+      <div class="box two" onclick="switch_to_login()">
         <div class="item" >
-          <a href="/html/login.html">Login or SignUp</a>
+          <a>Login or SignUp</a>
         </div>
       </div>
     </center>
@@ -185,6 +185,15 @@
         return timerStr.split(''); //字符串转换数组，并返回
       }
     })(window, document);
+  
+    function switch_to_search()
+    {
+      window.location.href='/html/search.html';
+    }
+    function switch_to_login()
+    {
+      window.location.href='/html/login.html';
+    }
   </script>
 
   <script type="text/javascript" src="https://wow.techbrood.com/libs/jquery/jquery-2.1.1.min.js"></script>
