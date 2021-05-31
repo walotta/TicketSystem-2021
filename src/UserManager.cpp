@@ -6,7 +6,7 @@
 
 bool UserManager::add_user(const string &c,const string &u,const string &p,const string &n,const string &m,int g)
 {
-    if(c=="")
+    if(user.size()==0)
     {
         if(!loggedUser.empty()) return false;
         if(user.size()!=0) return false;
@@ -70,16 +70,16 @@ string UserManager::modify_profile(const string &c,const string &u,const string 
 
     auto tp=user.FindByKey(u);
     if(!tp.second) return fail; // Nonexistent user "u".
-    if(tp.first.pri()>pri || g>=pri) return fail;// Access denied.
+    auto &user1=tp.first;
+    if(user1.pri()>pri || g>=pri) return fail;// Access denied.
 
     string pp=p,nn=n,mm=m;
-    if(p=="") pp=tp.first.pass();
-    if(n=="") nn=tp.first.nam();
-    if(m=="") mm=tp.first.mail();
-    if(g==-404)  g=tp.first.pri();
-    User temp(u,pp,nn,mm,g);
-    user.Update(u,temp);
-    return temp.display();
+    if(p!="") user1.pass()=p;
+    if(n!="") user1.nam()=n;
+    if(m!="") user1.mail()=m;
+    if(g==-404)  g=user1.pri();
+    user.Update(u,user1);
+    return user1.display();
 }
 
 int UserManager::check_login(const string &u) const

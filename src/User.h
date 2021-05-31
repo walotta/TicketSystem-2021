@@ -33,11 +33,11 @@ public:
     }
     bool check_pass(str p) const { return password==p; }
 
-    string user() const {return (string)username;}
-    string pass() const {return (string)password;}
-    string nam()  const {return (string)name;}
-    string mail() const {return (string)mailAddr;}
-    int pri() const { return privilege; }
+    MyString &user() {return username;}
+    MyString &pass() {return password;}
+    MyString &nam()  {return name;}
+    MyString &mail() {return mailAddr;}
+    int &pri() {return privilege;}
     int order_number() const {return orderedNum;}
     void add_order() {++orderedNum;}
 

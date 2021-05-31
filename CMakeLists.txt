@@ -15,6 +15,8 @@ add_executable(TicketSystem_2021
         src/include/HashMap.h
         src/include/MyString.hpp
         src/include/StoragePool.h
+        src/include/separator.cpp
+        src/include/separator.h
 
         src/main.cpp
         src/TrainManager.cpp
