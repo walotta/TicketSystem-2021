@@ -91,6 +91,7 @@ public:
 
     inline vector<T> FindByTag(const string& Tag)
     {
+        // testing: The problem now is the find without finding.
         if(TagIndex==nullptr)throw error("this StorageManger has no TagIndex");
         vector<int>id_list=TagIndex->find(Tag);
         vector<T>ansList;
