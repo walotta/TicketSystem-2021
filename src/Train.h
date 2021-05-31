@@ -19,7 +19,12 @@ class RemainedSeat
     MyString trainI_Date; // This is the mainKey of this class.
     int seat_remained[102];
 public:
-    RemainedSeat(str main_key):trainI_Date(main_key){}
+    RemainedSeat()=default;
+    explicit RemainedSeat(str main_key):trainI_Date(main_key){}
+    explicit RemainedSeat(str main_key,const int &station_num,const int &seat_num):trainI_Date(main_key)
+    {
+        for(int i=0;i<=station_num;++i) seat_remained[i]=seat_num;
+    }
 
     int min_seat(const int &start,const int &end) const
     {
@@ -166,8 +171,7 @@ public:
         for(auto i=sale_beg;i<sale_end;++i)
         {
             string main_key=(string)trainID+" "+i.display();
-            RemainedSeat seat(main_key);
-            for(int j=0;j<stationNum;++j) seat[j]=seatNum;
+            RemainedSeat seat(main_key,stationNum,seatNum);
             store.insert(main_key,seat);
         }
         return true;
@@ -205,6 +209,7 @@ public:
             if(f==st.name) {b=j; break;}
             if(If_find_initial) seat=min(seat,seats[j]);
             //consider: Would un-released train use this function?
+            //          This part could be optimized.
         }
         int price=station[b].price-station[a].price;
         Time departure(station[a].departure.time()),arrival(station[b].arrival.time());
