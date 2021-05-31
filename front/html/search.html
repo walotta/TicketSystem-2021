@@ -270,49 +270,61 @@
                                     document.getElementById("search_botton").innerHTML="FINISHED";
                                     var return_msg=xmlhttp.responseText;
                                     //alert(return_msg);
-                                    ansJson=JSON.parse(return_msg);
-                                    mdui.snackbar({
-                                        message: "为您找到了"+Object.keys(ansJson).length+"张直达票",
-                                        position: 'right-bottom'
-                                    });
-                                    document.getElementById("resault_display").innerHTML='\
-                                    <div class="mdui-divider mdui-color-blue-grey-500"></div>\
-                                    <div class="mdui-table-fluid">\
-                                        <table class="mdui-table mdui-table-hoverable">\
-                                            <thead>\
-                                            <tr>\
-                                                <th>#</th>\
-                                                <th>Train Id</th>\
-                                                <th>FROM</th>\
-                                                <th>LEAVING DATE</th>\
-                                                <th>LEAVING TIME</th>\
-                                                <th>TO</th>\
-                                                <th>ARRIVING DATE</th>\
-                                                <th>ARRIVING TIME</th>\
-                                                <th>PRICE</th>\
-                                                <th>SEAT</th>\
-                                            </tr>\
-                                            </thead>\
-                                            <tbody id="table_inner">\
-                                            </tbody>\
-                                        </table>\
-                                    </div>\
-                                    ';
-                                    for(var i=0;i<Object.keys(ansJson).length;i++)
+                                    if(return_msg=="empty msg"||return_msg=="failed query")
                                     {
-                                        var new_inner=document.createElement("tr");
-                                        new_inner.innerHTML='\
-                                                                <td>'+i+'</td>'+'\
-                                                                <td>'+ansJson[i]["trainId"]+'</td>\
-                                                                <td>'+ansJson[i]["from"]+'</td>\
-                                                                <td>'+ansJson[i]["leaving_date"]+'</td>\
-                                                                <td>'+ansJson[i]["leaving_time"]+'</td>\
-                                                                <td>'+ansJson[i]["to"]+'</td>\
-                                                                <td>'+ansJson[i]["arriving_date"]+'</td>\
-                                                                <td>'+ansJson[i]["arriving_time"]+'</td>\
-                                                                <td>'+ansJson[i]["price"]+'</td>\
-                                                                <td>'+ansJson[i]["seat"]+'</td>'
-                                        document.getElementById("table_inner").appendChild(new_inner);
+                                        mdui.alert("查找失败，请更改条件后再次查询！","TRAIN NOT FOUND");
+                                    }else
+                                    {
+                                        var ansJson=JSON.parse(return_msg);
+                                        if(Object.keys(ansJson).length==0)
+                                        {
+                                            mdui.alert("查找失败，请更改条件后再次查询！","TRAIN NOT FOUND");
+                                        }else
+                                        {
+                                            mdui.snackbar({
+                                            message: "为您找到了"+Object.keys(ansJson).length+"张直达票",
+                                            position: 'right-bottom'
+                                            });
+                                            document.getElementById("resault_display").innerHTML='\
+                                            <div class="mdui-divider mdui-color-blue-grey-500"></div>\
+                                            <div class="mdui-table-fluid">\
+                                                <table class="mdui-table mdui-table-hoverable">\
+                                                    <thead>\
+                                                    <tr>\
+                                                        <th>#</th>\
+                                                        <th>Train Id</th>\
+                                                        <th>FROM</th>\
+                                                        <th>LEAVING DATE</th>\
+                                                        <th>LEAVING TIME</th>\
+                                                        <th>TO</th>\
+                                                        <th>ARRIVING DATE</th>\
+                                                        <th>ARRIVING TIME</th>\
+                                                        <th>PRICE</th>\
+                                                        <th>SEAT</th>\
+                                                    </tr>\
+                                                    </thead>\
+                                                    <tbody id="table_inner">\
+                                                    </tbody>\
+                                                </table>\
+                                            </div>\
+                                            ';
+                                            for(var i=0;i<Object.keys(ansJson).length;i++)
+                                            {
+                                                var new_inner=document.createElement("tr");
+                                                new_inner.innerHTML='\
+                                                                        <td>'+i+'</td>'+'\
+                                                                        <td>'+ansJson[i]["trainId"]+'</td>\
+                                                                        <td>'+ansJson[i]["from"]+'</td>\
+                                                                        <td>'+ansJson[i]["leaving_date"]+'</td>\
+                                                                        <td>'+ansJson[i]["leaving_time"]+'</td>\
+                                                                        <td>'+ansJson[i]["to"]+'</td>\
+                                                                        <td>'+ansJson[i]["arriving_date"]+'</td>\
+                                                                        <td>'+ansJson[i]["arriving_time"]+'</td>\
+                                                                        <td>'+ansJson[i]["price"]+'</td>\
+                                                                        <td>'+ansJson[i]["seat"]+'</td>'
+                                                document.getElementById("table_inner").appendChild(new_inner);
+                                            }
+                                        }
                                     }
                                 }else
                                 {
@@ -341,77 +353,84 @@
                                 document.getElementById("search_botton").innerHTML="FINISHED";
                                 var return_msg=xmlhttp.responseText;
                                 //alert(return_msg);
-                                ansJson=JSON.parse(return_msg);
-                                if(Object.keys(ansJson).length==0||return_msg=="empty msg"||return_msg=="failed query")
+                                if(return_msg=="empty msg"||return_msg=="failed query")
                                 {
                                     mdui.alert("查找失败，请更改条件后再次查询！","TRAIN NOT FOUND");
-                                }else{
-                                    mdui.snackbar({
+                                }else
+                                {
+                                    var ansJson=JSON.parse(return_msg);
+                                    if(Object.keys(ansJson).length==0)
+                                    {
+                                        mdui.alert("查找失败，请更改条件后再次查询！","TRAIN NOT FOUND");
+                                    }else
+                                    {
+                                        mdui.snackbar({
                                         message: "成功为您找到了对应的火车信息",
                                         position: 'right-bottom'
-                                    });
-                                    document.getElementById("resault_display").innerHTML='\
-                                    <div class="mdui-divider mdui-color-blue-grey-500"></div>\
-                                    <div class="mdui-table-fluid">\
-                                        <table class="mdui-table mdui-table-hoverable">\
-                                            <thead>\
-                                            <tr>\
-                                                <th></th>\
-                                                <th></th>\
-                                                <th></th>\
-                                                <th>Train Id</th>\
-                                                <th><i class="mdui-text-color-blue-accent">'+trainId+'</i></th>\
-                                                <th>Train Type</th>\
-                                                <th><i class="mdui-text-color-blue-accent">'+ansJson['type']+'</i></th>\
-                                                <th></th>\
-                                                <th></th>\
-                                                <th></th>\
-                                            </tr>\
-                                            </thead>\
-                                            <tbody>\
-                                            </tbody>\
-                                        </table>\
-                                    </div>\
-                                    <div class="mdui-shadow-8 mdui-m-a-1"><div class="mdui-divider mdui-color-grey"></div></div>\
-                                    <div class="mdui-table-fluid">\
-                                        <table class="mdui-table mdui-table-hoverable">\
-                                            <thead>\
-                                            <tr>\
-                                                <th>#</th>\
-                                                <th>FROM</th>\
-                                                <th>ARRIVING DATE</th>\
-                                                <th>ARRIVING TIME</th>\
-                                                <th></th>\
-                                                <th>LEAVING DATE</th>\
-                                                <th>LEAVING TIME</th>\
-                                                <th>PRICE</th>\
-                                                <th>SEAT</th>\
-                                            </tr>\
-                                            </thead>\
-                                            <tbody id="table_inner">\
-                                            </tbody>\
-                                        </table>\
-                                    </div>\
-                                    ';
-                                    for(var i=0;i<ansJson['station'].length;i++)
-                                    {
-                                        if(ansJson['station'][i]["arrive_date"]=="xx-xx")ansJson['station'][i]["arrive_date"]="-";
-                                        if(ansJson['station'][i]["arrive_time"]=="xx:xx")ansJson['station'][i]["arrive_time"]="-";
-                                        if(ansJson['station'][i]["leaving_date"]=="xx-xx")ansJson['station'][i]["leaving_date"]="-";
-                                        if(ansJson['station'][i]["leaving_time"]=="xx:xx")ansJson['station'][i]["leaving_time"]="-";
-                                        if(ansJson['station'][i]["seat"]=="x")ansJson['station'][i]["seat"]="-";
-                                        var new_inner=document.createElement("tr");
-                                        new_inner.innerHTML='\
-                                                                <td>'+i+'</td>'+'\
-                                                                <td>'+ansJson['station'][i]["station"]+'</td>\
-                                                                <td>'+ansJson['station'][i]["arrive_date"]+'</td>\
-                                                                <td>'+ansJson['station'][i]["arrive_time"]+'</td>\
-                                                                <td><i class="mdui-icon material-icons">arrow_forward</i></td>\
-                                                                <td>'+ansJson['station'][i]["leaving_date"]+'</td>\
-                                                                <td>'+ansJson['station'][i]["leaving_time"]+'</td>\
-                                                                <td>'+ansJson['station'][i]["price"]+'</td>\
-                                                                <td>'+ansJson['station'][i]["seat"]+'</td>'
-                                        document.getElementById("table_inner").appendChild(new_inner);
+                                        });
+                                        document.getElementById("resault_display").innerHTML='\
+                                        <div class="mdui-divider mdui-color-blue-grey-500"></div>\
+                                        <div class="mdui-table-fluid">\
+                                            <table class="mdui-table mdui-table-hoverable">\
+                                                <thead>\
+                                                <tr>\
+                                                    <th></th>\
+                                                    <th></th>\
+                                                    <th></th>\
+                                                    <th>Train Id</th>\
+                                                    <th><i class="mdui-text-color-blue-accent">'+trainId+'</i></th>\
+                                                    <th>Train Type</th>\
+                                                    <th><i class="mdui-text-color-blue-accent">'+ansJson['type']+'</i></th>\
+                                                    <th></th>\
+                                                    <th></th>\
+                                                    <th></th>\
+                                                </tr>\
+                                                </thead>\
+                                                <tbody>\
+                                                </tbody>\
+                                            </table>\
+                                        </div>\
+                                        <div class="mdui-shadow-8 mdui-m-a-1"><div class="mdui-divider mdui-color-grey"></div></div>\
+                                        <div class="mdui-table-fluid">\
+                                            <table class="mdui-table mdui-table-hoverable">\
+                                                <thead>\
+                                                <tr>\
+                                                    <th>#</th>\
+                                                    <th>FROM</th>\
+                                                    <th>ARRIVING DATE</th>\
+                                                    <th>ARRIVING TIME</th>\
+                                                    <th></th>\
+                                                    <th>LEAVING DATE</th>\
+                                                    <th>LEAVING TIME</th>\
+                                                    <th>PRICE</th>\
+                                                    <th>SEAT</th>\
+                                                </tr>\
+                                                </thead>\
+                                                <tbody id="table_inner">\
+                                                </tbody>\
+                                            </table>\
+                                        </div>\
+                                        ';
+                                        for(var i=0;i<ansJson['station'].length;i++)
+                                        {
+                                            if(ansJson['station'][i]["arrive_date"]=="xx-xx")ansJson['station'][i]["arrive_date"]="-";
+                                            if(ansJson['station'][i]["arrive_time"]=="xx:xx")ansJson['station'][i]["arrive_time"]="-";
+                                            if(ansJson['station'][i]["leaving_date"]=="xx-xx")ansJson['station'][i]["leaving_date"]="-";
+                                            if(ansJson['station'][i]["leaving_time"]=="xx:xx")ansJson['station'][i]["leaving_time"]="-";
+                                            if(ansJson['station'][i]["seat"]=="x")ansJson['station'][i]["seat"]="-";
+                                            var new_inner=document.createElement("tr");
+                                            new_inner.innerHTML='\
+                                                                    <td>'+i+'</td>'+'\
+                                                                    <td>'+ansJson['station'][i]["station"]+'</td>\
+                                                                    <td>'+ansJson['station'][i]["arrive_date"]+'</td>\
+                                                                    <td>'+ansJson['station'][i]["arrive_time"]+'</td>\
+                                                                    <td><i class="mdui-icon material-icons">arrow_forward</i></td>\
+                                                                    <td>'+ansJson['station'][i]["leaving_date"]+'</td>\
+                                                                    <td>'+ansJson['station'][i]["leaving_time"]+'</td>\
+                                                                    <td>'+ansJson['station'][i]["price"]+'</td>\
+                                                                    <td>'+ansJson['station'][i]["seat"]+'</td>'
+                                            document.getElementById("table_inner").appendChild(new_inner);
+                                        }
                                     }
                                 }
                             }else
@@ -422,7 +441,7 @@
                         }
                     document.getElementById("search_botton").innerHTML='LOADING . . .';
                     xmlhttp.send("trainId="+trainId+"&start_month="+start_month+"&start_day="+start_day);
-                    alert(trainId+'\n'+start_date);
+                    //alert(trainId+'\n'+start_date);
                 }
                 mdui.mutation();
             }
