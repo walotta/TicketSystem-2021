@@ -590,9 +590,10 @@
                                         document.getElementById("resault_display").innerHTML='\
                                         <div class="mdui-divider mdui-color-blue-grey-500"></div>\
                                         <div class="mdui-table-fluid">\
-                                            <table class="mdui-table mdui-table-hoverable">\
+                                            <table class="mdui-table mdui-table-hoverable" id="order_table">\
                                                 <thead>\
                                                 <tr>\
+                                                    <th>#</th>\
                                                     <th>status</th>\
                                                     <th>Train Id</th>\
                                                     <th>FROM</th>\
@@ -609,22 +610,44 @@
                                                 </tbody>\
                                             </table>\
                                         </div>\
+                                        <div class="mdui-divider mdui-color-blue-grey-500"></div>\
+                                        <div class="mdui-p-a-3 mdui-row"><button class="mdui-btn mdui-btn-block mdui-color-light-blue-700 mdui-ripple" mdui-tooltip="{content: \'点击退票\'}" onclick="refund_ticket('+Object.keys(ansJson).length+')" id="buy_btn">REFUND TICKETS</button></div>\
                                         ';
                                         for(var i=0;i<Object.keys(ansJson).length;i++)
                                         {
-                                            var new_inner=document.createElement("tr");
-                                            new_inner.innerHTML='\
-                                                                    <td>'+ansJson[i]["status"]+'</td>'+'\
-                                                                    <td>'+ansJson[i]["trainId"]+'</td>\
-                                                                    <td>'+ansJson[i]["from"]+'</td>\
-                                                                    <td>'+ansJson[i]["leaving_date"]+'</td>\
-                                                                    <td>'+ansJson[i]["leaving_time"]+'</td>\
-                                                                    <td>'+ansJson[i]["to"]+'</td>\
-                                                                    <td>'+ansJson[i]["arriving_date"]+'</td>\
-                                                                    <td>'+ansJson[i]["arriving_time"]+'</td>\
-                                                                    <td>'+ansJson[i]["price"]+'</td>\
-                                                                    <td>'+ansJson[i]["seat"]+'</td>'
-                                            document.getElementById("table_inner").appendChild(new_inner);
+                                            if(ansJson[i]["status"]=="refunded")
+                                            {
+                                                var new_inner=document.createElement("tr");
+                                                new_inner.innerHTML='\
+                                                                        <td><label class="mdui-checkbox"><input type="checkbox" id="select_'+(i+1)+'" disabled/><i class="mdui-checkbox-icon"></i></label></td>\
+                                                                        <td>'+ansJson[i]["status"]+'</td>'+'\
+                                                                        <td>'+ansJson[i]["trainId"]+'</td>\
+                                                                        <td>'+ansJson[i]["from"]+'</td>\
+                                                                        <td>'+ansJson[i]["leaving_date"]+'</td>\
+                                                                        <td>'+ansJson[i]["leaving_time"]+'</td>\
+                                                                        <td>'+ansJson[i]["to"]+'</td>\
+                                                                        <td>'+ansJson[i]["arriving_date"]+'</td>\
+                                                                        <td>'+ansJson[i]["arriving_time"]+'</td>\
+                                                                        <td>'+ansJson[i]["price"]+'</td>\
+                                                                        <td>'+ansJson[i]["seat"]+'</td>'
+                                                document.getElementById("table_inner").appendChild(new_inner);
+                                            }else
+                                            {
+                                                var new_inner=document.createElement("tr");
+                                                new_inner.innerHTML='\
+                                                                        <td><label class="mdui-checkbox"><input type="checkbox" id="select_'+(i+1)+'"/><i class="mdui-checkbox-icon"></i></label></td>\
+                                                                        <td>'+ansJson[i]["status"]+'</td>'+'\
+                                                                        <td>'+ansJson[i]["trainId"]+'</td>\
+                                                                        <td>'+ansJson[i]["from"]+'</td>\
+                                                                        <td>'+ansJson[i]["leaving_date"]+'</td>\
+                                                                        <td>'+ansJson[i]["leaving_time"]+'</td>\
+                                                                        <td>'+ansJson[i]["to"]+'</td>\
+                                                                        <td>'+ansJson[i]["arriving_date"]+'</td>\
+                                                                        <td>'+ansJson[i]["arriving_time"]+'</td>\
+                                                                        <td>'+ansJson[i]["price"]+'</td>\
+                                                                        <td>'+ansJson[i]["seat"]+'</td>'
+                                                document.getElementById("table_inner").appendChild(new_inner);
+                                            }
                                         }
                                     }
                                 }
@@ -923,8 +946,8 @@
                                         rows[now_id].cells[9].innerHTML=_sum-parseInt(text);
                                         if(rows[now_id].cells[9].innerHTML=="0")
                                         {
-                                            document.getElementById("select_"+(i-1)).disabled=true;
-                                            document.getElementById("select_"+(i-1)).checked=false;
+                                            document.getElementById("select_"+(now_id-1)).disabled=true;
+                                            document.getElementById("select_"+(now_id-1)).checked=false;
                                         }
                                         document.getElementById("buy_btn").innerHTML='购买成功，花费了'+all_sum_up+'元','购买成功';
                                     }
@@ -959,6 +982,12 @@
                                     }else
                                     {
                                         all_sum_up+=parseInt(rows[now_id].cells[8].innerHTML)*parseInt(text);
+                                        rows[now_id].cells[9].innerHTML=_sum-parseInt(text);
+                                        if(rows[now_id].cells[9].innerHTML=="0")
+                                        {
+                                            document.getElementById("select_"+(now_id-1)).disabled=true;
+                                            document.getElementById("select_"+(now_id-1)).checked=false;
+                                        }
                                         document.getElementById("buy_btn").innerHTML='购买成功，花费了'+all_sum_up+'元','购买成功';
                                     }
                                 }
@@ -969,6 +998,49 @@
                 }
             }
            
+            function refund_ticket(cnt)
+            {
+                var selectList=new Array();
+                for(var i=1;i<=cnt;i++)
+                {
+                    if(document.getElementById("select_"+i).checked)selectList.push(i);
+                }
+                if(selectList.length==0)
+                {
+                    mdui.snackbar({
+                                    message: "您还没有选中要退的火车票哦qwqqqq",
+                                    position: 'right-bottom'
+                                    });
+                }else
+                {
+                    //alert(selectList.length);
+                    for(var i=0;i<selectList.length;i++)
+                    {
+                        var xmlhttp=new XMLHttpRequest();
+                        var now_=selectList[i];
+                        xmlhttp.open("POST","/php/refund_ticket.php",true);
+                        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xmlhttp.onreadystatechange=function()
+                        {
+                            if(xmlhttp.readyState==4&&xmlhttp.status==200)
+                            {
+                                var returnMsg=xmlhttp.responseText;
+                                if(returnMsg=="-1")
+                                {
+                                    mdui.alert( '):  你的第'+now_+'张火车票在退票时出现了一些错误',"退票出错");
+                                }
+                            }
+                        }
+                        xmlhttp.send("userId="+id+"&number="+now_);
+                    }
+                    for(var i=0;i<selectList.length;i++)
+                    {
+                        document.getElementById("select_"+selectList[i]).checked=false;
+                        document.getElementById("select_"+selectList[i]).disabled=true;
+                    }
+                    document.getElementById("buy_btn").innerHTML='退票成功，一共退了'+selectList.length+'张票';
+                }
+            }
             init();
             mdui.mutation();
             mdui.updateTextFields();
