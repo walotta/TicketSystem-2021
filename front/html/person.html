@@ -1037,6 +1037,7 @@
                     {
                         document.getElementById("select_"+selectList[i]).checked=false;
                         document.getElementById("select_"+selectList[i]).disabled=true;
+                        document.getElementById("order_table").rows[selectList[i]].cells[1].innerHTML='refunded';
                     }
                     document.getElementById("buy_btn").innerHTML='退票成功，一共退了'+selectList.length+'张票';
                 }
