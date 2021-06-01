@@ -52,7 +52,7 @@ vecS ManagementSystem::query_transfer(const string &s,const string &t,Date d,boo
 vector<string> ManagementSystem::query_order(const string &u)
 {
     if(user.check_login(u)==-404) return vecS();
-    return vecS({to_string(user.query_order_number(u))});
+    return train.query_order(u);
 }
 
 string ManagementSystem::query_profile(const string &c,const string &u)

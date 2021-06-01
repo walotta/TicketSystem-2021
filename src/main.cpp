@@ -16,7 +16,15 @@ int main(int argc,char *argv[])
     cmd ticketLibrary;
     if(run_with_io)
     {
-        ticketLibrary.run(in,out);
+        try
+        {
+            ticketLibrary.run(in,out);
+        }
+        catch(error x)
+        {
+            cout<<x.what()<<endl;
+            return 0;
+        }
     }else
     {
         stringstream sin,sout;

@@ -184,9 +184,12 @@ public:
         auto seat=store.FindByKey((string)trainID+" "+d.display()).first;
         for(int i=0;i<stationNum;++i)
         {
-            string temp;
-            temp+=(string)station[i].name;
-            temp+=" "+station[i].arrival.display()+" -> "+station[i].departure.display();
+            RealTime arrival(station[i].arrival+RealTime(d));
+            RealTime departure(station[i].departure+RealTime(d));
+            if(station[i].arrival.minutes<0) arrival.minutes=-404;
+            if(station[i].departure.minutes<0) departure.minutes=-404;
+            string temp((string)station[i].name);
+            temp+=" "+arrival.display()+" -> "+departure.display();
             temp+=" "+to_string(station[i].price)+" ";
             if(i==stationNum-1) temp+="x";
             else

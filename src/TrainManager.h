@@ -17,7 +17,7 @@ class TrainManager
     bool update_log(str u,int id,STATUS s);
     int write_log(int id,STATUS s,str u,str i,str f,str t,const RealTime &d,const RealTime &a,int p,int n);
 public:
-    TrainManager():train("train.dat",true),seat("seat.dat",false),log("log.dat",false){}
+    TrainManager():train("train.dat",true),seat("seat.dat",false),log("log.dat",true){}
     ~TrainManager()=default;
 
     bool add_train(str i,int n,int m,const vecS &s,vecI p,Time x,vecI t,vecI o,Date d_beg,Date d_end,char y);

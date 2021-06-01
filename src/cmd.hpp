@@ -287,13 +287,12 @@ public:
             }
             else if(command=="exit")
             {
-                os<<"bye";
-                exit(0);
+                os<<"bye"<<endl;
+                os.flush();
+                break;
             }
             os<<"\n";
         }
-
-
         /*
         string op;
         while(is>>op)

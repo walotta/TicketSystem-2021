@@ -175,7 +175,9 @@ public:
 
     std::vector<int> find(const string &key)const
     {
-        return BlockList->give_list(index->find(key)[0]);
+        std::vector<int> res=index->find(key);
+        if(res.empty())return res;
+        else return BlockList->give_list(res[0]);
     }
 
     void remove(const string &key, const int &id)

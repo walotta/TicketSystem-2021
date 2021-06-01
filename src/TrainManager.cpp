@@ -43,7 +43,7 @@ bool TrainManager::delete_train(const string &i)
 
 vecS TrainManager::query_train(const string &i,Date d)
 {
-    vecS fail;
+    vecS fail({"-1"});
     auto tp=train.FindByKey(i);
     if(!tp.second) return fail;
     auto &t=tp.first;
@@ -73,11 +73,11 @@ vecS TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_t
             }
         }
     }
+    if(list.empty()) return vecS({"0"});
     sort(list.begin(),list.end());
 
     vecS output;
-    if(!list.empty()) output.push_back(to_string(list.size()));
-    else output.push_back("-1");
+    output.push_back(to_string(list.size()));
     for(int k=0; k<list.size(); ++k) output.push_back(trains2[list[k].second].information(s,t,d,seat));
     return output;
 }
@@ -85,7 +85,9 @@ vecS TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_t
 int TrainManager::write_log(int id,STATUS s,const string &u,const string &i,const string &f,const string &t,const RealTime &d,const RealTime &a,int p,int n)
 {
     Log temp(id,s,u,i,f,t,d,a,p,n);
-    log.insert(u+to_string(id),temp);
+    auto main_key=u+to_string(id);
+    log.insert(main_key,temp);
+    log.AddTag(main_key,u);
     return 0;
 }
 
@@ -104,7 +106,7 @@ vecS TrainManager::query_order(const string &u)
     auto temp=log.FindByTag(u);
     vecS output;
     output.push_back(to_string(temp.size()));
-    for(int i=0;i<temp.size();++i) output.push_back(temp[i].display());
+    for(int i=temp.size()-1;i>=0;--i) output.push_back(temp[i].display());
     return output;
 }
 
@@ -186,12 +188,12 @@ int TrainManager::buy_ticket(const string &i,Date d,const string &f,const string
     if(seat_remain>n)
     {
         train_find.decrease_seat(f,t,date,n,seat);
-        write_log(id,SUCCESS,u,i,f,t,time.first,time.second,total_price,n);
+        write_log(id,SUCCESS,u,i,f,t,time.first,time.second,total_price/n,n);
         return total_price;
     }
     else
     {
-        if(q) write_log(id,PENDING,u,i,f,t,time.first,time.second,total_price,n);
+        if(q) write_log(id,PENDING,u,i,f,t,time.first,time.second,total_price/n,n);
         return 0;
     }
 }
