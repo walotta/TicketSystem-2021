@@ -8,6 +8,7 @@ ofstream out("output.txt");
 
 int main(int argc,char *argv[])
 {
+    freopen("debug.txt","w",stdout);
     bool run_with_io=true;
     if(argc!=1)
     {

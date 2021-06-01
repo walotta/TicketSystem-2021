@@ -28,11 +28,15 @@ public:
 
     int min_seat(const int &start,const int &end) const
     {
+        //testing
         int output=seat_remained[start];
+        if(trainI_Date=="LeavesofGrass 06-28") printf("[Debug]: ");
         for(int i=start;i<end;++i)
         {
             output=min(output,seat_remained[i]);
+            if(trainI_Date=="LeavesofGrass 06-28") printf("seat[%02d]=%-5d ",i,seat_remained[i]);
         }
+        if(trainI_Date=="LeavesofGrass 06-28") printf("\n");
         return output;
     }
     void de_seat(const int &start,const int &end,const int &n)
@@ -241,26 +245,13 @@ public:
     }
     int get_price(str i,str f,int n=1) const
     {
-        int a=0,b=0;
-        for(int j=0;j<stationNum;++j)
-        {
-            if(i==station[j].name) a=j;
-            if(f==station[j].name) {b=j; break;}
-        }
-        return (station[b].price-station[a].price)*n;
+        auto id=get_id(i,f);
+        return (station[id.second].price-station[id.first].price)*n;
     }// Only for comparing the cost.
     int get_time(str i,str f) const
     {
-        int a=0,b=0;
-        for(int j=0;j<stationNum;++j)
-        {
-            if(i==station[j].name) a=j;
-            if(f==station[j].name)
-            {
-                b=j; break;
-            }
-        }
-        return station[b].arrival-station[a].departure;
+        auto id=get_id(i,f);
+        return station[id.second].arrival-station[id.first].departure;
     } // Use for comparing the cost.
 
     // pair<time_cost_between_transfer,transfer_date>
@@ -321,7 +312,8 @@ public:
     }
     void increase_seat(str i,str f,const Date &d,int n,ST &store)
     {
-        decrease_seat(i,f,date_for_record(i,d),-n,store);
+        auto date=date_for_record(i,d);
+        decrease_seat(i,f,date,-n,store);
     }
 };
 

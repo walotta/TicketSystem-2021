@@ -75,14 +75,14 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
     auto back=train.refund_ticket(u,number);
     if(back.second==-1) return fail;
 
-    auto temp=order.FindByTag(back.first);
+    auto orders=order.FindByTag(back.first);
     if(back.second==0)
     {
-        for(int i=0;i<temp.size();++i)
+        for(int i=0; i<orders.size(); ++i)
         {
-            if(temp[i].id==number && temp[i].user==u)
+            if(orders[i].id==number && orders[i].user==u)
             {
-                string main_key(to_string(temp[i].serial_number)),tag(temp[i].trainID);
+                string main_key(to_string(orders[i].serial_number)),tag(orders[i].trainID);
                 order.RemoveTag(main_key,tag);
                 order.Remove(main_key);
                 break;
@@ -92,14 +92,14 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
     else
     {
         // Process pending after refund.
-        sort(temp.begin(),temp.end());
-        for(int i=0;i<temp.size();++i)
+        sort(orders.begin(),orders.end());
+        for(int i=0; i<orders.size(); ++i)
         {
-            auto &t=temp[i];
-            bool If_success=train.re_buy_ticket((string)t.trainID,t.date,(string)t.start,(string)t.arrive,t.number,t.id,(string)t.user);
+            auto &orderI=orders[i];
+            bool If_success=train.re_buy_ticket((string)orderI.trainID,orderI.date,(string)orderI.start,(string)orderI.arrive,orderI.number,orderI.id,(string)orderI.user);
             if(If_success)
             {
-                string main_key(to_string(t.serial_number)),tag(t.trainID);
+                string main_key(to_string(orderI.serial_number)),tag(orderI.trainID);
                 order.RemoveTag(main_key,tag);
                 order.Remove(main_key);
             }

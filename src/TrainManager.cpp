@@ -180,13 +180,15 @@ int TrainManager::buy_ticket(const string &i,Date d,const string &f,const string
     auto &train_find=search.first;
     if(!train_find.if_release()) return -404;
     if(!train_find.check_date(d,f)) return -404;
+    if(!train_find.check_sequence(f,t)) return -404;
 
     auto date=train_find.date_for_record(f,d);
     auto seat_remain=train_find.check_seat(f,t,date,seat);
     int total_price=train_find.get_price(f,t,n);
     auto time=train_find.obtain_time(f,t,date);
 
-    if(i=="LeavesofGrass" && u=="Shaw" && n==20244) printf("[Debug]:remained seat=%d\n",seat_remain);
+    //testing
+    if(i=="LeavesofGrass" && date==Date(6,28)) printf("[Debug]: remained_seat=%-5d, queried number=%-5d, buy=%1d\n",seat_remain,n,seat_remain>=n);
 
     if(seat_remain>=n)
     {
