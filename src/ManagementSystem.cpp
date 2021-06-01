@@ -51,7 +51,7 @@ vecS ManagementSystem::query_transfer(const string &s,const string &t,Date d,boo
 
 vector<string> ManagementSystem::query_order(const string &u)
 {
-    if(user.check_login(u)==-404) return vecS();
+    if(user.check_login(u)==-404) return vecS({"-1"});
     return train.query_order(u);
 }
 
@@ -80,7 +80,7 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
     {
         for(int i=0;i<temp.size();++i)
         {
-            if(temp[i].id==number)
+            if(temp[i].id==number && temp[i].user==u)
             {
                 string main_key(to_string(temp[i].serial_number)),tag(temp[i].trainID);
                 order.RemoveTag(main_key,tag);

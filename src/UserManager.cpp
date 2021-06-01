@@ -71,9 +71,8 @@ string UserManager::modify_profile(const string &c,const string &u,const string 
     auto tp=user.FindByKey(u);
     if(!tp.second) return fail; // Nonexistent user "u".
     auto &user1=tp.first;
-    if(user1.pri()>pri || (c==u && tp.first.pri()==pri) || g>=pri) return fail;// Access denied.
+    if(user1.pri()>pri || (c!=u && tp.first.pri()==pri) || g>=pri) return fail;// Access denied.
 
-    string pp=p,nn=n,mm=m;
     if(p!="") user1.pass()=p;
     if(n!="") user1.nam()=n;
     if(m!="") user1.mail()=m;

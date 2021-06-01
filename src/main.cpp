@@ -1,7 +1,7 @@
 #include "cmd.hpp"
 #include <iostream>
 
-ifstream in("in.txt");
+ifstream in("../data/basic_3/4.in");
 ofstream out("output.txt");
 
 

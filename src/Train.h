@@ -228,6 +228,17 @@ public:
         if(temp<sale_beg || sale_end<temp) return false;
         return true;
     }
+    bool check_sequence(str i,str f) const
+    {
+        int start=-404;
+        for(int k=0;k<stationNum;++k)
+        {
+            if(station[k].name==i) start=k;
+            if(station[k].name==f) break;
+        }
+        if(start<0) return false;
+        return true;
+    }
     int get_price(str i,str f,int n=1) const
     {
         int a=0,b=0;
