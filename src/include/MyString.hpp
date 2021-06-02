@@ -5,6 +5,7 @@
 class MyString
 {
 private:
+    //todo: Add a function that can change the size of this class.
     char storage[80]{};
 public:
     MyString(){storage[0]='\0';}

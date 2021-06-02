@@ -10,7 +10,7 @@
 #include "cache.hpp"
 using namespace std;
 
-template<class T,class extraBlock>
+template<class T,class extraBlock,int SizeOfCache>
 class StoragePool
 {
 private:
@@ -140,22 +140,23 @@ public:
         return tem;
     }
 
-private:
     void clearAll()
     {
-        fileOpen();
+        pool.open(dir+StorageFileName,fstream::out|ios::binary);
         pool.close();
-        pool.open(dir+StorageFileName,ios::out|ios::binary);
-        pool.close();
-        pool.open(dir+StorageFileName,ios::in|ios::out|ios::binary);
+        pool.open(dir+StorageFileName,fstream::in|fstream::out|ios::binary);
+        pool.seekp(0,ios::beg);
         WritePoint=-1;
         LastBlock=-1;
-        pool.seekp(0,ios::beg);
         pool.write(reinterpret_cast<const char*>(&WritePoint),sizeof(int));
         pool.write(reinterpret_cast<const char*>(&LastBlock),sizeof(int));
-        fileClose();
+        extraBlock tem;
+        pool.write(reinterpret_cast<const char*>(&tem),sizeof(extraBlock));
+        pool.close();
+        cache.clear();
     }
 
+private:
     int tellSpace()
     {
         fileOpen();
