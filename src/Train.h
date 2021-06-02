@@ -238,7 +238,7 @@ public:
         int start=-404,end=-404;
         for(int k=0;k<stationNum;++k)
         {
-            if(station[k].name==f) {end=k;}
+            if(station[k].name==f) {end=k; break;}
             if(station[k].name==i) start=k;
         }
         if(start<0 || end<0 || start>=end) return false;

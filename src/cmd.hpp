@@ -167,7 +167,7 @@ public:
                     else if(tokens[j]=="-p") p=to_vector_int(tokens[j+1]);
                     else if(tokens[j]=="-x") x=to_time(tokens[j+1]);
                     else if(tokens[j]=="-t") t=to_vector_int(tokens[j+1]);
-                    else if(tokens[j]=="-o" && n>2) o=to_vector_int(tokens[j+1]);
+                    else if(tokens[j]=="-o") {if(n>2) o=to_vector_int(tokens[j+1]);}
                     else if(tokens[j]=="-d")
                     {
                         Fourest::separator process("|");
