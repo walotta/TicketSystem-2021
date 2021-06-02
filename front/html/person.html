@@ -52,7 +52,7 @@
               <li class="mdui-subheader">Personal area</li>
               <li class="mdui-list-item mdui-ripple" onclick="show_myself()">
                 <i class="mdui-list-item-icon mdui-icon material-icons">account_circle</i>
-                <div class="mdui-list-item-content" id="logout_btn">我的信息</div>
+                <div class="mdui-list-item-content">我的信息</div>
               </li>
               <li class="mdui-list-item mdui-ripple" onclick="logout()">
                 <i class="mdui-list-item-icon mdui-icon material-icons">power_settings_new</i>
@@ -686,7 +686,7 @@
                             }
                         }
                     }
-                    xmlhttp.send("userId="+id+"&userName="+new_name+"&mail="+new_mail+"&psw="+new_psw+"&pri=1");
+                    xmlhttp.send("userId="+id+"&userName="+new_name+"&mail="+new_mail+"&psw="+new_psw+"&pri=1"+"&curId="+id);
                 }
                 mdui.mutation();
             }
