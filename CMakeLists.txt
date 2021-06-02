@@ -1,12 +1,14 @@
-cmake_minimum_required(VERSION 3.19)
-project(TicketSystem_2021)
+cmake_minimum_required(VERSION 3.15)
+project(code)
 
 set(CMAKE_CXX_STANDARD 14)
+
+add_compile_options(-std=c++11 -Ofast)
 
 include_directories(src)
 include_directories(src/include)
 
-add_executable(TicketSystem_2021
+add_executable(code
         src/include/BPlusTree.h
         src/include/cache.hpp
         src/include/ErrorMessage.h
