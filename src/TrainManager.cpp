@@ -58,7 +58,7 @@ vecS TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_t
 
 
     unordered_set<string> station1;
-    vector<pair<int,int>> list; // The first one is value, the second one is id.
+    vector<pair<pair<int,string>,int>> list; // The first one is value, the second one is id.
     for(int i=0;i<trains1.size();++i) station1.insert(trains1[i].train_id());
     for(int i=0;i<trains2.size();++i)
     {
@@ -70,7 +70,7 @@ vecS TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_t
                 int value;
                 if(If_time) value=train_t.get_time(s,t);
                 else value=train_t.get_price(s,t);
-                list.push_back({value,i});
+                list.push_back({{value,train_t.train_id()},i});
             }
         }
     }
@@ -117,7 +117,7 @@ vecS TrainManager::query_transfer(const string &s,const string &t,Date d,bool If
     auto trains2=train.FindByTag(t);
 
     bool If_find=false;
-    int cost_minimal,train1_id,train2_id;
+    int cost_minimal=-1,train1_id,train2_id,cost_time_1=-1;
     string transfer_station;
     Date date_of_transfer;
 
@@ -137,7 +137,7 @@ vecS TrainManager::query_transfer(const string &s,const string &t,Date d,bool If
         for(int j=0;j<trains2.size();++j)
         {
             auto &train2=trains2[j];
-            if(!train2.if_release()) continue;
+            if(!train2.if_release() || train1.train_id()==train2.train_id()) continue;
             for(int k=0;k<trains2[j].station_number();++k)
             {
                 const string &st=trains2[j].station_name(k);
@@ -147,18 +147,20 @@ vecS TrainManager::query_transfer(const string &s,const string &t,Date d,bool If
                     auto temp=train1.check_if_later(train2,d,s,st);
                     if(temp.first<0) continue;
 
-                    int cost=0;
+                    int cost=0,cost_time=train1.get_time(s,st);
                     if(!If_time) cost=train1.get_price(s,st)+train2.get_price(st,t);
                     else cost=train1.get_time(s,st)+temp.first+train2.get_time(st,t);
 
-                    if(!If_find || cost<cost_minimal)
+
+                    if(!If_find || cost<cost_minimal || (cost==cost_minimal && cost_time<cost_time_1))
                     {
                         If_find=true;
-                        cost_minimal=cost;
+                        cost_minimal=cost; cost_time_1=train1.get_time(s,st);
                         train1_id=i; train2_id=j;
                         transfer_station=st;
                         date_of_transfer=temp.second;
                     }
+
                 }
             }
         }
@@ -180,7 +182,7 @@ int TrainManager::buy_ticket(const string &i,Date d,const string &f,const string
     if(!train_find.if_release()) return -404;
     if(!train_find.check_date(d,f)) return -404;
     if(!train_find.check_sequence(f,t)) return -404;
-
+    if(train_find.seat_number()<n) return -404;
     auto date=train_find.date_for_record(f,d);
     auto seat_remain=train_find.check_seat(f,t,date,seat);
     int total_price=train_find.get_price(f,t,n);
@@ -195,8 +197,12 @@ int TrainManager::buy_ticket(const string &i,Date d,const string &f,const string
     }
     else
     {
-        if(q) write_log(id,PENDING,u,i,f,t,time.first,time.second,total_price/n,n);
-        return 0;
+        if(q)
+        {
+            write_log(id,PENDING,u,i,f,t,time.first,time.second,total_price/n,n);
+            return 0;
+        }
+        return -404;
     }
 }
 

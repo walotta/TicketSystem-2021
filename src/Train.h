@@ -40,7 +40,12 @@ public:
     {
         return seat_remained[index];
     }
-
+    void debug(int n) const
+    {
+        printf("[Debug]: In RemainedSeat[%s], ",string(trainI_Date).c_str());
+        for(int i=0;i<n-1;++i) printf("%d ",seat_remained[i]);
+        printf("\n");
+    }
 };
 
 class Train
@@ -137,6 +142,7 @@ public:
     string train_id() const {return (string)trainID;}
     pair<Date,Date> date() const {return {sale_beg,sale_end};}
     int station_number() const {return stationNum;}
+    int seat_number() const {return seatNum;}
     string station_name(const int &pos) const {return (string)station[pos].name;}
     RealTime station_departure(const int &pos) const {return station[pos].departure;}
     RealTime station_arrival(const int &pos) const {return station[pos].arrival;}
@@ -229,13 +235,13 @@ public:
     }
     bool check_sequence(str i,str f) const
     {
-        int start=-404;
+        int start=-404,end=-404;
         for(int k=0;k<stationNum;++k)
         {
+            if(station[k].name==f) {end=k;}
             if(station[k].name==i) start=k;
-            if(station[k].name==f) break;
         }
-        if(start<0) return false;
+        if(start<0 || end<0 || start>=end) return false;
         return true;
     }
     int get_price(str i,str f,int n=1) const
