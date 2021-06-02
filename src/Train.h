@@ -98,6 +98,14 @@ class Train
         }
         return {start,end};
     }
+    int get_id(str s) const
+    {
+        for(int i=0;i<stationNum;++i)
+        {
+            if(station[i].name==s) return i;
+        }
+        return stationNum;
+    }
 public:
     Train()=default;
     ~Train()=default;
@@ -142,31 +150,19 @@ public:
     // The "Date" in the parameter represents the date of the train's departure from the departure-station.
     Date departure_date(str station_name,const Date &d) const
     {
-        for(int i=0;i<stationNum;++i)
-        {
-            if(station[i].name==station_name)
-            {
-                RealTime temp=station[i].departure+RealTime(d);
-                return temp.date();
-            }
-        }
-        return Date();
+        int id=get_id(station_name);
+        RealTime temp=station[id].departure+RealTime(d);
+        return temp.date();
     }
     Time departure_time(str station_name) const
     {
-        for(int i=0;i<stationNum;++i)
-        {
-            if(station[i].name==station_name) return station[i].departure.time();
-        }
-        return Time();
+        int id=get_id(station_name);
+        return station[id].departure.time();
     }
     Date date_for_record(str station_name,const Date &d) const
     {
-        for(int i=0;i<stationNum;++i)
-        {
-            if(station[i].name==station_name) return d-station[i].departure.date().dayNum();
-        }
-        return Date();
+        int id=get_id(station_name);
+        return d-station[id].departure.date().dayNum();
     }
 
     bool release(ST &store)
@@ -265,24 +261,25 @@ public:
 
         auto last_sale_date=train.departure_date(transfer_station,sale_end);
         auto d_time=train.departure_time(transfer_station);
+
         if(last_sale_date<arrival_date) return {-1,Date()};
         if(arrival_date==last_sale_date && d_time<arrival_time) return {-1,Date()};
 
         auto first_sale_date=train.departure_date(transfer_station,sale_beg);
-        int time_cost_between_transfer=0;
+        int transfer_cost_time=0;
         Date d_date;
         for(auto i=first_sale_date;i<=last_sale_date;++i)
         {
-            RealTime temp=RealTime(i,d_time);
+            RealTime temp(i,d_time);
             if(arrival<temp)
             {
-                time_cost_between_transfer=temp-arrival;
+                transfer_cost_time=temp-arrival;
                 d_date=i;
                 break;
             }
         }
 
-        return {time_cost_between_transfer,d_date};
+        return {transfer_cost_time,d_date};
     }
     int check_seat(str i,str f,const Date &d,ST &store) const
     {

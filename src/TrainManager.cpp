@@ -188,7 +188,7 @@ int TrainManager::buy_ticket(const string &i,Date d,const string &f,const string
     auto time=train_find.obtain_time(f,t,date);
 
     //testing
-    if(i=="LeavesofGrass" && date==Date(6,28)) printf("[Debug]: remained_seat=%-5d, queried number=%-5d, buy=%1d\n",seat_remain,n,seat_remain>=n);
+    if(i=="LeavesofGrass" && date==Date(6,28)) printf("[Debug]: Infunction (buy_ticket) remained_seat=%-5d, queried number=%-5d, buy=%1d\n",seat_remain,n,seat_remain>=n);
 
     if(seat_remain>=n)
     {
@@ -210,19 +210,26 @@ pair<string,int> TrainManager::refund_ticket(const string &u,const int &n)
     auto temp_log=log.FindByKey(main_key);
     if(!temp_log.second) return output;
     auto &log1=temp_log.first;
+    auto t=train.FindByKey(log1.train()).first;
+    auto da=t.date_for_record(log1.stations().first,log1.times().first.date());
+    if(log1.train()=="LeavesofGrass" && da==Date(6,28)) printf("[Debug]: In function (refund_ticket) status=%d, ",log1.status_now());
     if(log1.status_now()==REFUNDED) return output;
-
     if(log1.status_now()==PENDING) output.second=0;
     else output.second=1;
 
     log1.modify_status(REFUNDED);
     log.Update(main_key,log1);
-    auto t=train.FindByKey(log1.train()).first;
+//    auto t=train.FindByKey(log1.train()).first;
     output.first=t.train_id();
-    if(output.second==0) return output;
+    if(output.second==0)
+    {
+        if(log1.train()=="LeavesofGrass" && da==Date(6,28)) printf("\n");
+        return output;
+    }
 
     auto stations=log1.stations();
     auto date=log1.times().first.date();
+    if(log1.train()=="LeavesofGrass" && da==Date(6,28)) printf("increased seat number=%d\n",log1.number());
     t.increase_seat(stations.first,stations.second,date,log1.number(),seat);
     train.Update(t.train_id(),t);// consider: This line is redundant.
     return output;
@@ -231,10 +238,13 @@ pair<string,int> TrainManager::refund_ticket(const string &u,const int &n)
 bool TrainManager::re_buy_ticket(const string &i,Date d,const string &f,const string &t,int n,int id,const string &u)
 {
     auto train_find=train.FindByKey(i).first;
-    auto seat_remain=train_find.check_seat(f,t,d,seat);
+    auto date=train_find.date_for_record(f,d);
+    if(i=="LeavesofGrass" && date==Date(6,28)) printf("[Debug]: In function (re_buy_ticket1) train=%s, date=%s\n",i.c_str(),date.display().c_str());
+    auto seat_remain=train_find.check_seat(f,t,date,seat);
+    if(i=="LeavesofGrass" && date==Date(6,28)) printf("[Debug]: In function (re_buy_ticket2) remained_seat=%-5d, queried number=%-5d, buy=%1d\n",seat_remain,n,seat_remain>=n);
     if(seat_remain>=n)
     {
-        auto date=train_find.date_for_record(f,d);
+//        auto date=train_find.date_for_record(f,d);
         train_find.decrease_seat(f,t,date,n,seat);
         update_log(u,id,SUCCESS);
         return true;
