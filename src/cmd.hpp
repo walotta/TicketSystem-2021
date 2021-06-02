@@ -88,7 +88,8 @@ public:
     cmd():words(" "){}
     void run(std::istream &is, std::ostream &os)
     {
-        while(words.readLine(is))
+        words.readLine(is);
+        do
         {
             auto tokens=words.content();
             auto &command=tokens[0];
@@ -292,7 +293,7 @@ public:
                 break;
             }
             os<<"\n";
-        }
+        }while(words.readLine(is));
         /*
         string op;
         while(is>>op)

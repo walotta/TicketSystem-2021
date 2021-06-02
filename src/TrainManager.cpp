@@ -163,13 +163,12 @@ vecS TrainManager::query_transfer(const string &s,const string &t,Date d,bool If
             }
         }
     }
+
+    if(!If_find) return vecS({"0"});
+//    printf("[Debug]: In function (query_transfer), train1=%s, train2=%s, station1=%s, station2=%s, station_transfer=%s, date_of_transfer=%s\n",trains1[train1_id].train_id().c_str(),trains2[train2_id].train_id().c_str(),s.c_str(),t.c_str(),transfer_station.c_str(),date_of_transfer.display().c_str());
     vecS output;
-    if(!If_find) output.push_back("0");
-    else
-    {
-        output.push_back(trains1[train1_id].information(s,transfer_station,d,seat));
-        output.push_back(trains2[train2_id].information(transfer_station,t,date_of_transfer,seat));
-    }
+    output.push_back(trains1[train1_id].information(s,transfer_station,d,seat));
+    output.push_back(trains2[train2_id].information(transfer_station,t,date_of_transfer,seat));
     return output;
 }
 
@@ -187,8 +186,6 @@ int TrainManager::buy_ticket(const string &i,Date d,const string &f,const string
     int total_price=train_find.get_price(f,t,n);
     auto time=train_find.obtain_time(f,t,date);
 
-    //testing
-    if(i=="LeavesofGrass" && date==Date(6,28)) printf("[Debug]: Infunction (buy_ticket) remained_seat=%-5d, queried number=%-5d, buy=%1d\n",seat_remain,n,seat_remain>=n);
 
     if(seat_remain>=n)
     {
@@ -212,7 +209,6 @@ pair<string,int> TrainManager::refund_ticket(const string &u,const int &n)
     auto &log1=temp_log.first;
     auto t=train.FindByKey(log1.train()).first;
     auto da=t.date_for_record(log1.stations().first,log1.times().first.date());
-    if(log1.train()=="LeavesofGrass" && da==Date(6,28)) printf("[Debug]: In function (refund_ticket) status=%d, ",log1.status_now());
     if(log1.status_now()==REFUNDED) return output;
     if(log1.status_now()==PENDING) output.second=0;
     else output.second=1;
@@ -221,15 +217,11 @@ pair<string,int> TrainManager::refund_ticket(const string &u,const int &n)
     log.Update(main_key,log1);
 //    auto t=train.FindByKey(log1.train()).first;
     output.first=t.train_id();
-    if(output.second==0)
-    {
-        if(log1.train()=="LeavesofGrass" && da==Date(6,28)) printf("\n");
-        return output;
-    }
+    if(output.second==0) return output;
 
     auto stations=log1.stations();
     auto date=log1.times().first.date();
-    if(log1.train()=="LeavesofGrass" && da==Date(6,28)) printf("increased seat number=%d\n",log1.number());
+
     t.increase_seat(stations.first,stations.second,date,log1.number(),seat);
     train.Update(t.train_id(),t);// consider: This line is redundant.
     return output;
@@ -239,12 +231,9 @@ bool TrainManager::re_buy_ticket(const string &i,Date d,const string &f,const st
 {
     auto train_find=train.FindByKey(i).first;
     auto date=train_find.date_for_record(f,d);
-    if(i=="LeavesofGrass" && date==Date(6,28)) printf("[Debug]: In function (re_buy_ticket1) train=%s, date=%s\n",i.c_str(),date.display().c_str());
     auto seat_remain=train_find.check_seat(f,t,date,seat);
-    if(i=="LeavesofGrass" && date==Date(6,28)) printf("[Debug]: In function (re_buy_ticket2) remained_seat=%-5d, queried number=%-5d, buy=%1d\n",seat_remain,n,seat_remain>=n);
     if(seat_remain>=n)
     {
-//        auto date=train_find.date_for_record(f,d);
         train_find.decrease_seat(f,t,date,n,seat);
         update_log(u,id,SUCCESS);
         return true;

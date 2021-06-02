@@ -28,15 +28,8 @@ public:
 
     int min_seat(const int &start,const int &end) const
     {
-        //testing
         int output=seat_remained[start];
-        if(trainI_Date=="LeavesofGrass 06-28") printf("[Debug]: ");
-        for(int i=start;i<end;++i)
-        {
-            output=min(output,seat_remained[i]);
-            if(trainI_Date=="LeavesofGrass 06-28") printf("seat[%02d]=%-5d ",i,seat_remained[i]);
-        }
-        if(trainI_Date=="LeavesofGrass 06-28") printf("\n");
+        for(int i=start;i<end;++i) output=min(output,seat_remained[i]);
         return output;
     }
     void de_seat(const int &start,const int &end,const int &n)
@@ -154,6 +147,12 @@ public:
         RealTime temp=station[id].departure+RealTime(d);
         return temp.date();
     }
+    Date arrival_date(str station_name,const Date &d) const
+    {
+        int id=get_id(station_name);
+        RealTime temp=station[id].arrival+RealTime(d);
+        return temp.date();
+    }
     Time departure_time(str station_name) const
     {
         int id=get_id(station_name);
@@ -255,31 +254,25 @@ public:
     {
         auto ids=get_id(start_station,transfer_station);
         int date_gap=station[ids.second].arrival.date()-station[ids.first].departure.date();
-        auto arrival_date=start_date+date_gap;
+        auto arrival_date_=start_date+date_gap;
         auto arrival_time=station[ids.second].arrival.time();
-        RealTime arrival(arrival_date,arrival_time);
+        RealTime arrival(arrival_date_,arrival_time);
 
-        auto last_sale_date=train.departure_date(transfer_station,sale_end);
+        auto last_sale_date=train.departure_date(transfer_station,train.sale_end);
         auto d_time=train.departure_time(transfer_station);
 
-        if(last_sale_date<arrival_date) return {-1,Date()};
-        if(arrival_date==last_sale_date && d_time<arrival_time) return {-1,Date()};
+        if(last_sale_date<arrival_date_) return {-1,Date()};
+        if(arrival_date_==last_sale_date && d_time<arrival_time) return {-1,Date()};
 
-        auto first_sale_date=train.departure_date(transfer_station,sale_beg);
-        int transfer_cost_time=0;
-        Date d_date;
-        for(auto i=first_sale_date;i<=last_sale_date;++i)
+        auto first_sale_date=train.departure_date(transfer_station,train.sale_beg);
+
+//        printf("[Debug]: In function (check_if_later), train1=%s, train2=%s, transfer_station=%s, first_sale_date=%s, last_sale_date=%s\n",train_id().c_str(),train.train_id().c_str(),transfer_station.c_str(),first_sale_date.display().c_str(),last_sale_date.display().c_str());
+        for(auto day=first_sale_date; day<=last_sale_date; ++day)
         {
-            RealTime temp(i,d_time);
-            if(arrival<temp)
-            {
-                transfer_cost_time=temp-arrival;
-                d_date=i;
-                break;
-            }
+            RealTime temp(day,d_time);
+            if(arrival<temp) return {temp-arrival,day};
         }
-
-        return {transfer_cost_time,d_date};
+        return {0,Date()};
     }
     int check_seat(str i,str f,const Date &d,ST &store) const
     {

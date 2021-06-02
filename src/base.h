@@ -214,7 +214,9 @@ struct RealTime
         return *this;
     }
 
-    bool operator<(const RealTime &t) const {return minutes<t.minutes;}
+    bool operator< (const RealTime &t) const {return minutes<t.minutes;}
+    bool operator==(const RealTime &t) const {return minutes==t.minutes;}
+    bool operator<=(const RealTime &t) const {return minutes<=t.minutes;}
 };
 
 

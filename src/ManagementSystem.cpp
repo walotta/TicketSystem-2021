@@ -77,14 +77,13 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
 
     auto &trainID=back.first;
     auto orders=order.FindByTag(trainID);
-    if(trainID=="LeavesofGrass") printf("[Debug]: In function (REFUND_TICKET) refund_value=%d, user=%s\n",back.second,u.c_str());
     if(back.second==0)
     {
         for(int i=0; i<orders.size(); ++i)
         {
             if(orders[i].id==number && orders[i].user==u)
             {
-                string main_key(to_string(orders[i].serial_number)),tag(orders[i].trainID);
+                string main_key(to_string(orders[i].serial_number)),tag(trainID);
                 order.RemoveTag(main_key,tag);
                 order.Remove(main_key);
                 break;
@@ -93,15 +92,12 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
     }
     else
     {
-        if(trainID=="LeavesofGrass") cout<<orders.size()<<endl;
         // Process pending after refund.
         sort(orders.begin(),orders.end());
         int ll=orders.size();
         for(int i=0;i<ll;++i)
         {
-
             auto &orderI=orders[i];
-            if(trainID=="LeavesofGrass" && (orderI.date==Date(6,29) || orderI.date==Date(6,28))) printf("[Debug]: In function (REFUND_TICKET_IN_FOR) number=%d, date=%s, departure_station=%s, seat_number=%d\n",i,orderI.date.display().c_str(),((string)orderI.start).c_str(),orderI.number);
             bool If_success=train.re_buy_ticket(trainID,orderI.date,(string)orderI.start,(string)orderI.arrive,orderI.number,orderI.id,(string)orderI.user);
             if(If_success)
             {
