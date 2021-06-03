@@ -153,12 +153,6 @@ public:
         RealTime temp=station[id].departure+RealTime(d);
         return temp.date();
     }
-    Date arrival_date(str station_name,const Date &d) const
-    {
-        int id=get_id(station_name);
-        RealTime temp=station[id].arrival+RealTime(d);
-        return temp.date();
-    }
     Time departure_time(str station_name) const
     {
         int id=get_id(station_name);
@@ -260,15 +254,15 @@ public:
     {
         auto ids=get_id(start_station,transfer_station);
         int date_gap=station[ids.second].arrival.date()-station[ids.first].departure.date();
-        auto arrival_date_=start_date+date_gap;
+        auto arrival_date=start_date+date_gap;
         auto arrival_time=station[ids.second].arrival.time();
-        RealTime arrival(arrival_date_,arrival_time);
+        RealTime arrival(arrival_date,arrival_time);
 
         auto last_sale_date=train.departure_date(transfer_station,train.sale_end);
         auto d_time=train.departure_time(transfer_station);
 
-        if(last_sale_date<arrival_date_) return {-1,Date()};
-        if(arrival_date_==last_sale_date && d_time<arrival_time) return {-1,Date()};
+        if(last_sale_date<arrival_date) return {-1,Date()};
+        if(arrival_date==last_sale_date && d_time<arrival_time) return {-1,Date()};
 
         auto first_sale_date=train.departure_date(transfer_station,train.sale_beg);
 
@@ -276,7 +270,7 @@ public:
         for(auto day=first_sale_date; day<=last_sale_date; ++day)
         {
             RealTime temp(day,d_time);
-            if(arrival<temp) return {temp-arrival,day};
+            if(arrival<=temp) return {temp-arrival,day};
         }
         return {0,Date()};
     }
