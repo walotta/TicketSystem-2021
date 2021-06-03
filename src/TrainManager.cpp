@@ -23,8 +23,8 @@ bool TrainManager::clean()
 
 bool TrainManager::add_train(const string &i,int n,int m,const vecS &s,const vector<int> &p,Time x,const vector<int> &t,const vector<int> &o,Date d_beg,Date d_end,char y)
 {
-    auto tp=train.FindByKey(i);
-    if(tp.second) return false;
+    auto temp=train.FindByKey(i);
+    if(temp.second) return false;
     Train new_train(i,n,m,s,p,x,t,o,d_beg,d_end,y);
     train.insert(i,new_train);
     train.AddTag(i,s);
@@ -213,23 +213,19 @@ pair<string,int> TrainManager::refund_ticket(const string &u,const int &n)
     auto temp_log=log.FindByKey(main_key);
     if(!temp_log.second) return output;
     auto &log1=temp_log.first;
-    auto t=train.FindByKey(log1.train()).first;
-    auto da=t.date_for_record(log1.stations().first,log1.times().first.date());
     if(log1.status_now()==REFUNDED) return output;
-    if(log1.status_now()==PENDING) output.second=0;
-    else output.second=1;
 
+    output={log1.train(),log1.status_now()};
     log1.modify_status(REFUNDED);
     log.Update(main_key,log1);
-//    auto t=train.FindByKey(log1.train()).first;
-    output.first=t.train_id();
     if(output.second==0) return output;
 
+    auto train1=train.FindByKey(output.first).first;
     auto stations=log1.stations();
-    auto date=log1.times().first.date();
+    auto day=log1.times().first.date();
 
-    t.increase_seat(stations.first,stations.second,date,log1.number(),seat);
-    train.Update(t.train_id(),t);// consider: This line is redundant.
+    train1.increase_seat(stations.first,stations.second,day,log1.number(),seat);
+    train.Update(output.first,train1);// consider: This line is redundant.
     return output;
 }
 
