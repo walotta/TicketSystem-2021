@@ -238,10 +238,10 @@ public:
         if(start<0 || end<0 || start>=end) return false;
         return true;
     }
-    int get_price(str i,str f,int n=1) const
+    lint get_price(str i,str f,int n=1) const
     {
         auto id=get_id(i,f);
-        return (station[id.second].price-station[id.first].price)*n;
+        return (station[id.second].price-station[id.first].price)*lint(n);
     }// Only for comparing the cost.
     int get_time(str i,str f) const
     {

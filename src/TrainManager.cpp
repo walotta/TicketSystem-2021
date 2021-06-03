@@ -174,7 +174,7 @@ vecS TrainManager::query_transfer(const string &s,const string &t,Date d,bool If
     return output;
 }
 
-int TrainManager::buy_ticket(const string &i,Date d,const string &f,const string &t,int n,int id,const string &u,bool q)
+lint TrainManager::buy_ticket(const string &i,Date d,const string &f,const string &t,int n,int id,const string &u,bool q)
 {
     auto search=train.FindByKey(i);
     if(!search.second) return -404;
@@ -185,7 +185,7 @@ int TrainManager::buy_ticket(const string &i,Date d,const string &f,const string
     if(train_find.seat_number()<n) return -404;
     auto date=train_find.date_for_record(f,d);
     auto seat_remain=train_find.check_seat(f,t,date,seat);
-    int total_price=train_find.get_price(f,t,n);
+    lint total_price=train_find.get_price(f,t,n);
     auto time=train_find.obtain_time(f,t,date);
 
 

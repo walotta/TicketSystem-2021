@@ -51,7 +51,7 @@ vecS ManagementSystem::query_transfer(const string &s,const string &t,Date d,boo
 
 vector<string> ManagementSystem::query_order(const string &u)
 {
-    if(user.check_login(u)==-404) return vecS({"-1"});
+    if(user.check_priority(u)==-404) return vecS({"-1"});
     return train.query_order(u);
 }
 
@@ -68,7 +68,7 @@ string ManagementSystem::modify_profile(const string &c,const string &u,const st
 bool ManagementSystem::refund_ticket(const string &u,int n)
 {
     bool fail=false,success=true;
-    if(user.check_login(u)==-404) return fail;
+    if(user.check_priority(u)==-404) return fail;
     int number=user.query_order_number(u)+1-n;
     if(number<=0) return fail;
 
@@ -113,11 +113,11 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
 string ManagementSystem::buy_ticket(const string &u,const string &i,const Date &d,const string &f,const string &t,int n,bool q)
 {
     string fail="-1",into_queue="queue";
-    int pri=user.check_login(u);
+    int pri=user.check_priority(u);
     if(pri==-404) return fail;
 
     int number=user.query_order_number(u); //consider: This place could optimize.
-    int cost=train.buy_ticket(i,d,f,t,n,number+1,u,q);
+    lint cost=train.buy_ticket(i,d,f,t,n,number+1,u,q);
     if(cost>0)
     {
         user.add_order_number(u);

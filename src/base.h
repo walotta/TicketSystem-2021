@@ -15,6 +15,7 @@
 typedef const string & str;
 typedef const vector<int> & vecI;
 typedef vector<string> vecS;
+typedef long long lint;
 struct Time;
 struct Date;
 struct RealTime;

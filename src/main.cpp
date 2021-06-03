@@ -1,7 +1,7 @@
 #include "cmd.hpp"
 #include <iostream>
 
-ifstream in("../data/basic_6/10.in");
+ifstream in("../data/basic_1/1.in");
 ofstream out("output.txt");
 
 
@@ -20,7 +20,7 @@ int main(int argc,char *argv[])
     {
         try
         {
-            ticketLibrary.run(in,out);
+            ticketLibrary.run(cin,cout);
         }
         catch(error x)
         {

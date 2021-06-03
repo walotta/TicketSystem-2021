@@ -28,7 +28,7 @@ public:
 //    bool refund_ticket(str u,int n);
     bool clean();
 
-    int check_login(str u) const;// If the user is logged, return its priority; else return -404;
+    int check_priority(str u) const;// If the user is logged, return its priority; else return -404;
     int query_user_priority(str u);
     int query_order_number(str u) const;
     bool add_order_number(str u);
