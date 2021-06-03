@@ -95,7 +95,7 @@ public:
             auto &command=tokens[0];
             if(command=="add_user")
             {
-                string c="",u="",p="",n="",m="";
+                string c(""),u(""),p(""),n(""),m("");
                 int g=-404;
                 for(int i=1;i<tokens.size();i+=2)
                 {
@@ -110,7 +110,7 @@ public:
             }
             else if(command=="login")
             {
-                string u="",p="";
+                string u(""),p("");
                 for(int i=1;i<tokens.size();i+=2)
                 {
                     if(tokens[i]=="-u") u=tokens[i+1];
@@ -120,13 +120,13 @@ public:
             }
             else if(command=="logout")
             {
-                string u="";
+                string u("");
                 if(tokens[1]=="-u") u=tokens[2];
                 os<<sys.logout(u)-1;
             }
             else if(command=="query_profile")
             {
-                string c,u;
+                string c(""),u("");
                 for(int i=1;i<tokens.size();i+=2)
                 {
                     if(tokens[i]=="-c") c=tokens[i+1];
@@ -136,7 +136,7 @@ public:
             }
             else if(command=="modify_profile")
             {
-                string c="",u="",p="",n="",m="";
+                string c(""),u(""),p(""),n(""),m("");
                 int g=-404;
                 for(int i=1;i<tokens.size();i+=2)
                 {
@@ -167,7 +167,7 @@ public:
                     else if(tokens[j]=="-p") p=to_vector_int(tokens[j+1]);
                     else if(tokens[j]=="-x") x=to_time(tokens[j+1]);
                     else if(tokens[j]=="-t") t=to_vector_int(tokens[j+1]);
-                    else if(tokens[j]=="-o" && n>2) o=to_vector_int(tokens[j+1]);
+                    else if(tokens[j]=="-o") {if(n>2) o=to_vector_int(tokens[j+1]);}
                     else if(tokens[j]=="-d")
                     {
                         Fourest::separator process("|");
@@ -265,7 +265,7 @@ public:
             }
             else if(command=="query_order")
             {
-                string u="";
+                string u("");
                 if(tokens[1]=="-u") u=tokens[2];
                 auto ans=sys.query_order(u);
                 print_os(ans,os);
