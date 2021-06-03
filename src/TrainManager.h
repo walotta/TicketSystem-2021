@@ -27,7 +27,7 @@ public:
     vecS query_ticket(str s,str t,Date d,bool If_time);
     vecS query_transfer(str s,str t,Date d,bool If_time);
     vecS query_order(str u); // If query failed, return an empty vector.
-    int  buy_ticket(str i,Date d,str f,str t,int n,int id,str u,bool q);// If but_ticket failed, return 0; If no such train, return -404;
+    lint buy_ticket(str i,Date d,str f,str t,int n,int id,str u,bool q);// If but_ticket failed, return 0; If no such train, return -404;
     pair<string,int> refund_ticket(str u,const int &n);
     bool clean();
 

@@ -15,7 +15,7 @@ bool UserManager::add_user(const string &c,const string &u,const string &p,const
         return true;
     }
 
-    int pri=check_login(c);
+    int pri=check_priority(c);
     if(pri==-404 || pri<=g) return false;
 
     auto tp=user.FindByKey(u);
@@ -28,7 +28,7 @@ bool UserManager::add_user(const string &c,const string &u,const string &p,const
 
 bool UserManager::login(const string &u,const string &p)
 {
-    if(check_login(u)!=-404) return false;
+    if(check_priority(u)!=-404) return false;
 
     auto temp=user.FindByKey(u);
     if(!temp.second) return false;
@@ -51,7 +51,7 @@ string UserManager::query_profile(const string &c,const string &u)
 {
     string fail("-1");
 
-    int priority=check_login(c);
+    int priority=check_priority(c);
     if(priority==-404) return fail;// Un-logged user "c".
 
     auto tp=user.FindByKey(u);
@@ -65,7 +65,7 @@ string UserManager::modify_profile(const string &c,const string &u,const string 
 {
     string fail("-1");
 
-    int priority=check_login(c);
+    int priority=check_priority(c);
     if(priority==-404) return fail;// Un-logged user "c".
 
     auto tp=user.FindByKey(u);
@@ -81,7 +81,7 @@ string UserManager::modify_profile(const string &c,const string &u,const string 
     return user1.display();
 }
 
-int UserManager::check_login(const string &u) const
+int UserManager::check_priority(const string &u) const
 {
     auto tpp=logged_users.find(u);
     if(tpp==logged_users.end()) return -404;
