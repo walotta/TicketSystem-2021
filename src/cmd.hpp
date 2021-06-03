@@ -404,7 +404,7 @@ public:
                         break;
                     }
                 }
-                string ans=sys.modify_profile(list[0],list[1],list[2],list[3],list[4],pri);
+                string ans=sys.modify_profile(list[0],list[1],list[2],list[3],list[4],priority);
                 os<<ans;
             }else if(op=="add_train")
             {

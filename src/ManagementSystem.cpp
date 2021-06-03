@@ -159,8 +159,9 @@ void ManagementSystem::add_order(int id,const string &u,const string &i,const Da
 {
     auto number=1+order.read_log();
     Order new_order(number,id,u,i,d,f,t,n);
-    order.insert(to_string(number),new_order);
-    order.AddTag(to_string(number),i);
+    string main_key(to_string(number));
+    order.insert(main_key,new_order);
+    order.AddTag(main_key,i);
     order.plus_log();
 }
 
