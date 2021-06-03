@@ -50,6 +50,7 @@ public:
 
 class Train
 {
+private:
     struct Station
     {
         MyString name;
@@ -78,7 +79,6 @@ class Train
     Date sale_beg,sale_end;
     bool If_release;
     char type;
-
 
     pair<int,int> get_id(str i,str f) const
     {
@@ -128,8 +128,13 @@ public:
     string train_id() const {return (string)trainID;}
     pair<Date,Date> date() const {return {sale_beg,sale_end};}
     int station_number() const {return stationNum;}
-    int seat_number() const {return seatNum;}
     string station_name(const int &pos) const {return (string)station[pos].name;}
+    vecS stations() const
+    {
+        vecS output;
+        for(int i=0;i<stationNum;++i) output.push_back((string)station[i].name);
+        return output;
+    }
     RealTime station_departure(const int &pos) const {return station[pos].departure;}
     RealTime station_arrival(const int &pos) const {return station[pos].arrival;}
     // The "Date" in the parameter represents the date of the train's departure from the departure-station.
@@ -236,6 +241,12 @@ public:
     } // Use for comparing the cost.
 
     // pair<time_cost_between_transfer,transfer_date>
+    pair<RealTime,RealTime> obtain_time(str i,str f,const Date &d)
+    {
+        auto id=get_id(i,f);
+        int start=id.first,end=id.second;
+        return {station[start].departure+RealTime(d),station[end].arrival+RealTime(d)};
+    }
     pair<int,Date> check_if_later(const Train &train,const Date &start_date,str start_station,str transfer_station) const
     {
         auto ids=get_id(start_station,transfer_station);
@@ -261,6 +272,8 @@ public:
         }
         return {0,Date()};
     }
+
+    int seat_number() const {return seatNum;}
     int check_seat(str i,str f,const Date &d,ST &store) const
     {
         auto id=get_id(i,f);
@@ -270,7 +283,6 @@ public:
         auto seats=store.FindByKey(main_key).first;
         return seats.min_seat(start,end);
     }
-
     void decrease_seat(str i,str f,const Date &d,int n,ST &store)
     {
         auto id=get_id(i,f);
@@ -280,12 +292,6 @@ public:
         auto seats=store.FindByKey(main_key).first;
         seats.de_seat(start,end,n);
         store.Update(main_key,seats);
-    }
-    pair<RealTime,RealTime> obtain_time(str i,str f,const Date &d)
-    {
-        auto id=get_id(i,f);
-        int start=id.first,end=id.second;
-        return {station[start].departure+RealTime(d),station[end].arrival+RealTime(d)};
     }
     void increase_seat(str i,str f,const Date &d,int n,ST &store)
     {
@@ -318,7 +324,7 @@ public:
         output+=to_string(price)+" "+to_string(num);
         return output;
     }
-    void modify_status(const Status &s) { status=s;}
+    void modify_status(const Status &s) {status=s;}
     string main_key() const {return (string)username+to_string(id);}
     string tag() const {return (string)username;}
     string user() const {return (string)username;}

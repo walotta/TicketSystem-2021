@@ -1,7 +1,7 @@
 #include "cmd.hpp"
 #include <iostream>
 
-ifstream in("../data/basic_1/1.in");
+ifstream in("../data/basic_6/2.in");
 ofstream out("output.txt");
 
 
@@ -22,7 +22,8 @@ int main(int argc,char *argv[])
             cout<<x.what()<<endl;
             return 0;
         }
-    }else
+    }
+    else
     {
         stringstream sin,sout;
         ticketLibrary.run(sin,sout);

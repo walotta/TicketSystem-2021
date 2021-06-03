@@ -37,6 +37,7 @@ bool TrainManager::delete_train(const string &i)
     if(!temp.second) return false;
     if(temp.first.if_release()) return false;
 
+    train.RemoveTag(i,temp.first.stations());
     train.Remove(i);
     return true;
 }
@@ -83,7 +84,7 @@ vecS TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_t
     return output;
 }
 
-int TrainManager::write_log(int id,Status s,const string &u,const string &i,const string &f,const string &t,const RealTime &d,const RealTime &a,int p,int n)
+int TrainManager::write_log(int id,Status s,const string &u,const string &i,const string &f,const string &t,const RealTime &d,const RealTime &a,lint p,int n)
 {
     Log new_log(id,s,u,i,f,t,d,a,p,n);
     auto main_key=u+to_string(id);
@@ -130,8 +131,9 @@ vecS TrainManager::query_transfer(const string &s,const string &t,Date d,bool If
         bool start_add=false;
         for(int k=0;k<trains1[i].station_number();++k)
         {
-            if(start_add) stations1.insert({trains1[i].station_name(k),k});
-            if(trains1[i].station_name(k)==s) start_add=true;
+            auto station_name=trains1[i].station_name(k);
+            if(start_add) stations1.insert({station_name,k});
+            if(station_name==s) start_add=true;
         }
 
         for(int j=0;j<trains2.size();++j)
@@ -177,21 +179,21 @@ lint TrainManager::buy_ticket(const string &i,Date d,const string &f,const strin
 {
     auto search=train.FindByKey(i);
     if(!search.second) return -404;
-    auto &train_find=search.first;
-    if(!train_find.if_release()) return -404;
-    if(!train_find.check_date(d,f)) return -404;
-    if(!train_find.check_sequence(f,t)) return -404;
-    if(train_find.seat_number()<n) return -404;
+    auto &train1=search.first;
+    if(!train1.if_release()) return -404;
+    if(!train1.check_date(d,f)) return -404;
+    if(!train1.check_sequence(f,t)) return -404;
+    if(train1.seat_number()<n) return -404;
 
-    auto date=train_find.date_for_record(f,d);
-    auto seat_remain=train_find.check_seat(f,t,date,seat);
-    lint total_price=train_find.get_price(f,t,n);
-    auto time=train_find.obtain_time(f,t,date);
+    auto date=train1.date_for_record(f,d);
+    auto seat_remain=train1.check_seat(f,t,date,seat);
+    lint total_price=train1.get_price(f,t,n);
+    auto time=train1.obtain_time(f,t,date);
 
 
     if(seat_remain>=n)
     {
-        train_find.decrease_seat(f,t,date,n,seat);
+        train1.decrease_seat(f,t,date,n,seat);
         write_log(id,SUCCESS,u,i,f,t,time.first,time.second,total_price/n,n);
         return total_price;
     }
