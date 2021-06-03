@@ -430,7 +430,7 @@
 
     查询成功：第一行输出一个整数，表示订单数量。
 
-    接下来每一行表示一个订单，格式为`[<STATUS>] <trainID> <FROM> <LEAVING_TIME> -> <TO> <ARRIVING_TIME> <PRICE> <NUM>`，其中`<NUM>`为购票数量，`<IS_PENDING>`表示该订单的状态，可能的值为：`success`（购票已成功）、`pending`（位于候补购票队列中）和`refunded`（已经退票）。
+    接下来每一行表示一个订单，格式为`[<Status>] <trainID> <FROM> <LEAVING_TIME> -> <TO> <ARRIVING_TIME> <PRICE> <NUM>`，其中`<NUM>`为购票数量，`<IS_PENDING>`表示该订单的状态，可能的值为：`success`（购票已成功）、`pending`（位于候补购票队列中）和`refunded`（已经退票）。
     
     查询失败：`-1`
     
