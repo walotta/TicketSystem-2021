@@ -12,11 +12,11 @@ class UserManager
 {
     US user;
     // map<username,pair<priority,orderNum>>
-    unordered_map<string,pair<int,int>> loggedUser;
+    unordered_map<string,pair<int,int>> logged_users;
 
 public:
     UserManager():user("user.dat",false){}
-    ~UserManager(){loggedUser.clear();}
+    ~UserManager(){logged_users.clear();}
 //    UserManager(const string &address);
 
     bool add_user(str c,str u,str p,str n,str m,int g);

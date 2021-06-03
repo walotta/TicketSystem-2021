@@ -1,37 +1,21 @@
 #include "separator.h"
-//consider: Add error throw system.
+
 
 namespace Fourest
 {
-    separator::separator(const std::string &_inputWords,bool _ifWhiteList):whiteList_mode(_ifWhiteList)
+    separator::separator(const std::string &_inputWords)
     {
-        if(_ifWhiteList) permit(_inputWords+" ");
-        else ban(_inputWords+" ");
-    }
-
-    void separator::permit(const str &_str)
-    {
-        for(char i : _str)
-        {
-            whiteList.insert(i);
-            blackList.erase(i);
-        }
-        process();
+        ban(_inputWords+" ");
     }
 
     void separator::ban(const std::string &_banWords)
     {
-        for(char _banWord : _banWords)
-        {
-            blackList.insert(_banWord);
-            whiteList.erase(_banWord);
-        }
+        for(char _banWord : _banWords) blackList.insert(_banWord);
         process();
     }
 
     separator::~separator()
     {
-        whiteList.clear();
         blackList.clear();
         words.clear();
     }
@@ -67,37 +51,9 @@ namespace Fourest
         return words;
     }
 
-    bool separator::changeMode()
-    {
-        whiteList_mode=!whiteList_mode;
-        return whiteList_mode;
-    }
-
-    str separator::toString(charType _type)
-    {
-        if(_type==ALPHABET) return "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        if(_type==NUMBER) return "0123456789.";
-        if(_type==COMPARISON) return "<>=!";
-        if(_type==CALCULATOR) return "+-*/\\%^";
-        if(_type==BRACKETS) return "()<>'\"[]{}";
-        if(_type==LOGIC) return "!&|^";
-        if(_type==OTHER) return "@#$,?`~ ";
-        return "";
-    }
-
-    void separator::ban(charType _type)
-    {
-        ban(toString(_type));
-    }
-
-    void separator::permit(charType _type)
-    {
-        permit(toString(_type));
-    }
 
     void separator::clear()
     {
-        whiteList.clear();
         blackList.clear();
         words.clear();
     }
@@ -110,8 +66,7 @@ namespace Fourest
         for(int i=0;i<source.size();++i)
         {
             bool legal=false;
-            if(whiteList_mode) legal=whiteList.find(source[i])!=whiteList.end();
-            else legal=blackList.find(source[i])==blackList.end();
+            legal=blackList.find(source[i])==blackList.end();
 
             if(!legal)
             {
@@ -131,26 +86,6 @@ namespace Fourest
         if(Length>0) words.push_back(source.substr(startPos,Length));
     }
 
-    std::vector<str> separator::restWords() const
-    {
-        return wordsBeBaned;
-    }
-
-    std::vector<double> separator::getNumber()
-    {
-        separator temp(toString(NUMBER),true),onlyInt(".");
-        temp.process(source);
-
-        std::vector<double> output;
-        for(int k=0;k<temp.size();++k)
-        {
-            onlyInt.process(temp[k]);
-            if(onlyInt.size()==1) output.push_back(toInt(onlyInt[0]));
-            else output.push_back(toInt(onlyInt[0])+toInt(onlyInt[1])/double(onlyInt[1].size()));
-        }
-        return output;
-    }
-
     int separator::toInt(const str &_number)
     {
         int output=0;
@@ -161,7 +96,6 @@ namespace Fourest
         }
         return output;
     }
-
 
     double toNumber(const str &_str)
     {
@@ -184,14 +118,6 @@ namespace Fourest
             }
         return output+latterPart;
     }
-
-    bool checkLength(const separator &_sep,int _len)
-    {
-        if(_sep.size()!=_len) return false;
-        return true;
-    }
-
-
 }
 
 

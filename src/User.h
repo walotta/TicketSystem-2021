@@ -37,7 +37,7 @@ public:
     MyString &pass() {return password;}
     MyString &nam()  {return name;}
     MyString &mail() {return mailAddr;}
-    int &pri() {return privilege;}
+    int &priority() {return privilege;}
     int order_number() const {return orderedNum;}
     void add_order() {++orderedNum;}
 

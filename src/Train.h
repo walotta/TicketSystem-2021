@@ -261,8 +261,9 @@ public:
         auto last_sale_date=train.departure_date(transfer_station,train.sale_end);
         auto d_time=train.departure_time(transfer_station);
 
-        if(last_sale_date<arrival_date) return {-1,Date()};
-        if(arrival_date==last_sale_date && d_time<arrival_time) return {-1,Date()};
+        if(RealTime(last_sale_date,d_time)<=arrival) return {-1,Date()};
+//        if(last_sale_date<arrival_date) return {-1,Date()};
+//        if(arrival_date==last_sale_date && d_time<arrival_time) return {-1,Date()};
 
         auto first_sale_date=train.departure_date(transfer_station,train.sale_beg);
 
@@ -310,6 +311,7 @@ public:
 enum STATUS{SUCCESS=1,PENDING=0,REFUNDED=-1};
 class Log
 {
+    // The main-key is "username+id"
     int id; // The main-key.
     STATUS status;
     MyString username;// The tag.
