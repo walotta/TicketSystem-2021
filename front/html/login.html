@@ -1,234 +1,208 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link  rel="stylesheet" type="text/css" href='/css/login.css'>
-        <title>Login or SignUp</title>
+        <title>Login & SignUp</title>
         <meta name="keywords" content="TicketSystem">
         <meta name="author" content="walotta & Fourest">
         <meta name="description" content="TicketSystem">
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="shortcut icon" href="/image/main.ico">
-        <!--ajax-->
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
-        <script src="http://malsup.github.com/jquery.form.js"></script>
+        <!-- MDUI CSS -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/mdui@1.0.1/dist/css/mdui.min.css"
+            integrity="sha384-cLRrMq39HOZdvE0j6yBojO4+1PrHfB7a9l5qLcmRm/fiWXYY+CndJPmyu5FV/9Tw"
+            crossorigin="anonymous"
+        />
     </head>
 
-    <body>
-        <script type="text/javascript" src="https://wow.techbrood.com/libs/jquery/jquery-2.1.1.min.js"></script>
-        <script src="https://wow.techbrood.com/libs/jquery/jquery-1.11.1.min.js"></script>
-        <div class="cotn_principal">
-            <div class="cont_centrar">
-
-                <div class="cont_login">
-                    <div class="cont_info_log_sign_up">
-                        <div class="col_md_login">
-                            <h2>LOGIN</h2>
-                            <p>已有账号，点击登陆</p>
-                            <button class="btn_login" onclick="cambiar_login()">PRESS TO LOGIN</button>
-                        </div>
-                        <div class="col_md_sign_up">
-                            <h2>SIGN UP</h2>
-                            <p>没有账号，点击注册</p>
-                            <button class="btn_sign_up" onclick="cambiar_sign_up()">PRESS TO SIGN UP</button>
-                        </div>
-                    </div>
-        
-        
-                    <div class="cont_back_info">
-                        <div class="cont_img_back_grey">
-                            <img src="https://images.unsplash.com/42/U7Fc1sy5SCUDIu4tlJY3_NY_by_PhilippHenzler_philmotion.de.jpg?ixlib=rb-0.3.5&q=50&fm=jpg&crop=entropy&s=7686972873678f32efaf2cd79671673d" alt="" />
-                        </div>
-                    </div>
-
-                    <div class="cont_forms">
-
-                        <div class="cont_img_back_">
-                            <img src="https://images.unsplash.com/42/U7Fc1sy5SCUDIu4tlJY3_NY_by_PhilippHenzler_philmotion.de.jpg?ixlib=rb-0.3.5&q=50&fm=jpg&crop=entropy&s=7686972873678f32efaf2cd79671673d" alt="" />
-                        </div>
-
-                        <div class="cont_form_login">
-                            <a href="#" onclick="ocultar_login_sign_up()"><i class="material-icons">&#xE5C4;</i></a>
-                            <h2>LOGIN</h2>
-                            <input type="text" id="login_id" placeholder="UserId" />
-                            <input type="password" id="login_psw" placeholder="Password" />
-                            <button class="btn_login" id="login_button" onclick="login_to_php()">LOGIN</button>
-                        </div>
-        
-                        <div class="cont_form_sign_up">
-                            <a href="#" onclick="ocultar_login_sign_up()"><i class="material-icons">&#xE5C4;</i></a>
-                            <h2>SIGN UP</h2>
-                            <input type="text" id="sign_id" placeholder="UserId" />
-                            <input type="text" id="sign_name" placeholder="Name" />
-                            <input type="text" id="sign_mail" placeholder="Mail" />
-                            <input type="password" id="sign_psw" placeholder="Password" />
-                            <!--<input type="password" id="sign_psw_repeat" placeholder="Confirm Password" />-->
-                            <button class="btn_sign_up" id="sign_button" onclick="sign_to_php()">SIGN UP</button>
-                        </div>
-        
-                    </div>
-        
+    <body class="mdui-theme-layout-dark">
+        <div class="mdui-container mdui-shadow-8 mdui-hoverable mdui-m-t-3 mdui-p-x-5">
+            <div class="mdui-row">
+                <div class="mdui-tab mdui-tab-full-width mdui-ripple-blue " mdui-tab>
+                    <a href="#example6-tab1" class="mdui-ripple" onclick="change_to_login()">
+                        <i class="mdui-icon material-icons">done_all</i>
+                        <label>Login</label>
+                    </a>
+                    <a href="#example6-tab2" class="mdui-ripple" onclick="change_to_sign()">
+                        <i class="mdui-icon material-icons">add</i>
+                        <label>Sign Up</label>
+                    </a>
                 </div>
             </div>
+            <div class="mdui-row">
+                <div class="mdui-p-a-3" id="filled">
+                </div>
+            </div>
+
         </div>
+        
+
+        <!-- MDUI JavaScript -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/mdui@1.0.1/dist/js/mdui.min.js"
+            integrity="sha384-gCMZcshYKOGRX9r6wbDrvF+TcCCswSHFucUzUPwka+Gr+uHgjlYvkABr95TCOz3A"
+            crossorigin="anonymous"
+        ></script>
+        <!--my JS-->
         <script>
-        /* ------------------------------------ Click on login and Sign Up to  changue and view the effect
-        ---------------------------------------
-        */
-        function getCookie(cname)
-        {
-        var name = cname + "=";
-        var ca = document.cookie.split(';');
-        for(var i=0; i<ca.length; i++) 
-        {
-            var c = ca[i].trim();
-            if (c.indexOf(name)==0) return c.substring(name.length,c.length);
-        }
-        return "";
-        }
-        function setCookie(cname,cvalue,exdays)
-        {
-        var d = new Date();
-        d.setTime(d.getTime()+(exdays*24*60*60*1000));
-        var expires = "expires="+d.toGMTString();
-        document.cookie = cname + "=" + cvalue + "; " + expires;
-        }
-        
-        function cambiar_login() {
-            document.querySelector('.cont_forms').className = "cont_forms cont_forms_active_login";
-            document.querySelector('.cont_form_login').style.display = "block";
-            document.querySelector('.cont_form_sign_up').style.opacity = "0";
-        
-            setTimeout(function() {
-                document.querySelector('.cont_form_login').style.opacity = "1";
-            }, 400);
-        
-            setTimeout(function() {
-                document.querySelector('.cont_form_sign_up').style.display = "none";
-            }, 200);
-        }
-        
-        function cambiar_sign_up(at) {
-            document.querySelector('.cont_forms').className = "cont_forms cont_forms_active_sign_up";
-            document.querySelector('.cont_form_sign_up').style.display = "block";
-            document.querySelector('.cont_form_login').style.opacity = "0";
-        
-            setTimeout(function() {
-                document.querySelector('.cont_form_sign_up').style.opacity = "1";
-            }, 100);
-        
-            setTimeout(function() {
-                document.querySelector('.cont_form_login').style.display = "none";
-            }, 400);
-        
-        
-        }
-        
-        
-        
-        function ocultar_login_sign_up() {
-        
-            document.querySelector('.cont_forms').className = "cont_forms";
-            document.querySelector('.cont_form_sign_up').style.opacity = "0";
-            document.querySelector('.cont_form_login').style.opacity = "0";
-        
-            setTimeout(function() {
-                document.querySelector('.cont_form_sign_up').style.display = "none";
-                document.querySelector('.cont_form_login').style.display = "none";
-            }, 500);
-        
-        }
-        
-        function login_to_php()
-        {
-            var xmlhttp=new XMLHttpRequest();
-
-            var userId=document.getElementById("login_id").value;
-            var psw=document.getElementById("login_psw").value;
-            xmlhttp.open("POST","/php/login.php",true);
-            xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xmlhttp.onreadystatechange=function()
+            function getCookie(cname)
             {
-                document.getElementById("login_button").innerHTML='LOADING . . .';
-                if (xmlhttp.readyState==4)
-                {
-                    if(xmlhttp.status==200)
-                    {
-                        var return_msg=xmlhttp.responseText;
-                        //alert(return_msg);
-                        if(return_msg=="0"||return_msg=="-1")document.getElementById("login_button").innerHTML='TRY AGAIN';
-                        else 
-                        {
-                            document.getElementById("login_button").innerHTML="PASSED";
-                            setCookie("userId",userId,365);
-                            setCookie("pri",return_msg,365);
-                            if(return_msg=="1")window.location.href='/html/person.html';
-                            else window.location.href='/html/admin.html';
-                        }
-                    }else
-                    {
-                        document.getElementById("login_button").innerHTML="ERROR OCCUR";
-                    }
-                }
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for(var i=0; i<ca.length; i++) 
+            {
+                var c = ca[i].trim();
+                if (c.indexOf(name)==0) return c.substring(name.length,c.length);
             }
-            document.getElementById("login_button").innerHTML='LOADING . . .';
-            xmlhttp.send("userId="+userId+"&psw="+psw);
-        }
-
-        function sign_to_php()
-        {
-            var xmlhttp=new XMLHttpRequest();
-            //alert("1");
-            var userId=document.getElementById("sign_id").value;
-            var name=document.getElementById("sign_name").value;
-            var psw=document.getElementById("sign_psw").value;
-            //var psw_rep=document.getElementById("sign_psw_repeat").value;
-            var mail=document.getElementById("sign_mail").value;
-            if(userId!=""&&psw!=""&&mail!=""&&name!="")
+            return "";
+            }
+            function setCookie(cname,cvalue,exdays)
             {
-                xmlhttp.open("POST","/php/sign.php",true);
+            var d = new Date();
+            d.setTime(d.getTime()+(exdays*24*60*60*1000));
+            var expires = "expires="+d.toGMTString();
+            document.cookie = cname + "=" + cvalue + "; " + expires;
+            }
+            
+            function login_to_php()
+            {
+                var xmlhttp=new XMLHttpRequest();
+
+                var userId=document.getElementById("login_id").value;
+                var psw=document.getElementById("login_psw").value;
+                xmlhttp.open("POST","/php/login.php",true);
                 xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                 xmlhttp.onreadystatechange=function()
                 {
-                    document.getElementById("sign_button").innerHTML='LOADING . . .';
+                    document.getElementById("login_button").innerHTML='LOADING . . .';
                     if (xmlhttp.readyState==4)
                     {
                         if(xmlhttp.status==200)
                         {
                             var return_msg=xmlhttp.responseText;
                             //alert(return_msg);
-                            if(return_msg!="1")document.getElementById("sign_button").innerHTML='TRY AGAIN';
-                            else
+                            if(return_msg=="0"||return_msg=="-1")document.getElementById("login_button").innerHTML='TRY AGAIN';
+                            else 
                             {
-                                document.getElementById("sign_button").innerHTML="PASSED";
+                                document.getElementById("login_button").innerHTML="PASSED";
                                 setCookie("userId",userId,365);
-                                setCookie("pri","1",365);
-                                window.location.href='/html/person.html';
+                                setCookie("pri",return_msg,365);
+                                if(return_msg=="1")window.location.href='/html/person.html';
+                                else window.location.href='/html/admin.html';
                             }
                         }else
                         {
-                            document.getElementById("sign_button").innerHTML="ERROR OCCUR";
+                            document.getElementById("login_button").innerHTML="ERROR OCCUR";
                         }
                     }
                 }
-                document.getElementById("sign_button").innerHTML='LOADING . . .';
-                xmlhttp.send("userId="+userId+"&psw="+psw+"&name="+name+"&mail="+mail);
-            }else
-            {
-                document.getElementById("sign_button").innerHTML='INVALID';
+                document.getElementById("login_button").innerHTML='LOADING . . .';
+                xmlhttp.send("userId="+userId+"&psw="+psw);
             }
-        }
-        
-        var userId=getCookie("userId");
-        //alert(userId);
-        if(userId!="")
-        {
-            var pri=getCookie("pri");
-            //alert(pri);
-            if(pri=="1")window.location.href='/html/person.html';
-            else window.location.href='/html/admin.html';
-        }
 
-        </script>
+            function sign_to_php()
+            {
+                var xmlhttp=new XMLHttpRequest();
+                //alert("1");
+                var userId=document.getElementById("sign_id").value;
+                var name=document.getElementById("sign_name").value;
+                var psw=document.getElementById("sign_psw").value;
+                var psw_rep=document.getElementById("sign_psw_repeat").value;
+                var mail=document.getElementById("sign_mail").value;
+                if(userId!=""&&psw!=""&&mail!=""&&name!=""&&psw==psw_rep)
+                {
+                    xmlhttp.open("POST","/php/sign.php",true);
+                    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                    xmlhttp.onreadystatechange=function()
+                    {
+                        document.getElementById("sign_button").innerHTML='LOADING . . .';
+                        if (xmlhttp.readyState==4)
+                        {
+                            if(xmlhttp.status==200)
+                            {
+                                var return_msg=xmlhttp.responseText;
+                                //alert(return_msg);
+                                if(return_msg!="1")document.getElementById("sign_button").innerHTML='TRY AGAIN';
+                                else
+                                {
+                                    document.getElementById("sign_button").innerHTML="PASSED";
+                                    setCookie("userId",userId,365);
+                                    setCookie("pri","1",365);
+                                    window.location.href='/html/person.html';
+                                }
+                            }else
+                            {
+                                document.getElementById("sign_button").innerHTML="ERROR OCCUR";
+                            }
+                        }
+                    }
+                    document.getElementById("sign_button").innerHTML='LOADING . . .';
+                    xmlhttp.send("userId="+userId+"&psw="+psw+"&name="+name+"&mail="+mail);
+                }else
+                {
+                    document.getElementById("sign_button").innerHTML='INVALID';
+                }
+            }
         
+
+            function change_to_login()
+            {
+                document.getElementById('filled').innerHTML='\
+                <div class="mdui-text-center mdui-typo-display-1-opacity mdui-p-a-2">Login</div>\
+                <div class="mdui-textfield mdui-textfield-floating-label">\
+                    <label class="mdui-textfield-label">UserId</label>\
+                    <input class="mdui-textfield-input" type="text" id="login_id"/>\
+                </div>\
+                <div class="mdui-textfield mdui-textfield-floating-label">\
+                    <label class="mdui-textfield-label">Password</label>\
+                    <input class="mdui-textfield-input" type="password" id="login_psw"/>\
+                </div>\
+                <div class="mdui-row-xs-3"><div class="mdui-col"></div><div class="mdui-col"><button class="mdui-btn mdui-btn-block mdui-center mdui-btn-raised mdui-color-light-blue-900 mdui-shadow-8 mdui-m-t-4 mdui-m-b-5" onclick="login_to_php()" id="login_button">Login</button></div></div>\
+                '
+                mdui.mutation();
+                mdui.updateTextFields();
+            }
+            function change_to_sign()
+            {
+                document.getElementById('filled').innerHTML='\
+                <div class="mdui-text-center mdui-typo-display-1-opacity mdui-p-a-3">Sign Up</div>\
+                <div class="mdui-textfield mdui-textfield-floating-label">\
+                    <label class="mdui-textfield-label">UserId</label>\
+                    <input class="mdui-textfield-input" type="text" id="sign_id"/>\
+                </div>\
+                <div class="mdui-textfield mdui-textfield-floating-label">\
+                    <label class="mdui-textfield-label">UserName</label>\
+                    <input class="mdui-textfield-input" type="text" id="sign_name"/>\
+                </div>\
+                <div class="mdui-textfield mdui-textfield-floating-label">\
+                    <label class="mdui-textfield-label">Mail</label>\
+                    <input class="mdui-textfield-input" type="mail" id="sign_mail"/>\
+                </div>\
+                <div class="mdui-textfield mdui-textfield-floating-label">\
+                    <label class="mdui-textfield-label">Password</label>\
+                    <input class="mdui-textfield-input" type="password" id="sign_psw"/>\
+                </div>\
+                <div class="mdui-textfield mdui-textfield-floating-label">\
+                    <label class="mdui-textfield-label">Password Repeat</label>\
+                    <input class="mdui-textfield-input" type="password" id="sign_psw_repeat"/>\
+                </div>\
+                <div class="mdui-row-xs-3"><div class="mdui-col"></div><div class="mdui-col"><button class="mdui-btn mdui-btn-block mdui-center mdui-btn-raised mdui-color-light-blue-900 mdui-shadow-8 mdui-m-t-4 mdui-m-b-5" onclick="sign_to_php()" id="sign_button">Sign Up</button></div></div>\
+                '
+                mdui.mutation();
+                mdui.updateTextFields();
+            }
+            
+            var userId=getCookie("userId");
+            //alert(userId);
+            if(userId!="")
+            {
+                var pri=getCookie("pri");
+                //alert(pri);
+                if(pri=="1")window.location.href='/html/person.html';
+                else window.location.href='/html/admin.html';
+            }
+            change_to_login();
+        </script>
     </body>
 </html>

@@ -4,7 +4,8 @@
   }
   body {
     height: 100vh;
-    background: url(/image/background.jpeg) center center;
+    /*background: url(/image/background.jpeg) center center;*/
+    background-color: #242424;
     background-size: cover;
   }
   .neon-wrap {

@@ -619,6 +619,82 @@
                         }
                     }
                     xmlhttp.send("userId="+new_id+"&userName="+new_name+"&mail="+new_mail+"&psw="+new_psw+"&pri="+pri);
+                }else if(now_at=="add_train")
+                {
+                    var now_cnt=document.getElementById('add_table').rows.length-1;
+
+                    var trainId=document.getElementById('trainId').value;
+                    var stationNum=document.getElementById('stationNum').value;
+                    var seatNum=document.getElementById('seatNum').value;
+                    var startTime=document.getElementById('startTime').value;
+                    var saleBegin=document.getElementById('saleBegin').value;
+                    var saleEnd=document.getElementById('saleEnd').value;
+                    var type=document.getElementById('type').value;
+                    var stationList=Array();
+                    var PriceList=Array();
+                    var TravelTimeList=Array();
+                    var StopoverTimeList=Array();
+                    for(var i=0;i<now_cnt;i++)
+                    {
+                        var station_=document.getElementById('stationName_'+i).value;
+                        var price_=document.getElementById('price_'+i).value;
+                        var travelTime_=document.getElementById('travelTime_'+i).value;
+                        var stopoverTime_=document.getElementById('stopoverTime_'+i).value;
+                        if(station_=='')
+                        {
+                            //alert(i);
+                            break;
+                        }else
+                        {
+                            //alert(station_);
+                            stationList.push(station_);
+                            if(price_!='')PriceList.push(price_);
+                            if(travelTime_!='')TravelTimeList.push(travelTime_);
+                            if(stopoverTime_!='')StopoverTimeList.push(stopoverTime_);
+                        }
+                    }
+                    if(stationList.length==parseInt(stationNum)&&stationList.length==PriceList.length+1&&stationList.length==TravelTimeList.length+1&&stationList.length==StopoverTimeList.length+2)
+                    {
+                        //alert('success');
+                        var sendJSON={};
+                        sendJSON.trainId=trainId;
+                        sendJSON.stationNum=stationNum;
+                        sendJSON.seatNum=seatNum;
+                        sendJSON.startTime=startTime;
+                        sendJSON.saleBegin=saleBegin;
+                        sendJSON.saleEnd=saleEnd;
+                        sendJSON.type=type;
+                        sendJSON.stationList=stationList;
+                        sendJSON.priceList=PriceList;
+                        sendJSON.travelTimeList=TravelTimeList;
+                        sendJSON.stopoverList=StopoverTimeList;
+                        
+                        to_send=JSON.stringify(sendJSON);
+
+                        var xmlhttp=new XMLHttpRequest();
+                        xmlhttp.open("POST","/php/add_train.php",true);
+                        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xmlhttp.onreadystatechange=function()
+                        {
+                            if(xmlhttp.readyState==4&&xmlhttp.status==200)
+                            {
+                                var returnMsg=xmlhttp.responseText;
+                                //mdui.alert(returnMsg);
+                                if(returnMsg=="success")
+                                {
+                                    mdui.snackbar({
+                                            message: "成功添加了1列新火车",
+                                            position: 'right-bottom'
+                                            });
+                                }else
+                                {
+                                    mdui.alert("添加失败，请修改后重试","ERROR OCCUR");
+                                }
+                            }
+                        }
+                        xmlhttp.send("send_msg="+to_send);
+
+                    }else mdui.alert('参数数量不符，请检查输入','INVALID')
                 }
 
                 mdui.updateTextFields();
@@ -734,8 +810,79 @@
             function show_add_train()
             {
                 now_at="add_train";
-                mdui.alert("不会写add_train，呜呜呜呜呜呜呜","用命令行凑合一下吧ww");
-                show_console();
+                //mdui.alert("不会写add_train，呜呜呜呜呜呜呜","用命令行凑合一下吧ww");
+                //show_console();
+                document.getElementById("contain_title").innerHTML='ADD TRAIN';
+                document.getElementById("resault_display").innerHTML='';
+                document.getElementById("search_contain").innerHTML='\
+                <div class="mdui-textfield mdui-textfield-floating-label">\
+                    <label class="mdui-textfield-label">ENTER THE TRAINID</label>\
+                    <input class="mdui-textfield-input" type="txt" id="trainId"/>\
+                </div>\
+                <div class="mdui-row-xs-3">\
+                    <div class="mdui-col">\
+                        <div class="mdui-textfield mdui-textfield-floating-label">\
+                            <label class="mdui-textfield-label">stationNum</label>\
+                            <input class="mdui-textfield-input" type="txt" id="stationNum"/>\
+                        </div>\
+                    </div>\
+                    <div class="mdui-col">\
+                        <div class="mdui-textfield mdui-textfield-floating-label">\
+                            <label class="mdui-textfield-label">seatNum</label>\
+                            <input class="mdui-textfield-input" type="txt" id="seatNum"/>\
+                        </div>\
+                    </div>\
+                    <div class="mdui-col">\
+                        <div class="mdui-textfield mdui-textfield-floating-label">\
+                            <label class="mdui-textfield-label">startTime</label>\
+                            <input class="mdui-textfield-input" type="txt" id="startTime"/>\
+                        </div>\
+                    </div>\
+                    <div class="mdui-col">\
+                        <div class="mdui-textfield mdui-textfield-floating-label">\
+                            <label class="mdui-textfield-label">saleBegin Date</label>\
+                            <input class="mdui-textfield-input" type="txt" id="saleBegin"/>\
+                        </div>\
+                    </div>\
+                    <div class="mdui-col">\
+                        <div class="mdui-textfield mdui-textfield-floating-label">\
+                            <label class="mdui-textfield-label">saleEnd Date</label>\
+                            <input class="mdui-textfield-input" type="txt" id="saleEnd"/>\
+                        </div>\
+                    </div>\
+                    <div class="mdui-col">\
+                        <div class="mdui-textfield mdui-textfield-floating-label">\
+                            <label class="mdui-textfield-label">type</label>\
+                            <input class="mdui-textfield-input" type="txt" id="type"/>\
+                        </div>\
+                    </div>\
+                </div>\
+                <div class="mdui-table-fluid">\
+                    <table class="mdui-table mdui-table-hoverable" id="add_table">\
+                        <thead>\
+                            <tr>\
+                                <th>#</th>\
+                                <th>Station Name</th>\
+                                <th>Price</th>\
+                                <th>Travel Time</th>\
+                                <th>Stopover Time</th>\
+                            </tr>\
+                        </thead>\
+                        <tbody id="table_inner">\
+                        </tbody>\
+                    </table>\
+                </div>\
+                ';
+                document.getElementById("user_btn").innerHTML='\
+                <div class="mdui-p-a-1 mdui-row-xs-1" id="insert_btn">\
+                    <div class="mdui-col mdui-p-a-1"><button class=" mdui-center mdui-btn mdui-btn-block mdui-btn-raised mdui-ripple mdui-color-light-blue-900 mdui-hoverable mdui-shadow-8" mdui-tooltip="{content: \'点击增加车站数量\'}" onclick="query_add_station_to_table()" id="add_station_to_table_botton">MORE STATIONS</button></div>\
+                    <div class="mdui-col mdui-p-a-1"><button class=" mdui-center mdui-btn mdui-btn-block mdui-btn-raised mdui-ripple mdui-color-light-blue-900 mdui-hoverable mdui-shadow-8" mdui-tooltip="{content: \'点击减少车站数量\'}" onclick="query_less_station_to_table()" id="less_station_to_table_botton">LESS STATIONS</button></div>\
+                    <div class="mdui-col mdui-p-a-1"><button class="mdui-center mdui-btn mdui-btn-block mdui-btn-raised mdui-ripple mdui-color-light-blue-900 mdui-hoverable mdui-shadow-8" mdui-tooltip="{content: \'点击添加火车\'}" onclick="run_search()" id="search_botton">ADD TRAIN</button></div>\
+                </div>\
+                ';
+                add_station_to_table(3);
+                mdui.updateTextFields();
+                mdui.mutation();
             }
 
             function show_console()
@@ -857,7 +1004,7 @@
                 </div>\
                 <div class="mdui-textfield mdui-textfield-floating-label">\
                     <label class="mdui-textfield-label">PASSWORD(如不更改请不要键入)</label>\
-                    <input class="mdui-textfield-input" type="txt" id="psw"/>\
+                    <input class="mdui-textfield-input" type="password" id="psw"/>\
                 </div>\
                 ';
                 document.getElementById('userId').value=personalJson['userId'];
@@ -1086,6 +1233,103 @@
                         mdui.alert('服务器清空指令已取消','取消指令');
                     }
                 );
+            }
+            
+            function query_add_station_to_table()
+            {
+                mdui.prompt('add more stations', '设置参数',
+                function (value) {
+                    var max_num=parseInt(value);
+                    add_station_to_table(max_num);
+                },
+                function (value) {
+                    //mdui.alert('您可以在现有表格上继续填写','已取消添加火车站数量操作');
+                },
+                {
+                    confirmOnEnter:true,
+                    defaultValue:10
+                }
+                );
+            }
+
+            function query_less_station_to_table()
+            {
+                mdui.prompt('remove stations', '设置参数',
+                function (value) {
+                    var max_num=parseInt(value);
+                    remove_station_to_table(max_num);
+                },
+                function (value) {
+                    //mdui.alert('您可以在现有表格上继续填写','已取消添加火车站数量操作');
+                },
+                {
+                    confirmOnEnter:true,
+                    defaultValue:1
+                }
+                );
+            }
+
+            function add_station_to_table(cnt)
+            {
+                var now_cnt=document.getElementById('add_table').rows.length-1;
+                for(var i=now_cnt;i<now_cnt+cnt;i++)
+                {
+                    var new_inner=document.createElement("tr");
+                    new_inner.innerHTML='\
+                                            <td>'+i+'</td>'+'\
+                                            <td>\
+                                                <div class="mdui-textfield mdui-textfield-floating-label">\
+                                                    <label class="mdui-textfield-label">Station Name</label>\
+                                                    <input class="mdui-textfield-input" type="txt" id="stationName_'+i+'"/>\
+                                                </div>\
+                                            </td>\
+                                            <td>\
+                                                <div class="mdui-textfield mdui-textfield-floating-label">\
+                                                    <label class="mdui-textfield-label">Price</label>\
+                                                    <input class="mdui-textfield-input" type="txt" id="price_'+i+'"/>\
+                                                </div>\
+                                            </td>\
+                                            <td>\
+                                                <div class="mdui-textfield mdui-textfield-floating-label">\
+                                                    <label class="mdui-textfield-label">Travel Time</label>\
+                                                    <input class="mdui-textfield-input" type="txt" id="travelTime_'+i+'"/>\
+                                                </div>\
+                                            </td>\
+                                            <td>\
+                                                <div class="mdui-textfield mdui-textfield-floating-label">\
+                                                    <label class="mdui-textfield-label">Stopover Time</label>\
+                                                    <input class="mdui-textfield-input" type="txt" id="stopoverTime_'+i+'"/>\
+                                                </div>\
+                                            </td>\
+                                            '
+                    document.getElementById("table_inner").appendChild(new_inner);
+                }
+                document.getElementById('price_0').disabled=true;
+                document.getElementById('travelTime_0').disabled=true;
+                document.getElementById('stopoverTime_0').disabled=true;
+                document.getElementById('stopoverTime_'+(now_cnt+cnt-1)).disabled=true;
+                if(now_cnt>=1)document.getElementById('stopoverTime_'+(now_cnt-1)).disabled=false;
+                mdui.mutation();
+                mdui.updateTextFields();
+            }
+
+            function remove_station_to_table(cnt)
+            {
+                var now_cnt=document.getElementById('add_table').rows.length-1;
+                if(cnt>=now_cnt)mdui.alert("移除数量过多，移除失败","REMOVE FAILED");
+                else
+                {
+                    var table=document.getElementById('table_inner');
+                    for(var i=0;i<cnt;i++)
+                    {
+                        var to_remove=now_cnt-i;
+                        table.removeChild(table.childNodes[to_remove]);
+                    }
+                }
+                now_cnt=document.getElementById('add_table').rows.length-1;
+                document.getElementById('stopoverTime_'+(now_cnt-1)).disabled=true;
+                mdui.mutation();
+                mdui.updateTextFields();
             }
             init();
             mdui.mutation();
