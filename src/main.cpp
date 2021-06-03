@@ -11,17 +11,12 @@ int main(int argc,char *argv[])
 //    freopen("debug.txt","a",stdout);
 //    printf("\n\n");
     bool run_with_io=true;
-    if(argc!=1)
-    {
-        run_with_io=false;
-    }
+    if(argc!=1) run_with_io=false;
+
     cmd ticketLibrary;
     if(run_with_io)
     {
-        try
-        {
-            ticketLibrary.run(cin,cout);
-        }
+        try {ticketLibrary.run(cin,cout);}
         catch(error x)
         {
             cout<<x.what()<<endl;

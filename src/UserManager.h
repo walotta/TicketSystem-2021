@@ -17,15 +17,12 @@ class UserManager
 public:
     UserManager():user("user.dat",false){}
     ~UserManager(){logged_users.clear();}
-//    UserManager(const string &address);
 
     bool add_user(str c,str u,str p,str n,str m,int g);
     bool login(str u,str p);
     bool logout(str u);
     string query_profile(str c,str u);
     string modify_profile(str c,str u,str p,str n,str m,int g);
-//    string buy_ticket(str u,str i,Date d,str f,str t,int n,bool q);
-//    bool refund_ticket(str u,int n);
     bool clean();
 
     int check_priority(str u) const;// If the user is logged, return its priority; else return -404;

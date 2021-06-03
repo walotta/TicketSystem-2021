@@ -25,8 +25,8 @@ bool TrainManager::add_train(const string &i,int n,int m,const vecS &s,const vec
 {
     auto tp=train.FindByKey(i);
     if(tp.second) return false;
-    Train temp(i,n,m,s,p,x,t,o,d_beg,d_end,y);
-    train.insert(i,temp);
+    Train new_train(i,n,m,s,p,x,t,o,d_beg,d_end,y);
+    train.insert(i,new_train);
     train.AddTag(i,s);
     return true;
 }
@@ -83,16 +83,16 @@ vecS TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_t
     return output;
 }
 
-int TrainManager::write_log(int id,STATUS s,const string &u,const string &i,const string &f,const string &t,const RealTime &d,const RealTime &a,int p,int n)
+int TrainManager::write_log(int id,Status s,const string &u,const string &i,const string &f,const string &t,const RealTime &d,const RealTime &a,int p,int n)
 {
-    Log temp(id,s,u,i,f,t,d,a,p,n);
+    Log new_log(id,s,u,i,f,t,d,a,p,n);
     auto main_key=u+to_string(id);
-    log.insert(main_key,temp);
+    log.insert(main_key,new_log);
     log.AddTag(main_key,u);
     return 0;
 }
 
-bool TrainManager::update_log(const string &u,int id,STATUS s)
+bool TrainManager::update_log(const string &u,int id,Status s)
 {
     string mainKey=u+to_string(id);
     auto temp=log.FindByKey(mainKey);
@@ -151,11 +151,10 @@ vecS TrainManager::query_transfer(const string &s,const string &t,Date d,bool If
                     if(!If_time) cost=train1.get_price(s,st)+train2.get_price(st,t);
                     else cost=train1.get_time(s,st)+temp.first+train2.get_time(st,t);
 
-
                     if(!If_find || cost<cost_minimal || (cost==cost_minimal && cost_time<cost_time_1))
                     {
                         If_find=true;
-                        cost_minimal=cost; cost_time_1=train1.get_time(s,st);
+                        cost_minimal=cost; cost_time_1=cost_time;
                         train1_id=i; train2_id=j;
                         transfer_station=st;
                         date_of_transfer=temp.second;
@@ -183,6 +182,7 @@ lint TrainManager::buy_ticket(const string &i,Date d,const string &f,const strin
     if(!train_find.check_date(d,f)) return -404;
     if(!train_find.check_sequence(f,t)) return -404;
     if(train_find.seat_number()<n) return -404;
+
     auto date=train_find.date_for_record(f,d);
     auto seat_remain=train_find.check_seat(f,t,date,seat);
     lint total_price=train_find.get_price(f,t,n);
