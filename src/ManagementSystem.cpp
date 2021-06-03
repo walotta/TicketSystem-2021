@@ -117,7 +117,7 @@ string ManagementSystem::buy_ticket(const string &u,const string &i,const Date &
     if(pri==-404) return fail;
 
     int number=user.query_order_number(u); //consider: This place could optimize.
-    lint cost=train.buy_ticket(i,d,f,t,n,number+1,u,q);
+    lint cost=train.buy_ticket(i,d,f,t,n,number +1,u,q);
     if(cost>0)
     {
         user.add_order_number(u);

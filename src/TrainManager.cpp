@@ -23,10 +23,10 @@ bool TrainManager::clean()
 
 bool TrainManager::add_train(const string &i,int n,int m,const vecS &s,const vector<int> &p,Time x,const vector<int> &t,const vector<int> &o,Date d_beg,Date d_end,char y)
 {
-    auto tp=train.FindByKey(i);
-    if(tp.second) return false;
-    Train temp(i,n,m,s,p,x,t,o,d_beg,d_end,y);
-    train.insert(i,temp);
+    auto temp=train.FindByKey(i);
+    if(temp.second) return false;
+    Train new_train(i,n,m,s,p,x,t,o,d_beg,d_end,y);
+    train.insert(i,new_train);
     train.AddTag(i,s);
     return true;
 }
@@ -37,6 +37,7 @@ bool TrainManager::delete_train(const string &i)
     if(!temp.second) return false;
     if(temp.first.if_release()) return false;
 
+    train.RemoveTag(i,temp.first.stations());
     train.Remove(i);
     return true;
 }
@@ -83,16 +84,16 @@ vecS TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_t
     return output;
 }
 
-int TrainManager::write_log(int id,STATUS s,const string &u,const string &i,const string &f,const string &t,const RealTime &d,const RealTime &a,int p,int n)
+int TrainManager::write_log(int id,Status s,const string &u,const string &i,const string &f,const string &t,const RealTime &d,const RealTime &a,lint p,int n)
 {
-    Log temp(id,s,u,i,f,t,d,a,p,n);
+    Log new_log(id,s,u,i,f,t,d,a,p,n);
     auto main_key=u+to_string(id);
-    log.insert(main_key,temp);
+    log.insert(main_key,new_log);
     log.AddTag(main_key,u);
     return 0;
 }
 
-bool TrainManager::update_log(const string &u,int id,STATUS s)
+bool TrainManager::update_log(const string &u,int id,Status s)
 {
     string mainKey=u+to_string(id);
     auto temp=log.FindByKey(mainKey);
@@ -130,8 +131,9 @@ vecS TrainManager::query_transfer(const string &s,const string &t,Date d,bool If
         bool start_add=false;
         for(int k=0;k<trains1[i].station_number();++k)
         {
-            if(start_add) stations1.insert({trains1[i].station_name(k),k});
-            if(trains1[i].station_name(k)==s) start_add=true;
+            auto station_name=trains1[i].station_name(k);
+            if(start_add) stations1.insert({station_name,k});
+            if(station_name==s) start_add=true;
         }
 
         for(int j=0;j<trains2.size();++j)
@@ -151,11 +153,10 @@ vecS TrainManager::query_transfer(const string &s,const string &t,Date d,bool If
                     if(!If_time) cost=train1.get_price(s,st)+train2.get_price(st,t);
                     else cost=train1.get_time(s,st)+temp.first+train2.get_time(st,t);
 
-
                     if(!If_find || cost<cost_minimal || (cost==cost_minimal && cost_time<cost_time_1))
                     {
                         If_find=true;
-                        cost_minimal=cost; cost_time_1=train1.get_time(s,st);
+                        cost_minimal=cost; cost_time_1=cost_time;
                         train1_id=i; train2_id=j;
                         transfer_station=st;
                         date_of_transfer=temp.second;
@@ -178,20 +179,21 @@ lint TrainManager::buy_ticket(const string &i,Date d,const string &f,const strin
 {
     auto search=train.FindByKey(i);
     if(!search.second) return -404;
-    auto &train_find=search.first;
-    if(!train_find.if_release()) return -404;
-    if(!train_find.check_date(d,f)) return -404;
-    if(!train_find.check_sequence(f,t)) return -404;
-    if(train_find.seat_number()<n) return -404;
-    auto date=train_find.date_for_record(f,d);
-    auto seat_remain=train_find.check_seat(f,t,date,seat);
-    lint total_price=train_find.get_price(f,t,n);
-    auto time=train_find.obtain_time(f,t,date);
+    auto &train1=search.first;
+    if(!train1.if_release()) return -404;
+    if(!train1.check_date(d,f)) return -404;
+    if(!train1.check_sequence(f,t)) return -404;
+    if(train1.seat_number()<n) return -404;
+
+    auto date=train1.date_for_record(f,d);
+    auto seat_remain=train1.check_seat(f,t,date,seat);
+    lint total_price=train1.get_price(f,t,n);
+    auto time=train1.obtain_time(f,t,date);
 
 
     if(seat_remain>=n)
     {
-        train_find.decrease_seat(f,t,date,n,seat);
+        train1.decrease_seat(f,t,date,n,seat);
         write_log(id,SUCCESS,u,i,f,t,time.first,time.second,total_price/n,n);
         return total_price;
     }
@@ -213,23 +215,19 @@ pair<string,int> TrainManager::refund_ticket(const string &u,const int &n)
     auto temp_log=log.FindByKey(main_key);
     if(!temp_log.second) return output;
     auto &log1=temp_log.first;
-    auto t=train.FindByKey(log1.train()).first;
-    auto da=t.date_for_record(log1.stations().first,log1.times().first.date());
     if(log1.status_now()==REFUNDED) return output;
-    if(log1.status_now()==PENDING) output.second=0;
-    else output.second=1;
 
+    output={log1.train(),log1.status_now()};
     log1.modify_status(REFUNDED);
     log.Update(main_key,log1);
-//    auto t=train.FindByKey(log1.train()).first;
-    output.first=t.train_id();
     if(output.second==0) return output;
 
+    auto train1=train.FindByKey(output.first).first;
     auto stations=log1.stations();
-    auto date=log1.times().first.date();
+    auto day=log1.times().first.date();
 
-    t.increase_seat(stations.first,stations.second,date,log1.number(),seat);
-    train.Update(t.train_id(),t);// consider: This line is redundant.
+    train1.increase_seat(stations.first,stations.second,day,log1.number(),seat);
+    train.Update(output.first,train1);// consider: This line is redundant.
     return output;
 }
 

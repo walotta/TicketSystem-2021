@@ -27,10 +27,7 @@ public:
     ~User()=default;
     User(str u,str p,str n,str m,int g): username(u),password(p),name(n),mailAddr(m),privilege(g){}
 
-    string display() const
-    {
-        return (string)username+" "+(string)name+" "+(string)mailAddr+" "+to_string(privilege);
-    }
+    string display() const {return (string)username+" "+(string)name+" "+(string)mailAddr+" "+to_string(privilege);}
     bool check_pass(str p) const { return password==p; }
 
     MyString &user() {return username;}

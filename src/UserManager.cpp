@@ -56,9 +56,10 @@ string UserManager::query_profile(const string &c,const string &u)
 
     auto tp=user.FindByKey(u);
     if(!tp.second) return fail;// Nonexistent user.
-    if(tp.first.priority()>priority || (c!=u && tp.first.priority()==priority)) return fail;// Access denied.
+    auto &user1=tp.first;
+    if(user1.priority()>priority || (c!=u && user1.priority()==priority)) return fail;// Access denied.
 
-    return tp.first.display();
+    return user1.display();
 }
 
 string UserManager::modify_profile(const string &c,const string &u,const string &p,const string &n,const string &m,int g)

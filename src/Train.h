@@ -50,6 +50,7 @@ public:
 
 class Train
 {
+private:
     struct Station
     {
         MyString name;
@@ -60,19 +61,13 @@ class Train
 
         void update(str n,int p,int num,const RealTime &t1,const RealTime &t2)
         {
-            name=n;
-            price=p;
-//            NUM=num;
-            arrival=t1;
-            departure=t2;
-//            for(int i=0;i<100;++i) seat_remain[i]=num;
+            name=n; price=p;
+            arrival=t1; departure=t2;
         }
         void update(str n,int p,int num)
         {
             name=n;
             price=p;
-//            NUM=num;
-//            for(int i=0;i<100;++i) seat_remain[i]=num;
         }
     };
 
@@ -84,7 +79,6 @@ class Train
     Date sale_beg,sale_end;
     bool If_release;
     char type;
-
 
     pair<int,int> get_id(str i,str f) const
     {
@@ -109,10 +103,8 @@ public:
     ~Train()=default;
     Train(str i,int n,int m,const vecS &s,vecI p,Time x,vecI t,vecI o,Date d_beg,Date d_end,char y):trainID(i),startTime(x),sale_beg(d_beg),sale_end(d_end)
     {
-        stationNum=n;
-        seatNum=m;
-        type=y;
-        If_release=false;
+        stationNum=n; seatNum=m;
+        type=y; If_release=false;
 
         // Process the name & price & time;
         station[0].update(s[0],0,m);
@@ -121,12 +113,6 @@ public:
         {
             RealTime arrival(station[pos].departure+t[pos]);
             station[pos+1].update(s[pos+1],station[pos].price+p[pos],m,arrival,arrival+o[pos]);
-            /*
-            station[pos+1].name=s[pos+1];
-            station[pos+1].price=station[pos].price+p[pos];
-            station[pos+1].arrival=station[pos].departure+t[pos];
-            station[pos+1].departure=station[pos+1].arrival+o[pos];
-             */
         }
         int last=stationNum-1;
         station[last].update(s[last],station[last-1].price+p[last-1],m);
@@ -142,8 +128,13 @@ public:
     string train_id() const {return (string)trainID;}
     pair<Date,Date> date() const {return {sale_beg,sale_end};}
     int station_number() const {return stationNum;}
-    int seat_number() const {return seatNum;}
     string station_name(const int &pos) const {return (string)station[pos].name;}
+    vecS stations() const
+    {
+        vecS output;
+        for(int i=0;i<stationNum;++i) output.push_back((string)station[i].name);
+        return output;
+    }
     RealTime station_departure(const int &pos) const {return station[pos].departure;}
     RealTime station_arrival(const int &pos) const {return station[pos].arrival;}
     // The "Date" in the parameter represents the date of the train's departure from the departure-station.
@@ -250,6 +241,12 @@ public:
     } // Use for comparing the cost.
 
     // pair<time_cost_between_transfer,transfer_date>
+    pair<RealTime,RealTime> obtain_time(str i,str f,const Date &d)
+    {
+        auto id=get_id(i,f);
+        int start=id.first,end=id.second;
+        return {station[start].departure+RealTime(d),station[end].arrival+RealTime(d)};
+    }
     pair<int,Date> check_if_later(const Train &train,const Date &start_date,str start_station,str transfer_station) const
     {
         auto ids=get_id(start_station,transfer_station);
@@ -275,6 +272,8 @@ public:
         }
         return {0,Date()};
     }
+
+    int seat_number() const {return seatNum;}
     int check_seat(str i,str f,const Date &d,ST &store) const
     {
         auto id=get_id(i,f);
@@ -284,7 +283,6 @@ public:
         auto seats=store.FindByKey(main_key).first;
         return seats.min_seat(start,end);
     }
-
     void decrease_seat(str i,str f,const Date &d,int n,ST &store)
     {
         auto id=get_id(i,f);
@@ -295,12 +293,6 @@ public:
         seats.de_seat(start,end,n);
         store.Update(main_key,seats);
     }
-    pair<RealTime,RealTime> obtain_time(str i,str f,const Date &d)
-    {
-        auto id=get_id(i,f);
-        int start=id.first,end=id.second;
-        return {station[start].departure+RealTime(d),station[end].arrival+RealTime(d)};
-    }
     void increase_seat(str i,str f,const Date &d,int n,ST &store)
     {
         auto date=date_for_record(i,d);
@@ -308,12 +300,12 @@ public:
     }
 };
 
-enum STATUS{SUCCESS=1,PENDING=0,REFUNDED=-1};
+enum Status{SUCCESS=1,PENDING=0,REFUNDED=-1};
 class Log
 {
     // The main-key is "username+id"
     int id; // The main-key.
-    STATUS status;
+    Status status;
     MyString username;// The tag.
     MyString trainID;
     MyString From,To;
@@ -321,7 +313,7 @@ class Log
     int price,num;
 public:
     Log()=default;
-    Log(int k,STATUS s,str u,str i,str f,str t,const RealTime &d,const RealTime &a,int p,int n):username(u),trainID(i),From(f),To(t),departure(d),arrive(a),status(s)
+    Log(int k,Status s,str u,str i,str f,str t,const RealTime &d,const RealTime &a,int p,int n): username(u),trainID(i),From(f),To(t),departure(d),arrive(a),status(s)
     {
         price=p; num=n; id=k;
     }
@@ -332,11 +324,11 @@ public:
         output+=to_string(price)+" "+to_string(num);
         return output;
     }
-    void modify_status(const STATUS &s) {status=s;}
+    void modify_status(const Status &s) {status=s;}
     string main_key() const {return (string)username+to_string(id);}
     string tag() const {return (string)username;}
     string user() const {return (string)username;}
-    STATUS status_now() const {return status;}
+    Status status_now() const {return status;}
     string status_string() const
     {
         if(status==PENDING) return "pending";

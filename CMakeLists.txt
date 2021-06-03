@@ -3,7 +3,7 @@ project(code)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_compile_options(-std=c++11 -Ofast)
+add_compile_options(-std=c++14 -Ofast)
 
 include_directories(src)
 include_directories(src/include)

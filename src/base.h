@@ -148,8 +148,8 @@ struct RealTime
     long long minutes=-404;
 
     RealTime()=default;
-    explicit RealTime(const long long &m):minutes(m){}
     RealTime(const RealTime &r):minutes(r.minutes){}
+    explicit RealTime(const long long &m):minutes(m){}
     explicit RealTime(const Date &d,const Time &t)
     {
         minutes=0;

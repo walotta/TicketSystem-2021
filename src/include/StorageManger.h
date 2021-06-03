@@ -75,7 +75,7 @@ public:
     inline void RemoveTag(const string& MainKey,const vector<string>& TagList)
     {
         if(TagIndex==nullptr)throw error("this StorageManger has no TagIndex");
-        int remove_id=MainIndex->find(MainKey);
+        int remove_id=MainIndex->find(MainKey)[0];
         for(auto Tag:TagList)
         {
             TagIndex->remove(Tag,remove_id);
