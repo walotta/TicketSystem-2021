@@ -30,14 +30,10 @@ class ManagementSystem
     typedef StorageManger<Order,300,300,300,300,300> OD;
 
 
-
-
     TrainManager train;
     UserManager user;
     OD order;
 
-
-    bool buy_ticket(const Order &order);
     void add_order(int id,str u,str i,const Date &d,str f,str t,const int &n);
 
 public:

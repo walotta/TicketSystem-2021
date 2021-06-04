@@ -73,7 +73,8 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
     int number=total_number+1-n;
     if(number<=0 || number>total_number) return fail;
 
-    auto back=train.refund_ticket(u,number);
+    Date refund_date;
+    auto back=train.refund_ticket(u,number,refund_date);
     if(back.second==-1) return fail;
 
     auto &trainID=back.first;
@@ -97,17 +98,23 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
     {
         // Process pending after refund.
         sort(orders.begin(),orders.end());
+        auto train1=train.get_train(trainID);
+        string main_key(trainID+" "+refund_date.display());
+        auto seats=train.get_seat(trainID,refund_date);
         for(int i=0;i<orders.size();++i)
         {
             auto &orderI=orders[i];
-            bool If_success=train.re_buy_ticket(trainID,orderI.date,(string)orderI.start,(string)orderI.arrive,orderI.number,orderI.id,(string)orderI.user);
+            auto day=train1.date_for_record((string)orderI.start,orderI.date);
+            if(!(day==refund_date)) continue;
+            bool If_success=train.re_buy_ticket((string)orderI.start,(string)orderI.arrive,orderI.number,orderI.id,(string)orderI.user,train1,seats);
             if(If_success)
             {
-                string main_key(to_string(orderI.serial_number)),&tag=trainID;
-                order.RemoveTag(main_key,tag);
-                order.Remove(main_key);
+                string serial_key(to_string(orderI.serial_number)),&tag=trainID;
+                order.RemoveTag(serial_key,tag);
+                order.Remove(serial_key);
             }
         }
+        train.update_seat(main_key,seats);
     }
     return success;
 }
@@ -148,13 +155,6 @@ bool ManagementSystem::clean()
 int ManagementSystem::query_user_priority(const string &u)
 {
     return user.query_user_priority(u);
-}
-
-bool ManagementSystem::buy_ticket(const ManagementSystem::Order &ord)
-{
-    bool If_queue_success=train.re_buy_ticket((string)ord.trainID,ord.date,(string)ord.start,(string)ord.arrive,ord.number,ord.id,(string)ord.user);
-    if(If_queue_success) return true;
-    else return false;
 }
 
 void ManagementSystem::add_order(int id,const string &u,const string &i,const Date &d,const string &f,const string &t,const int &n)

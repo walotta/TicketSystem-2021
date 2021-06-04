@@ -224,7 +224,7 @@ lint TrainManager::buy_ticket(const string &i,Date d,const string &f,const strin
     }
 }
 
-pair<string,int> TrainManager::refund_ticket(const string &u,const int &n)
+pair<string,int> TrainManager::refund_ticket(const string &u,const int &n,Date &d)
 {
     pair<string,int> output("fail",-1);
     string main_key=u+to_string(n);
@@ -241,24 +241,40 @@ pair<string,int> TrainManager::refund_ticket(const string &u,const int &n)
     auto train1=train.FindByKey(output.first).first;
     auto stations=log1.stations();
     auto day=log1.times().first.date();
-
+    d=train1.date_for_record(stations.first,day);
     train1.increase_seat(stations.first,stations.second,day,log1.number(),seat);
 //    train.Update(output.first,train1);// consider: This line is redundant.
     return output;
 }
 
-bool TrainManager::re_buy_ticket(const string &i,Date d,const string &f,const string &t,int n,int id,const string &u)
+bool TrainManager::re_buy_ticket(const string &f,const string &t,int n,int id,const string &u,const Train &train1,RemainedSeat &seats)
 {
-    auto train_find=train.FindByKey(i).first;
-    auto date=train_find.date_for_record(f,d);
-    auto seat_remain=train_find.check_seat(f,t,date,seat);
+    auto ids=train1.get_id(f,t);
+    auto seat_remain=seats.min_seat(ids.first,ids.second);
     if(seat_remain>=n)
     {
-        train_find.decrease_seat(f,t,date,n,seat);
+        seats.de_seat(ids.first,ids.second,n);
         update_log(u,id,SUCCESS);
         return true;
     }
     return false;
+}
+
+Train TrainManager::get_train(const string &i)
+{
+    return train.FindByKey(i).first;
+}
+
+RemainedSeat TrainManager::get_seat(const string &i,const Date &d)
+{
+    string main_key(i+" "+d.display());
+    auto seats=seat.FindByKey(main_key).first;
+    return seats;
+}
+
+void TrainManager::update_seat(str main_key,const RemainedSeat &seat1)
+{
+    seat.Update(main_key,seat1);
 }
 
 

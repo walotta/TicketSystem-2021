@@ -80,6 +80,8 @@ private:
     bool If_release;
     char type;
 
+
+public:
     pair<int,int> get_id(str i,str f) const
     {
         int start=0,end=0;
@@ -98,7 +100,7 @@ private:
         }
         return stationNum;
     }
-public:
+
     Train()=default;
     ~Train()=default;
     Train(str i,int n,int m,const vecS &s,vecI p,Time x,vecI t,vecI o,Date d_beg,Date d_end,char y):trainID(i),startTime(x),sale_beg(d_beg),sale_end(d_end)
@@ -279,7 +281,7 @@ public:
         auto seats=store.FindByKey(main_key).first;
         return seats.min_seat(start,end);
     }
-    void decrease_seat(str i,str f,const Date &d,int n,ST &store)
+    void decrease_seat(str i,str f,const Date &d,int n,ST &store) const
     {
         auto id=get_id(i,f);
         int start=id.first,end=id.second;

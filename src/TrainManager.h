@@ -28,10 +28,13 @@ public:
     void query_transfer(str s,str t,Date d,bool If_time,vecS &out);
     void query_order(str u,vecS &out); // If query failed, return an empty vector.
     lint buy_ticket(str i,Date d,str f,str t,int n,int id,str u,bool q);// If but_ticket failed, return 0; If no such train, return -404;
-    pair<string,int> refund_ticket(str u,const int &n);
+    pair<string,int> refund_ticket(str u,const int &n,Date &d);
     bool clean();
 
-    bool re_buy_ticket(str i,Date d,str f,str t,int n,int id,str u);// If success, return true;
+    bool re_buy_ticket(str f,str t,int n,int id,str u,const Train &train1,RemainedSeat &seats);// If success, return true;
+    Train get_train(str i);
+    RemainedSeat get_seat(str i,const Date &d);
+    void update_seat(str main_key,const RemainedSeat &seat1);
 };
 
 
