@@ -17,20 +17,17 @@ private:
         for(int i=0; i<input.size(); ++i) ans=10*ans+(input[i]-'0');
         return ans;
     }
-    vector<int> to_vector_int(str input)
+    void to_vector_int(str input,vector<int> &out)
     {
-        vector<int> output;
         Fourest::separator ints("|");
         ints.process(input);
-        for(int i=0;i<ints.size();++i) output.push_back(to_int(ints[i]));
-        return output;
+        for(int i=0;i<ints.size();++i) out.push_back(to_int(ints[i]));
     }
-    vector<string> to_vector_str(str input)
+    void to_vector_str(str input,vector<string> &out)
     {
-        vector<int> output;
         Fourest::separator ints("|");
         ints.process(input);
-        return ints.content();
+        out=ints.content();
     }
     Date to_date(str input)
     {
@@ -135,11 +132,11 @@ public:
                     if(tokens[j]=="-i") i=tokens[j+1];
                     else if(tokens[j]=="-n") n=to_int(tokens[j+1]);
                     else if(tokens[j]=="-m") m=to_int(tokens[j+1]);
-                    else if(tokens[j]=="-s") s=to_vector_str(tokens[j+1]);
-                    else if(tokens[j]=="-p") p=to_vector_int(tokens[j+1]);
+                    else if(tokens[j]=="-s") to_vector_str(tokens[j+1],s);
+                    else if(tokens[j]=="-p") to_vector_int(tokens[j+1],p);
                     else if(tokens[j]=="-x") x=to_time(tokens[j+1]);
-                    else if(tokens[j]=="-t") t=to_vector_int(tokens[j+1]);
-                    else if(tokens[j]=="-o") {if(n>2) o=to_vector_int(tokens[j+1]);}
+                    else if(tokens[j]=="-t") to_vector_int(tokens[j+1],t);
+                    else if(tokens[j]=="-o") {if(n>2) to_vector_int(tokens[j+1],o);}
                     else if(tokens[j]=="-d")
                     {
                         Fourest::separator process("|");
