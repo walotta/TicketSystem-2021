@@ -43,9 +43,11 @@ public:
 
     explicit StoragePool(const string& FileName):StorageFileName(FileName)
     {
-        pool.open(dir+FileName,fstream::in|fstream::out|ios::binary);
+        pool.open(dir+FileName,fstream::in|ios::binary);
         if(pool.fail())
         {
+            pool.clear();
+            pool.close();
             pool.open(dir+FileName,fstream::out|ios::binary);
             pool.close();
             pool.open(dir+FileName,fstream::in|fstream::out|ios::binary);

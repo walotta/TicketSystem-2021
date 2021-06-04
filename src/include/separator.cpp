@@ -48,7 +48,7 @@ namespace Fourest
         return true;
     }
 
-    std::vector<str> separator::content() const
+    std::vector<str> &separator::content()
     {
         return words;
     }

@@ -32,7 +32,7 @@ namespace Fourest
         void clear();
         void process(const str &);
         bool readLine(std::istream &);
-        std::vector<str> content() const;
+        std::vector<str> &content();
 
         str operator[](int) const;
 

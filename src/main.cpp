@@ -1,7 +1,7 @@
 #include "cmd.hpp"
 #include <iostream>
 
-ifstream in("../data/basic_6/1.in");
+ifstream in("../data/basic_6/10.in");
 ofstream out("output.txt");
 
 
@@ -16,7 +16,7 @@ int main(int argc,char *argv[])
     cmd ticketLibrary;
     if(run_with_io)
     {
-        try {ticketLibrary.run(cin,cout);}
+        try {ticketLibrary.run(in,out);}
         catch(error x)
         {
             cout<<x.what()<<endl;
