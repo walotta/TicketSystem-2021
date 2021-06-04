@@ -22,11 +22,11 @@ public:
 
     bool add_train(str i,int n,int m,const vecS &s,vecI p,Time x,vecI t,vecI o,Date d_beg,Date d_end,char y);
     bool release_train(str i);// Only after we release the train when we could check its seat number.
-    vecS query_train(str i,Date d);
+    void query_train(str i,Date d,vecS &out);
     bool delete_train(str i);
-    vecS query_ticket(str s,str t,Date d,bool If_time);
-    vecS query_transfer(str s,str t,Date d,bool If_time);
-    vecS query_order(str u); // If query failed, return an empty vector.
+    void query_ticket(str s,str t,Date d,bool If_time,vecS &out);
+    void query_transfer(str s,str t,Date d,bool If_time,vecS &out);
+    void query_order(str u,vecS &out); // If query failed, return an empty vector.
     lint buy_ticket(str i,Date d,str f,str t,int n,int id,str u,bool q);// If but_ticket failed, return 0; If no such train, return -404;
     pair<string,int> refund_ticket(str u,const int &n);
     bool clean();

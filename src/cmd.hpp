@@ -14,11 +14,7 @@ private:
     int to_int(const string& input)
     {
         int ans=0;
-        for(int i=0; i<input.size(); ++i)
-        {
-            ans*=10;
-            ans+=input[i]-'0';
-        }
+        for(int i=0; i<input.size(); ++i) ans=10*ans+(input[i]-'0');
         return ans;
     }
     vector<int> to_vector_int(str input)
@@ -170,7 +166,9 @@ public:
                     if(tokens[j]=="-i") i=tokens[j+1];
                     else d=to_date(tokens[j+1]);
                 }
-                auto ans=sys.query_train(i,d);
+                static vecS ans;
+                ans.clear();
+                sys.query_train(i,d,ans);
                 print_os(ans,os);
             }
             else if(command=="delete_train")
@@ -195,7 +193,9 @@ public:
                         else p=false;
                     }
                 }
-                auto ans=sys.query_ticket(s,t,d,p);
+                static vecS ans;
+                ans.clear();
+                sys.query_ticket(s,t,d,p,ans);
                 print_os(ans,os);
             }
             else if(command=="query_transfer")
@@ -214,7 +214,9 @@ public:
                         else p=false;
                     }
                 }
-                auto ans=sys.query_transfer(s,t,d,p);
+                static vecS ans;
+                ans.clear();
+                sys.query_transfer(s,t,d,p,ans);
                 print_os(ans,os);
             }
             else if(command=="buy_ticket")
@@ -243,7 +245,9 @@ public:
             {
                 string u("");
                 if(tokens[1]=="-u") u=tokens[2];
-                auto ans=sys.query_order(u);
+                static vecS ans;
+                ans.clear();
+                sys.query_order(u,ans);
                 print_os(ans,os);
             }
             else if(command=="refund_ticket")

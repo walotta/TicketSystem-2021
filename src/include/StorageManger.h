@@ -103,16 +103,16 @@ public:
         TagIndex->insert(hash(Tag),find_id);
     }
 
-    inline vector<T> FindByTag(const string& Tag)
+    inline void FindByTag(const string& Tag, vector<T> &ansList)
     {
         if(TagIndex==nullptr)throw error("this StorageManger has no TagIndex");
         vector<int>id_list=TagIndex->find(hash(Tag));
-        vector<T>ansList;
+//        vector<T>ansList;
         for(auto it:id_list)
         {
             ansList.push_back(dataLibrary->get(it));
         }
-        return ansList;
+//        return ansList;
     }
 
     inline std::pair<T,bool> FindByKey(const string& MainKey)

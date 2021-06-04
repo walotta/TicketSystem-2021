@@ -129,11 +129,9 @@ public:
     pair<Date,Date> date() const {return {sale_beg,sale_end};}
     int station_number() const {return stationNum;}
     string station_name(const int &pos) const {return (string)station[pos].name;}
-    vecS stations() const
+    void stations(vecS &out) const
     {
-        vecS output;
-        for(int i=0;i<stationNum;++i) output.push_back((string)station[i].name);
-        return output;
+        for(int i=0;i<stationNum;++i) out.push_back((string)station[i].name);
     }
     RealTime station_departure(const int &pos) const {return station[pos].departure;}
     RealTime station_arrival(const int &pos) const {return station[pos].arrival;}
@@ -167,10 +165,9 @@ public:
         }
         return true;
     }
-    vecS query_train(const Date &d,ST &store) const
+    void query_train(const Date &d,ST &store,vecS &out) const
     {
-        vecS output;
-        output.push_back((string)trainID+" "+type);
+        out.push_back((string)trainID+" "+type);
         auto seat=store.FindByKey((string)trainID+" "+d.display()).first;
         for(int i=0;i<stationNum;++i)
         {
@@ -187,9 +184,8 @@ public:
                 if(!If_release) temp+=to_string(seatNum);
                 else temp+=to_string(seat[i]);
             }
-            output.push_back(temp);
+            out.push_back(temp);
         }
-        return output;
     }
     string information(str i,str f,const Date &d,ST &store) const
     {

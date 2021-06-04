@@ -36,25 +36,34 @@ bool TrainManager::delete_train(const string &i)
     auto temp=train.FindByKey(i);
     if(!temp.second) return false; // If find the train do not existed, return false;
     if(temp.first.if_release()) return false;
-    train.RemoveTag(i,temp.first.stations());
+    static vector<string> stations;
+    stations.clear();
+    temp.first.stations(stations);
+    train.RemoveTag(i,stations);
     train.Remove(i);
     return true;
 }
 
-vecS TrainManager::query_train(const string &i,Date d)
+void TrainManager::query_train(const string &i,Date d,vecS &out)
 {
     vecS fail({"-1"});
     auto tp=train.FindByKey(i);
-    if(!tp.second) return fail;
+    if(!tp.second) {out=fail; return;}
     auto &t=tp.first;
-    if(d<t.date().first || t.date().second<d) return fail;
-    return t.query_train(d,seat);
+    if(d<t.date().first || t.date().second<d) {out=fail; return;}
+    t.query_train(d,seat,out);
 }
 
-vecS TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_time)
+void TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_time,vecS &out)
 {
-    auto trains1=train.FindByTag(s);
-    auto trains2=train.FindByTag(t);
+    static vector<Train> trains1;
+    static vector<Train> trains2;
+    trains1.clear(); trains2.clear();
+    train.FindByTag(s,trains1);
+    train.FindByTag(t,trains2);
+
+//    auto trains1=train.FindByTag(s);
+//    auto trains2=train.FindByTag(t);
 
     unordered_set<string> station1;
     vector<pair<pair<int,string>,int>> list; // The first one is value, the second one is id.
@@ -73,13 +82,14 @@ vecS TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_t
             }
         }
     }
-    if(list.empty()) return vecS({"0"});
+    if(list.empty()) {
+        out.push_back("0");
+        return;
+    }
     sort(list.begin(),list.end());
 
-    vecS output;
-    output.push_back(to_string(list.size()));
-    for(int k=0; k<list.size(); ++k) output.push_back(trains2[list[k].second].information(s,t,d,seat));
-    return output;
+    out.push_back(to_string(list.size()));
+    for(int k=0; k<list.size(); ++k) out.push_back(trains2[list[k].second].information(s,t,d,seat));
 }
 
 int TrainManager::write_log(int id,Status s,const string &u,const string &i,const string &f,const string &t,const RealTime &d,const RealTime &a,lint p,int n)
@@ -101,19 +111,25 @@ bool TrainManager::update_log(const string &u,int id,Status s)
     return true;
 }
 
-vecS TrainManager::query_order(const string &u)
+void TrainManager::query_order(const string &u,vecS &out)
 {
-    auto temp=log.FindByTag(u);
-    vecS output;
-    output.push_back(to_string(temp.size()));
-    for(int i=temp.size()-1;i>=0;--i) output.push_back(temp[i].display());
-    return output;
+    static vector<Log> temp;
+    temp.clear();
+    log.FindByTag(u,temp);
+    out.push_back(to_string(temp.size()));
+    for(int i=temp.size()-1;i>=0;--i) out.push_back(temp[i].display());
 }
 
-vecS TrainManager::query_transfer(const string &s,const string &t,Date d,bool If_time)
+void TrainManager::query_transfer(const string &s,const string &t,Date d,bool If_time,vecS &out)
 {
-    auto trains1=train.FindByTag(s);
-    auto trains2=train.FindByTag(t);
+    static vector<Train> trains1;
+    static vector<Train> trains2;
+    trains1.clear(); trains2.clear();
+    train.FindByTag(s,trains1);
+    train.FindByTag(t,trains2);
+
+//    auto trains1=train.FindByTag(s);
+//    auto trains2=train.FindByTag(t);
 
     bool If_find=false;
     int cost_minimal=-1,train1_id,train2_id,cost_time_1=-1;
@@ -165,12 +181,14 @@ vecS TrainManager::query_transfer(const string &s,const string &t,Date d,bool If
         }
     }
 
-    if(!If_find) return vecS({"0"});
+    if(!If_find)
+    {
+        out.push_back("0");
+        return;
+    }
 //    printf("[Debug]: In function (query_transfer), train1=%s, train2=%s, station1=%s, station2=%s, station_transfer=%s, date_of_transfer=%s\n",trains1[train1_id].train_id().c_str(),trains2[train2_id].train_id().c_str(),s.c_str(),t.c_str(),transfer_station.c_str(),date_of_transfer.display().c_str());
-    vecS output;
-    output.push_back(trains1[train1_id].information(s,transfer_station,d,seat));
-    output.push_back(trains2[train2_id].information(transfer_station,t,date_of_transfer,seat));
-    return output;
+    out.push_back(trains1[train1_id].information(s,transfer_station,d,seat));
+    out.push_back(trains2[train2_id].information(transfer_station,t,date_of_transfer,seat));
 }
 
 lint TrainManager::buy_ticket(const string &i,Date d,const string &f,const string &t,int n,int id,const string &u,bool q)
@@ -225,7 +243,7 @@ pair<string,int> TrainManager::refund_ticket(const string &u,const int &n)
     auto day=log1.times().first.date();
 
     train1.increase_seat(stations.first,stations.second,day,log1.number(),seat);
-    train.Update(output.first,train1);// consider: This line is redundant.
+//    train.Update(output.first,train1);// consider: This line is redundant.
     return output;
 }
 

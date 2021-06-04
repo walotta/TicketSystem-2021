@@ -24,9 +24,9 @@ bool ManagementSystem::delete_train(const string &i)
     return train.delete_train(i);
 }
 
-vecS ManagementSystem::query_train(const string &i,Date d)
+void ManagementSystem::query_train(const string &i,Date d,vecS &out)
 {
-    return train.query_train(i,d);
+    train.query_train(i,d,out);
 }
 
 bool ManagementSystem::add_user(const string &c,const string &u,const string &p,const string &n,const string &m,int g)
@@ -39,20 +39,20 @@ bool ManagementSystem::add_train(const string &i,int n,int m,const vecS &s,const
     return train.add_train(i,n,m,s,p,x,t,o,d_beg,d_end,y);
 }
 
-vecS ManagementSystem::query_ticket(const string &s,const string &t,Date d,bool If_time)
+void ManagementSystem::query_ticket(const string &s,const string &t,Date d,bool If_time,vecS &out)
 {
-    return train.query_ticket(s,t,d,If_time);
+    train.query_ticket(s,t,d,If_time,out);
 }
 
-vecS ManagementSystem::query_transfer(const string &s,const string &t,Date d,bool If_time)
+void ManagementSystem::query_transfer(const string &s,const string &t,Date d,bool If_time,vecS &out)
 {
-    return train.query_transfer(s,t,d,If_time);
+    train.query_transfer(s,t,d,If_time,out);
 }
 
-vector<string> ManagementSystem::query_order(const string &u)
+void ManagementSystem::query_order(const string &u,vecS &out)
 {
-    if(user.check_priority(u)==-404) return vecS({"-1"});
-    return train.query_order(u);
+    if(user.check_priority(u)==-404) out.push_back("-1");
+    else train.query_order(u,out);
 }
 
 string ManagementSystem::query_profile(const string &c,const string &u)
@@ -77,7 +77,9 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
     if(back.second==-1) return fail;
 
     auto &trainID=back.first;
-    auto orders=order.FindByTag(trainID);
+    static vector<Order> orders;
+    orders.clear();
+    order.FindByTag(trainID,orders);
     if(back.second==0)
     {
         for(int i=0; i<orders.size(); ++i)

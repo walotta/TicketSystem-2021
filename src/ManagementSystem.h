@@ -46,10 +46,10 @@ public:
 
     bool add_train(str i,int n,int m,const vecS &s,vecI p,Time x,vecI t,vecI o,Date d_beg,Date d_end,char y);
     bool release_train(str i);
-    vecS query_train(str i,Date d);
+    void query_train(str i,Date d,vecS &out);
     bool delete_train(str i);
-    vecS query_ticket(str s,str t,Date d,bool If_time);
-    vecS query_transfer(str s,str t,Date d,bool If_time);
+    void query_ticket(str s,str t,Date d,bool If_time,vecS &out);
+    void query_transfer(str s,str t,Date d,bool If_time,vecS &out);
     string buy_ticket(str u,str i,const Date &d,str f,str t,int n,bool q);
 
     bool add_user(str c,str u,str p,str n,str m,int g);
@@ -57,7 +57,7 @@ public:
     bool logout(str u);
     string query_profile(str c,str u);
     string modify_profile(str c,str u,str p,str n,str m,int g);
-    vecS query_order(str u); // If query failed, return an empty vector.
+    void query_order(str u,vecS &out); // If query failed, return an empty vector.
 
     int query_user_priority(str u);
     bool refund_ticket(str u,int n);
