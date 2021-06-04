@@ -73,7 +73,7 @@ private:
         {
             int pos=-1;
             dataBlock tem=BlockList->get(list_id);
-            while(list_id!=-1)
+            while(tem.next!=-1)
             {
                 for(int i=0;i<tem.cnt;i++)
                 {
@@ -173,14 +173,14 @@ public:
         delete BlockList;
     }
 
-    std::vector<int> find(const string &key)const
+    std::vector<int> find(const unsigned long long &key)const
     {
         std::vector<int> res=index->find(key);
         if(res.empty())return res;
         else return BlockList->give_list(res[0]);
     }
 
-    void remove(const string &key, const int &id)
+    void remove(const unsigned long long &key, const int &id)
     {
         int list_id=index->find(key)[0];
         bool empty=BlockList->remove(list_id,id);
@@ -190,7 +190,7 @@ public:
         }
     }
 
-    void insert(const string &key, const int &id)
+    void insert(const unsigned long long &key, const int &id)
     {
         vector<int> tem=index->find(key);
         if(tem.empty())
