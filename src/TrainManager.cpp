@@ -24,7 +24,7 @@ bool TrainManager::clean()
 bool TrainManager::add_train(const string &i,int n,int m,const vecS &s,const vector<int> &p,Time x,const vector<int> &t,const vector<int> &o,Date d_beg,Date d_end,char y)
 {
     auto temp=train.FindByKey(i);
-    if(temp.second) return false;
+    if(temp.second) return false; // If find the train already existed, return false;
     Train new_train(i,n,m,s,p,x,t,o,d_beg,d_end,y);
     train.insert(i,new_train);
     train.AddTag(i,s);
@@ -34,9 +34,8 @@ bool TrainManager::add_train(const string &i,int n,int m,const vecS &s,const vec
 bool TrainManager::delete_train(const string &i)
 {
     auto temp=train.FindByKey(i);
-    if(!temp.second) return false;
+    if(!temp.second) return false; // If find the train do not existed, return false;
     if(temp.first.if_release()) return false;
-
     train.RemoveTag(i,temp.first.stations());
     train.Remove(i);
     return true;
@@ -56,7 +55,6 @@ vecS TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_t
 {
     auto trains1=train.FindByTag(s);
     auto trains2=train.FindByTag(t);
-
 
     unordered_set<string> station1;
     vector<pair<pair<int,string>,int>> list; // The first one is value, the second one is id.

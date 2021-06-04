@@ -41,6 +41,8 @@ namespace Fourest
     {
         std::string input;
         getline(_is,input);
+        //testing
+        //printf("[Debug]: %s\n",input.c_str());
         process(input);
         if(_is.eof()) return false;
         return true;

@@ -11,7 +11,6 @@ class cmd
 private:
     ManagementSystem sys;
     Fourest::separator words;
-    stringstream split;
     int to_int(const string& input)
     {
         int ans=0;
@@ -50,29 +49,6 @@ private:
         return Time(to_int(processor[0]),to_int(processor[1]));
     }
 
-    Date readDate(istream& o)
-    {
-        int month,day;
-        o>>month;
-        o.get();
-        o>>day;
-        Date ans;
-        ans.month=month;
-        ans.day=day;
-        return ans;
-    }
-    Time readTime(istream& o)
-    {
-        int hour,minute;
-        o>>hour;
-        o.get();
-        o>>minute;
-        Time ans;
-        ans.hour=hour;
-        ans.minute=minute;
-        return ans;
-    }
-
     template<class T>
     void print_os(const vector<T> &list,ostream& o)
     {
@@ -91,6 +67,7 @@ public:
         do
         {
             auto tokens=words.content();
+            if(tokens.empty()) continue;
             auto &command=tokens[0];
             if(command=="add_user")
             {

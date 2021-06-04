@@ -36,13 +36,13 @@ private:
         int FrontLeaf=-1;
         int storeNumber=-1;
         int storeId[Size];
-        MyString storeKey[Size];
+        unsigned long long storeKey[Size];
     };
     BStore rootBlock;
     StoragePool<BStore,assistStore,SizeOfCache>* storage;
 
     //返回是否需要裂块，需要返回裂块后的新id值
-    int dp_insert(int now,MyString key, const int &id){
+    int dp_insert(int now,unsigned long long key, const int &id){
         BStore nowBlock=storage->get(now);
         if(nowBlock.IfLeaves)
         {
@@ -193,7 +193,7 @@ private:
             {
                 //处理裂块
                 BStore temm=storage->get(nowBlock.storeId[i]);
-                MyString newKey=temm.storeKey[0];
+                unsigned long long newKey=temm.storeKey[0];
                 if(nowBlock.storeNumber<Size)
                 {
                     for(int j=nowBlock.storeNumber;j>i;j--)
@@ -257,7 +257,7 @@ private:
     }
 
     //搜索删除，在返回后由父节点判断是否需要合并
-    void dp_remove(int now,const MyString &key, const int &id)
+    void dp_remove(int now,const unsigned long long &key, const int &id)
     {
         BStore nowBlock=storage->get(now);
         if(nowBlock.IfLeaves)
@@ -496,7 +496,7 @@ private:
         }
     }
 
-    std::vector<int> dp_find(int now,const MyString &key)const
+    std::vector<int> dp_find(int now,const unsigned long long &key)const
     {
         BStore nowBlock=storage->get(now);
         if(nowBlock.IfLeaves)
@@ -583,7 +583,7 @@ public:
         delete storage;
     }
 
-    void insert(const string &key, const int &id)
+    void insert(const unsigned long long &key, const int &id)
     {
         if(root==-1)
         {
@@ -691,7 +691,7 @@ public:
         }
     }
 
-    void remove(const string &key, const int &id)
+    void remove(const unsigned long long &key, const int &id)
     {
         //不完全，对于重复key的块合并不完整
         /*bool check_flag=false;
@@ -739,7 +739,7 @@ public:
         }
     }
 
-    std::vector<int> find(const string &key)const
+    std::vector<int> find(const unsigned long long &key)const
     {
         if(root==-1)
         {

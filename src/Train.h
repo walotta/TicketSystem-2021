@@ -124,7 +124,7 @@ public:
         return trainID<t.trainID;
     }
 
-    bool if_release() const { return If_release; }
+    bool if_release() const {return If_release;}
     string train_id() const {return (string)trainID;}
     pair<Date,Date> date() const {return {sale_beg,sale_end};}
     int station_number() const {return stationNum;}
