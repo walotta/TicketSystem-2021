@@ -13,6 +13,8 @@
 #include "StoragePool.h"
 #include "ErrorMessage.h"
 #include "MyString.hpp"
+#include <chrono>
+using namespace std::chrono;
 
 template<int Size,int SizeOfCache>
 class BPlusTree
@@ -36,13 +38,20 @@ private:
         int FrontLeaf=-1;
         int storeNumber=-1;
         int storeId[Size];
-        unsigned long long storeKey[Size];
+        std::pair<unsigned long long,long long> storeKey[Size];
     };
     BStore rootBlock;
     StoragePool<BStore,assistStore,SizeOfCache>* storage;
 
+    unsigned long long hash(const string& hash_in)
+    {
+        unsigned long long res=0;
+        for(auto it:hash_in)res=(res<<16)+res+(unsigned int)it;
+        return res;
+    }
+
     //返回是否需要裂块，需要返回裂块后的新id值
-    int dp_insert(int now,unsigned long long key, const int &id){
+    int dp_insert(int now,std::pair<unsigned long long,long long> key, const int &id){
         BStore nowBlock=storage->get(now);
         if(nowBlock.IfLeaves)
         {
@@ -193,7 +202,7 @@ private:
             {
                 //处理裂块
                 BStore temm=storage->get(nowBlock.storeId[i]);
-                unsigned long long newKey=temm.storeKey[0];
+                std::pair<unsigned long long,long long> newKey=temm.storeKey[0];
                 if(nowBlock.storeNumber<Size)
                 {
                     for(int j=nowBlock.storeNumber;j>i;j--)
@@ -257,7 +266,7 @@ private:
     }
 
     //搜索删除，在返回后由父节点判断是否需要合并
-    void dp_remove(int now,const unsigned long long &key, const int &id)
+    void dp_remove(int now,const std::pair<unsigned long long,long long> &key, const int &id)
     {
         BStore nowBlock=storage->get(now);
         if(nowBlock.IfLeaves)
@@ -496,7 +505,7 @@ private:
         }
     }
 
-    std::vector<int> dp_find(int now,const unsigned long long &key)const
+    void dp_find(int now,const unsigned long long &key,std::vector<std::pair<int,long long>>& res)const
     {
         BStore nowBlock=storage->get(now);
         if(nowBlock.IfLeaves)
@@ -504,45 +513,44 @@ private:
             int i=0;
             for(i=0;i<nowBlock.storeNumber;i++)
             {
-                if(key<nowBlock.storeKey[i])break;
+                if(key<nowBlock.storeKey[i].first)break;
             }
             i--;
             if(i==-1)
             {
-                vector<int> ans;
-                return ans;
+                res.clear();
+                return;
             }
-            if(nowBlock.storeKey[i]==key)
+            if(nowBlock.storeKey[i].first==key)
             {
-                vector<int> ans;
-                ans.push_back(nowBlock.storeId[i]);
+                res.push_back(make_pair(nowBlock.storeId[i],nowBlock.storeKey[i].second));
                 for(int j=i-1;j>=0;j--)
                 {
-                    if(nowBlock.storeKey[j]==key)ans.push_back(nowBlock.storeId[j]);
-                    else return ans;
+                    if(nowBlock.storeKey[j].first==key)res.push_back(make_pair(nowBlock.storeId[i],nowBlock.storeKey[i].second));
+                    else return;
                 }
                 BStore find=storage->get(nowBlock.FrontLeaf);
                 while(true)
                 {
                     for(int j=find.storeNumber-1;j>=0;j--)
                     {
-                        if(find.storeKey[j]==key)ans.push_back(find.storeId[j]);
-                        else return ans;
+                        if(find.storeKey[j]==key)res.push_back(make_pair(nowBlock.storeId[i],nowBlock.storeKey[i].second));
+                        else return;
                     }
-                    if(find.FrontLeaf==-1)return ans;
+                    if(find.FrontLeaf==-1)return;
                     else find=storage->get(find.FrontLeaf);
                 }
             }else
             {
-                vector<int> ans;
-                return ans;
+                res.clear();
+                return;
             }
         }else
         {
             int i=0;
             for(i=0;i<nowBlock.storeNumber-1;i++)
             {
-                if(key<nowBlock.storeKey[i+1])break;
+                if(key<nowBlock.storeKey[i+1].first)break;
             }
             return dp_find(nowBlock.storeId[i],key);
         }
@@ -583,8 +591,9 @@ public:
         delete storage;
     }
 
-    void insert(const unsigned long long &key, const int &id)
+    void insert(const std::pair<string ,long long > &key_, const int &id)
     {
+        std::pair<unsigned long long ,long long >key=make_pair(hash(key_.first),key_.second);
         if(root==-1)
         {
             //当前无数据
@@ -605,78 +614,6 @@ public:
             if(newId==-1)return;
             else
             {
-                /*if(rootBlock.IfLeaves)
-                {
-                    //仅有一个节点的裂块
-                    BStore new_head;
-                    BStore temm=bptStorage->get(newId);
-                    new_head.IfLeaves=false;
-                    new_head.storeNumber=2;
-                    new_head.storeKey[0]=temm.storeKey[0];
-                    new_head.storeId[0]=newId;
-                    new_head.storeKey[1]=rootBlock.storeKey[0];
-                    new_head.storeId[1]=root;
-                    root=bptStorage->add(new_head);
-                    rootBlock=new_head;
-                }else
-                {
-                    //有多个节点的裂块
-                    if(rootBlock.storeNumber<Size)
-                    {
-                        int i=0;
-                        for(i=0;i<rootBlock.storeNumber;i++)
-                        {
-                            if(key<rootBlock.storeKey[i])break;
-                        }
-                        for(int j=rootBlock.storeNumber;j>i;j--)
-                        {
-                            rootBlock.storeId[j]=rootBlock.storeId[j-1];
-                            rootBlock.storeKey[j]=rootBlock.storeKey[j-1];
-                        }
-                        rootBlock.storeNumber++;
-                        rootBlock.storeId[i]=newId;
-                        BStore temm=bptStorage->get(rootBlock.storeId[i+1]);
-                        rootBlock.storeKey[i+1]=temm.storeKey[0];
-                        bptStorage->update(root,rootBlock);
-                        return;
-                    }else
-                    {
-                        int i=0;
-                        for(i=0;i<rootBlock.storeNumber-1;i++)
-                        {
-                            if(key<rootBlock.storeKey[i+1])break;
-                        }
-                        BStore temm=bptStorage->get(rootBlock.storeId[i]);
-                        MyString newKey=temm.storeKey[0];
-                        int numberOfNew=Size/2;
-                        BStore new_Store;
-                        new_Store.IfLeaves=false;
-                        new_Store.storeNumber=numberOfNew;
-                        for(int j=0;j<numberOfNew;j++)
-                        {
-                            new_Store.storeKey[j]=rootBlock.storeKey[j];
-                            new_Store.storeId[j]=rootBlock.storeId[j];
-                        }
-                        for(int j=numberOfNew;j<rootBlock.storeNumber;j++)
-                        {
-                            rootBlock.storeId[j-numberOfNew]=rootBlock.storeId[j];
-                            rootBlock.storeKey[j-numberOfNew]=rootBlock.storeKey[j];
-                        }
-                        rootBlock.storeNumber=rootBlock.storeNumber-numberOfNew;
-
-                        bptStorage->update(root,rootBlock);
-                        int ans=bptStorage->add(new_Store);
-                        BStore new_root;
-                        new_root.storeNumber=2;
-                        new_root.IfLeaves=false;
-                        new_root.storeId[0]=ans;
-                        new_root.storeKey[0]=new_Store.storeKey[0];
-                        new_root.storeKey[1]=rootBlock.storeKey[0];
-                        new_root.storeId[1]=root;
-                        root=bptStorage->add(new_root);
-                        rootBlock=new_root;
-                    }
-                }*/
                 BStore new_head;
                 BStore temm=storage->get(newId);
                 new_head.IfLeaves=false;
@@ -691,22 +628,9 @@ public:
         }
     }
 
-    void remove(const unsigned long long &key, const int &id)
+    void remove(const std::pair<string,long long> &key_, const int &id)
     {
-        //不完全，对于重复key的块合并不完整
-        /*bool check_flag=false;
-        vector<int> check;
-        check=find(key);
-        for(auto it:check)
-        {
-            if(it==id)
-            {
-                check_flag=true;
-                break;
-            }
-        }
-        if(!check_flag)throw error("BPT remove not found");*/
-
+        std::pair<unsigned long long ,long long >key=make_pair(hash(key_.first),key_.second);
         if(rootBlock.IfLeaves)
         {
             //根节点是叶子节点
@@ -739,32 +663,18 @@ public:
         }
     }
 
-    std::vector<int> find(const unsigned long long &key)const
+    void find(const string &_key,std::vector<std::pair<int,long long>>& res)const
     {
+        auto key=hash(_key);
         if(root==-1)
         {
-            vector<int> ans;
-            return ans;
+            res.clear();
+            return;
         }else
         {
-            return dp_find(root,key);
+            dp_find(root,key,res);
+            return;
         }
-    }
-
-    std::vector<int> giveAllStorage()const
-    {
-        vector<int> ans;
-        BStore tem=storage->get(head);
-        while(true)
-        {
-            for(int i=0;i<tem.storeNumber;i++)
-            {
-                ans.push_back(tem.storeId[i]);
-            }
-            if(tem.NextLeaf==-1)break;
-            else tem=storage->get(tem.NextLeaf);
-        }
-        return ans;
     }
 
     void clean()
@@ -779,79 +689,5 @@ public:
         storage->writeExtraBlock(ass);
     }
 
-#ifdef Debug_Mode
-    void debug()
-    {
-        cout<<endl<<"[debug]"<<endl;
-        int k=head;
-        cout<<"head:"<<head<<endl;
-        cout<<"root:"<<root<<endl<<endl;
-        while(k!=-1)
-        {
-            BStore KS=storage->get(k);
-            cout<<k<<' '<<KS.storeNumber<<endl;
-            cout<<"Key:"<<' ';
-            for(int i=0;i<KS.storeNumber;i++)
-            {
-                cout<<KS.storeKey[i]<<' ';
-            }
-            cout<<endl;
-            cout<<"Id :"<<' ';
-            for(int i=0;i<KS.storeNumber;i++)
-            {
-                cout<<KS.storeId[i]<<' ';
-            }
-            cout<<endl;
-            cout<<"NextLeaf   "<<KS.NextLeaf<<endl;
-            cout<<"FrontLeaf  "<<KS.FrontLeaf<<endl;
-            cout<<endl;
-            k=KS.NextLeaf;
-        }
-        cout<<"[debug finish]"<<endl;
-    }
-
-    void debug(int id)
-    {
-        cout<<"["<<id<<" block]"<<endl;
-        BStore KS=storage->get(id);
-        cout<<id<<' '<<KS.storeNumber<<endl;
-        cout<<"Key:"<<' ';
-        for(int i=0;i<KS.storeNumber;i++)
-        {
-            cout<<KS.storeKey[i]<<' ';
-        }
-        cout<<endl;
-        cout<<"Id :"<<' ';
-        for(int i=0;i<KS.storeNumber;i++)
-        {
-            cout<<KS.storeId[i]<<' ';
-        }
-        cout<<endl;
-        cout<<endl;
-        cout<<"["<<id<<" block finished]"<<endl;
-    }
-
-    void debugRoot()
-    {
-        cout<<"[root block]"<<endl;
-        BStore KS=storage->get(root);
-        cout<<root<<' '<<KS.storeNumber<<endl;
-        cout<<"Key:"<<' ';
-        for(int i=0;i<KS.storeNumber;i++)
-        {
-            cout<<KS.storeKey[i]<<' ';
-        }
-        cout<<endl;
-        cout<<"Id :"<<' ';
-        for(int i=0;i<KS.storeNumber;i++)
-        {
-            cout<<KS.storeId[i]<<' ';
-        }
-        cout<<endl;
-        cout<<endl;
-        cout<<"[root block finished]"<<endl;
-    }
-
-#endif
 };
 #endif //BOOKSTORE_BPLUSTREE_H

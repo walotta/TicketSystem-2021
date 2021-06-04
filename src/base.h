@@ -5,18 +5,23 @@
 #ifndef TICKETSYSTEM_2021_BASE_H
 #define TICKETSYSTEM_2021_BASE_H
 
-#include "include/StorageManger.h"
+#include "include/BPlusTree.h"
+#include "include/StoragePool.h"
 #include <unordered_set>
 #include <unordered_map>
 #include <set>
 #include <algorithm>
 #include <map>
+#include <string>
+using namespace std;
 
 
 typedef const string & str;
 typedef const vector<int> & vecI;
 typedef vector<string> vecS;
 typedef long long lint;
+typedef pair<int,lint> index;
+
 struct Time;
 struct Date;
 struct RealTime;
@@ -220,12 +225,6 @@ struct RealTime
     bool operator==(const RealTime &t) const {return minutes==t.minutes;}
     bool operator<=(const RealTime &t) const {return minutes<=t.minutes;}
 };
-
-
-
-
-
-
 
 
 #endif //TICKETSYSTEM_2021_BASE_H

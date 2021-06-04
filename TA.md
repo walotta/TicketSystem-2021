@@ -133,7 +133,7 @@
   
 - `saleDate`：车次的售卖时间区间（闭区间），在时间区间内，每天都有相同的此车次。共2项，每一项均为2021年6月至8月的某一天，日期格式为`mm-dd`。如：`06-07`。
   
-- `type`：列车类型，为一个大写字母。
+- `train_type`：列车类型，为一个大写字母。
 
 #### 指令
 
@@ -247,7 +247,7 @@
   
   - 说明
   
-    添加`<trainID>`为`-i`，`<stationNum>`为`-n`，`<seatNum>`为`-m`，`<stations>`为`-s`，`<prices>`为`-p`，`<startTime>`为`-x`，`<travelTimes>`为`-t`，`<stopoverTimes>`为`-o`，`<saleDate>`为`-d`，`<type>`为`-y`的车次。
+    添加`<trainID>`为`-i`，`<stationNum>`为`-n`，`<seatNum>`为`-m`，`<stations>`为`-s`，`<prices>`为`-p`，`<startTime>`为`-x`，`<travelTimes>`为`-t`，`<stopoverTimes>`为`-o`，`<saleDate>`为`-d`，`<train_type>`为`-y`的车次。
     
     由于`-s`、`-p`、`-t`、`-o`和`-d`由多个值组成，输入时两个值之间以`|`隔开（仍是一个不含空格的字符串）。
     
@@ -299,7 +299,7 @@
 
     查询成功：输出共`(<stationNum> + 1)`行。
 
-    ​	第一行为`<trainID> <type>`
+    ​	第一行为`<trainID> <train_type>`
 
     ​	接下来`<stationNum>`行，第`i`行为`<stations[i]> <ARRIVING_TIME> -> <LEAVING_TIME> <PRICE> <SEAT>`，其中`<ARRIVING_TIME>`和`<LEAVING_TIME>`为列车到达本站和离开本站的绝对时间，格式为`mm-dd hr:mi`。`<PRICE>`为从始发站乘坐至该站的累计票价，`<SEAT>`为从该站到下一站的剩余票数。对于始发站的到达时间和终点站的出发时间，所有数字均用`x`代替；终点站的剩余票数用`x`代替。
     

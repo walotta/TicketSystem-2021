@@ -9,7 +9,6 @@
 #include "base.h"
 
 class User;
-typedef StorageManger<User,300,300,300,300,300> US;
 
 
 
@@ -25,6 +24,11 @@ class User
 public:
     User()=default;
     ~User()=default;
+    User(const User &user):username(user.username),password(user.password),name(user.name),mailAddr(user.mailAddr)
+    {
+        privilege=user.privilege;
+        orderedNum=user.orderedNum;
+    }
     User(str u,str p,str n,str m,int g): username(u),password(p),name(n),mailAddr(m),privilege(g){}
 
     string display() const {return (string)username+" "+(string)name+" "+(string)mailAddr+" "+to_string(privilege);}
