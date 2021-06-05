@@ -9,9 +9,10 @@ bool UserManager::add_user(const string &c,const string &u,const string &p,const
     if(users.empty())
     {
         if(!logged_users.empty()) return false;
-        User firstUser(u,p,n,m,10);
-        users.insert(u,firstUser);
+        User first_user(u,p,n,m,10);
+        users.add_user(u,first_user);
         users.not_empty();
+//        cerr<<users.get_id(u)<<endl;
         return true;
     }
 
@@ -19,10 +20,10 @@ bool UserManager::add_user(const string &c,const string &u,const string &p,const
     if(pri==-404 || pri<=g) return false;
 
     int id=users.get_id(u);
-    if(id<0) return false;
+    if(id>=0) return false;
 
     User temp(u,p,n,m,g);
-    users.insert(u,temp);
+    users.add_user(u,temp);
     return true;
 }
 
@@ -33,7 +34,7 @@ bool UserManager::login(const string &u,const string &p)
     int id=users.get_id(u);
     if(id<0) return false;
     User user(users.get_user(id));
-    if(user.check_pass(p)) return false;
+    if(!user.check_pass(p)) return false;
 
     pair<string,pair<int,int>> add(u,pair<int,int>(user.priority(),user.order_number()));
     logged_users.insert(add);

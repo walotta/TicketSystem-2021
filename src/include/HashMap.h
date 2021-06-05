@@ -1,143 +1,187 @@
 //
-// Created by wzj on 2021/3/26.
-// Edit by Fourest on 2021.06.04
+// Created by Rainy Memory on 2021/3/17.
 //
 
-#ifndef CODE_HASHMAP_H
-#define CODE_HASHMAP_H
+#ifndef TICKETSYSTEM_AUTOMATA_HASHMAP_H
+#define TICKETSYSTEM_AUTOMATA_HASHMAP_H
 
-#include <string>
 #include <functional>
+#include "algorithm.h"
 
-/*
-template<typename key_type,typename value_type,class Hash=std::hash<key_type>>
-class HashMap
-{
-private:
-    typedef unsigned long long unsigned_lint;
-
-    static const unsigned_lint prime_number=30;
-    const unsigned_lint prime_list[prime_number]={
-        53,101,211,401,809,1601,3203,6421,12809,25601,51203,102407,204803,409609,//14
-        819229,1638431,3276803,6553621,13107229,26214401ll,52428841ll,104857601ll,209715263ll,//9
-        419430419ll,838860817ll,1677721631ll,3355443229ll,6710886407ll,13421772823ll,26843545607ll//7
-    };
-
-    class LinkList
-    {
-    public:
-        struct Node
-        {
-            key_type *key;
-            value_type *value;
-            Node *next;
-
-            Node(const key_type &k,const value_type &v,Node *n):key(k),value(v),next(n){}
-            ~Node(){delete key; delete value;}
+namespace RainyMemory {
+    template<class Key, class Value, class Hash = std::hash<Key>>
+    class HashMap {
+        /*
+         * class HashMap
+         * --------------------------------------------------------
+         * A class implements o(1) find, add_user and delete map like
+         * std::unordered_map.
+         * This class support dynamic capacity.
+         *
+         */
+    private:
+        using ull = unsigned long long;
+        
+        static const int PrimeNum = 28;
+        
+        const ull PrimeList[PrimeNum] = {
+                53, 97, 193, 389, 769,
+                1543, 3079, 6151, 12289, 24593,
+                49157, 98317, 196613, 393241, 786433,
+                1572869, 3145739, 6291469, 12582917, 25165843,
+                50331653ll, 100663319ll, 201326611ll, 402653189ll, 805306457ll,
+                1610612741ll, 3221225473ll, 4294967291ll
         };
-
-        Node *head;
-        unsigned_lint length;
-
-    public:
-        LinkList():head(nullptr),length(0){}
-        ~LinkList()
-        {
-            while(head!=nullptr)
-            {
-                auto temp=head;
-                head=head->next;
-                delete temp;
-            }
+        
+        inline ull nextPrime(ull n) {
+            const ull *first = PrimeList;
+            const ull *last = PrimeList + PrimeNum;
+            const ull *pos = RainyMemory::lower_bound(first, last, n);
+            return pos == last ? *(last - 1) : *pos;
         }
-
-        void insert(const key_type &k,const value_type &v)
-        {
-            Node *new_head=new Node(k,v,head);
-            head=new_head;
-            ++length;
-        }
-        void erase(const key_type &k)
-        {
-            if(*head->key==k)
-            {
-                auto temp=head;
-                head=head->next;
-                delete temp;
-                --length;
-                return;
-            }
-            auto now=head;
-            while(now->next!=nullptr)
-            {
-                if(*now->next->key==k)
-                {
-                    auto temp=now->next;
-                    now->next=temp->next;
-                    delete temp;
-                    --length;
-                    return;
+        
+        class LinkedList {
+        public:
+            class Node {
+            public:
+                Key *key;
+                Value *value;
+                Node *next;
+                
+                Node(const Key &k, const Value &v, Node *n) : key(new Key(k)), value(new Value(v)), next(n) {}
+                
+                ~Node() {
+                    delete key;
+                    delete value;
                 }
-                now=now->next;
+            };
+            
+            Node *head = nullptr;
+            ull listSize = 0;
+            
+            LinkedList() = default;
+            
+            ~LinkedList() {
+                Node *temp = head;
+                while (head != nullptr) {
+                    head = head->next;
+                    delete temp;
+                    temp = head;
+                }
+            }
+            
+            Node *find(const Key &o) {
+                Node *now = head;
+                while (now != nullptr) {
+                    if (*now->key == o)return now;
+                    now = now->next;
+                }
+                return nullptr;
+            }
+            
+            void insert(const Key &k, const Value &v) {
+                head = new Node(k, v, head);
+                listSize++;
+            }
+            
+            void erase(const Key &k) {
+                if (*head->key == k) {
+                    Node *temp = head;
+                    head = head->next;
+                    delete temp;
+                }
+                else {
+                    Node *now = head;
+                    while (now->next != nullptr) {
+                        if (*now->next->key == k) {
+                            Node *temp = now->next;
+                            now->next = now->next->next;
+                            delete temp;
+                            break;
+                        }
+                        now = now->next;
+                    }
+                }
+                listSize--;
+            }
+            
+            bool empty() const {
+                return listSize == 0;
+            }
+            
+            void addNode(Node *n) {
+                n->next = head;
+                head = n;
+            }
+        };
+        
+        using node_t = typename LinkedList::Node;
+        
+        ull capacity = 0;
+        ull number = 0;
+        LinkedList *buckets;
+        Hash hash;
+        
+        inline ull calculateIndex(const Key &k) const {
+            ull index = hash(k) % capacity;
+            return index;
+        }
+        
+        void resize() {
+            ull n = nextPrime(capacity);
+            if (n <= capacity)return;
+            LinkedList *temp = new LinkedList[n];
+            for (ull i = 0; i < capacity; i++) {
+                node_t *p = buckets[i].head;
+                while (p != nullptr) {
+                    ull index = hash(*p->key) % n;
+                    buckets[i].head = p->next;
+                    temp[index].addNode(p);
+                    p = buckets[i].head;
+                }
+            }
+            capacity = n;
+            delete[] buckets;
+            buckets = temp;
+        }
+    
+    public:
+        HashMap() : capacity(PrimeList[2]) {
+            buckets = new LinkedList[capacity];
+        }
+        
+        ~HashMap() {
+            delete[] buckets;
+        }
+        
+        void clear() {
+            delete[] buckets;
+            buckets = new LinkedList[capacity];
+            number = 0;
+        }
+        
+        bool containsKey(const Key &k) const {
+            ull index = calculateIndex(k);
+            return !(buckets[index].empty() || buckets[index].find(k) == nullptr);
+        }
+        
+        Value &operator[](const Key &k) {
+            ull index = calculateIndex(k);
+            if (containsKey(k))return *buckets[index].find(k)->value;
+            else {
+                if (number + 1 > capacity)resize();
+                buckets[index].insert(k, Value());
+                number++;
+                return *buckets[index].head->value;
             }
         }
-        value_type &find(const key_type &k)
-        {
-            auto now=head;
-            while(*now->key!=k && now->next!=nullptr) now=now->next;
-            if(*now->key==k) return *now->value;
-            return value_type();
-        }
-
-        int size() const {return length;}
-        bool empty() const {return length==0;}
-        void add_node(Node *node)
-        {
-            node->next=head;
-            head=node;
-            ++length;
+        
+        void erase(const Key &k) {
+            ull index = calculateIndex(k);
+            buckets[index].erase(k);
+            number--;
         }
     };
-    using node_t=typename LinkList::Node;
+}
 
-    unsigned_lint prime_pos_now=0;
-    unsigned_lint length=0;
-    LinkList *lists;
-    Hash hash;
-
-    inline unsigned_lint get_index(const key_type &k) const
-    {
-        return hash(k)%prime_list[prime_pos_now];
-    }
-
-    void resize()
-    {
-        LinkList *new_list=new LinkList[prime_list[++prime_pos_now]];
-        for(int i=0;i<prime_list[prime_pos_now-1];++i)
-        {
-//            node_t *now=lists[i].head;
-//            while(now!=nullptr)
-//            {
-//                auto index=get_index(n)
-//            }
-        }
-
-
-
-    }
-
-
-
-
-
-
-public:
-    HashMap();
-    ~HashMap()=default;
-
-
-
-};
-*/
-
-#endif //CODE_HASHMAP_H
+#endif //TICKETSYSTEM_AUTOMATA_HASHMAP_H

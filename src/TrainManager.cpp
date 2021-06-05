@@ -10,6 +10,7 @@ bool TrainManager::release_train(const string &i)
     if(id<0) return false;
     Train train(trains.get_train(id));
     if(train.if_release()) return false;
+    train.release();
     trains.release(id,train);
     seats.release(train);
     return true;
@@ -27,7 +28,7 @@ bool TrainManager::add_train(const string &i,int n,int m,const vecS &s,const vec
 {
     int id=trains.get_id(i);
     if(id>=0) return false; // If find the train already existed, return false;
-    Train new_train(i,n,m,s,p,x,t,o,d_beg,d_end,y);
+    Train new_train(i,n,m,s,p,x,t,o,d_beg,d_end,y,id);
     trains.add_train(i,new_train);
     return true;
 }
@@ -36,7 +37,8 @@ bool TrainManager::delete_train(const string &i)
 {
     int id=trains.get_id(i);
     if(id<0) return false; // If find the train do not existed, return false;
-    if(trains.get_train(id).if_release()) return false;
+    Train train(trains.get_train(id));
+    if(train.if_release()) return false;
     trains.delete_train(i);
     return true;
 }
@@ -66,7 +68,6 @@ void TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_t
     trains1.clear(); trains2.clear();
     trains.get_trains(s,trains1);
     trains.get_trains(t,trains2);
-
     unordered_set<string> station1;
     vector<pair<pair<int,string>,int>> list; // The first one is value, the second one is id.
     for(int i=0;i<trains1.size();++i) station1.insert(trains1[i].train_id());
@@ -187,13 +188,13 @@ void TrainManager::query_transfer(const string &s,const string &t,Date d,bool If
     Date date1=train1.set_off_date(s,d);
     int seat_id1=seats.get_id(train1.train_id(),date1);
     RemainedSeat seat1(seats.get_seats(seat_id1));
-    out.push_back(train1.information(s,t,d,seat1));
+    out.push_back(train1.information(s,transfer_station,d,seat1));
 
     Train &train2=trains2[train2_id];
     Date date2=train2.set_off_date(transfer_station,date_of_transfer);
     int seat_id2=seats.get_id(train2.train_id(),date2);
     RemainedSeat seat2(seats.get_seats(seat_id2));
-    out.push_back(train1.information(transfer_station,t,date_of_transfer,seat2));
+    out.push_back(train2.information(transfer_station,t,date_of_transfer,seat2));
 }
 
 lint TrainManager::buy_ticket(const string &i,Date d,const string &f,const string &t,int n,int id,const string &u,bool q)
@@ -258,7 +259,7 @@ pair<string,int> TrainManager::refund_ticket(const string &u,const int &n,Date &
 bool TrainManager::re_buy_ticket(const string &f,const string &t,int n,int id,const string &u,const Train &train,RemainedSeat &seat)
 {
     auto ids=train.get_id(f,t);
-    auto seat_remain=seat.min_seat(ids.first,ids.second);
+    int seat_remain=seat.min_seat(ids.first,ids.second);
     if(seat_remain>=n)
     {
         seat.de_seat(ids.first,ids.second,n);

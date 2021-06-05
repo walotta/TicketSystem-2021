@@ -12,9 +12,6 @@
 #include <cstring>
 #include "StoragePool.h"
 #include "ErrorMessage.h"
-#include "MyString.hpp"
-#include <chrono>
-using namespace std::chrono;
 
 template<int Size,int SizeOfCache>
 class BPlusTree
@@ -43,7 +40,7 @@ private:
     BStore rootBlock;
     StoragePool<BStore,assistStore,SizeOfCache>* storage;
 
-    unsigned long long hash(const string& hash_in)
+    unsigned long long hash(const string& hash_in) const
     {
         unsigned long long res=0;
         for(auto it:hash_in)res=(res<<16)+res+(unsigned int)it;
@@ -523,10 +520,10 @@ private:
             }
             if(nowBlock.storeKey[i].first==key)
             {
-                res.push_back(make_pair(nowBlock.storeId[i],nowBlock.storeKey[i].second));
+                res.push_back(std::make_pair(nowBlock.storeId[i],nowBlock.storeKey[i].second));
                 for(int j=i-1;j>=0;j--)
                 {
-                    if(nowBlock.storeKey[j].first==key)res.push_back(make_pair(nowBlock.storeId[i],nowBlock.storeKey[i].second));
+                    if(nowBlock.storeKey[j].first==key)res.push_back(std::make_pair(nowBlock.storeId[j],nowBlock.storeKey[j].second));
                     else return;
                 }
                 BStore find=storage->get(nowBlock.FrontLeaf);
@@ -534,7 +531,7 @@ private:
                 {
                     for(int j=find.storeNumber-1;j>=0;j--)
                     {
-                        if(find.storeKey[j]==key)res.push_back(make_pair(nowBlock.storeId[i],nowBlock.storeKey[i].second));
+                        if(find.storeKey[j].first==key)res.push_back(std::make_pair(nowBlock.storeId[j],nowBlock.storeKey[j].second));
                         else return;
                     }
                     if(find.FrontLeaf==-1)return;
@@ -552,7 +549,7 @@ private:
             {
                 if(key<nowBlock.storeKey[i+1].first)break;
             }
-            return dp_find(nowBlock.storeId[i],key);
+            return dp_find(nowBlock.storeId[i],key,res);
         }
     }
 
@@ -591,9 +588,9 @@ public:
         delete storage;
     }
 
-    void insert(const std::pair<string ,long long > &key_, const int &id)
+    void insert(const std::pair<string,long long > &_key, const int &id)
     {
-        std::pair<unsigned long long ,long long >key=make_pair(hash(key_.first),key_.second);
+        std::pair<unsigned long long,long long> key(hash(_key.first),_key.second);
         if(root==-1)
         {
             //当前无数据
@@ -628,9 +625,9 @@ public:
         }
     }
 
-    void remove(const std::pair<string,long long> &key_, const int &id)
+    void remove(const std::pair<string,long long> &_key, const int &id)
     {
-        std::pair<unsigned long long ,long long >key=make_pair(hash(key_.first),key_.second);
+        std::pair<unsigned long long,long long> key(hash(_key.first),_key.second);
         if(rootBlock.IfLeaves)
         {
             //根节点是叶子节点
@@ -665,7 +662,7 @@ public:
 
     void find(const string &_key,std::vector<std::pair<int,long long>>& res)const
     {
-        auto key=hash(_key);
+        unsigned long long key=hash(_key);
         if(root==-1)
         {
             res.clear();

@@ -75,13 +75,12 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
 
     Date refund_date;
     auto back=train.refund_ticket(u,number,refund_date);
-    if(back.second==-1) return fail;
+    if(back.second==REFUNDED) return fail;
 
     auto &trainID=back.first;
-    static vector<index> order_index;
-    order_index.clear();
+    vector<index> order_index;
     orders.get_ids(trainID,order_index);
-    if(back.second==0)
+    if(back.second==PENDING)
     {
         for(int i=0; i<order_index.size(); ++i)
         {
@@ -102,19 +101,18 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
         orders.get_orders(trainID,order_list);
 
         auto train1=train.get_train(trainID);
-        string main_key(trainID+" "+refund_date.display());
         auto seats=train.get_seat(trainID,refund_date);
         for(int i=0;i<order_list.size();++i)
         {
-            auto &orderI=order_list[i].first;
-            auto date=train1.set_off_date((string)orderI.start,orderI.date);
+            auto &order=order_list[i].first;
+            auto date=train1.set_off_date((string)order.start,order.date);
             if(!(date==refund_date)) continue;
 
-            bool If_success=train.re_buy_ticket((string)orderI.start,(string)orderI.arrive,orderI.number,orderI.id,(string)orderI.user,train1,seats);
+            bool If_success=train.re_buy_ticket((string)order.start,(string)order.arrive,order.number,order.id,(string)order.user,train1,seats);
             if(If_success)
             {
-                string serial_key(to_string(orderI.serial_number)),&tag=trainID;
-                orders.remove_order(order_list[i].second,trainID,orderI.serial_number);
+                string serial_key(to_string(order.serial_number)),&tag=trainID;
+                orders.remove_order(order_list[i].second,trainID,order.serial_number);
             }
         }
         train.update_seat(trainID,refund_date,seats);

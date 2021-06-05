@@ -12,34 +12,40 @@ class UserManager
 {
     class UserStorage
     {
-        StoragePool<User,bool,300> user_data;
-        BPlusTree<300,300> user_name_index;
+        struct ints{int value; ints():value(0){} explicit ints(int x):value(x){}};
+
+        StoragePool<User,ints,300> user_data;
+        BPlusTree<300,300> user_index;
+        bool if_empty=true;
     public:
-        UserStorage():user_data("user_data.dat"),user_name_index("user_index.dat"){}
+        UserStorage():user_data("user_data.dat"),user_index("user_index.dat")
+        {
+            if_empty=(user_data.readExtraBlock().value==0);
+        }
         ~UserStorage()=default;
 
         int get_id(str username)
         {
             vector<index> temp;
-            user_name_index.find(username,temp);
+            user_index.find(username,temp);
             if(temp.empty()) return -404;
             return temp[0].first;
         }
         User get_user(int id) {return user_data.get(id);}
 
         void update(const int &id,const User &user) {user_data.update(id,user);}
-        void insert(str username,const User &user)
+        void add_user(str username,const User &user)
         {
             int id=user_data.add(user);
-            user_name_index.insert({username,id},id);//todo: get serial_number.
+            user_index.insert({username,id+10086},id);//todo: get serial_number.
         }
 
-        bool empty() {return user_data.readExtraBlock();}
-        void not_empty() {user_data.writeExtraBlock(true);}
+        bool empty() {return if_empty;}
+        void not_empty() {user_data.writeExtraBlock(ints(1)); if_empty=false;}
         void clean()
         {
             user_data.clearAll();
-            user_name_index.clean();
+            user_index.clean();
         }
     };
     UserStorage users;
