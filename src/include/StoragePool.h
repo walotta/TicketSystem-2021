@@ -8,7 +8,10 @@
 #include <iostream>
 #include <fstream>
 #include "cache.hpp"
-using namespace std;
+using std::string;
+using std::fstream;
+using std::ios;
+
 
 template<class T,class extraBlock,int SizeOfCache>
 class StoragePool
@@ -186,5 +189,7 @@ public:
         fileClose();
     }
 };
+
+
 
 #endif //BOOKSTORE_STORAGEPOOL_H

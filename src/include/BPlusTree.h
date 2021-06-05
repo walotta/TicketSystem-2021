@@ -34,7 +34,7 @@ private:
         int NextLeaf=-1;
         int FrontLeaf=-1;
         int storeNumber=-1;
-        int storeId[Size];
+        int storeId[Size]={0};
         std::pair<unsigned long long,long long> storeKey[Size];
     };
     BStore rootBlock;
@@ -46,6 +46,7 @@ private:
         for(auto it:hash_in)res=(res<<16)+res+(unsigned int)it;
         return res;
     }
+
 
     //返回是否需要裂块，需要返回裂块后的新id值
     int dp_insert(int now,std::pair<unsigned long long,long long> key, const int &id){
@@ -531,7 +532,7 @@ private:
                 {
                     for(int j=find.storeNumber-1;j>=0;j--)
                     {
-                        if(find.storeKey[j].first==key)res.push_back(std::make_pair(nowBlock.storeId[j],nowBlock.storeKey[j].second));
+                        if(find.storeKey[j].first==key)res.push_back(std::make_pair(find.storeId[j],find.storeKey[j].second));
                         else return;
                     }
                     if(find.FrontLeaf==-1)return;

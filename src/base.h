@@ -5,11 +5,11 @@
 #ifndef TICKETSYSTEM_2021_BASE_H
 #define TICKETSYSTEM_2021_BASE_H
 
-//#include "include/BPlusTree.h"
-//#include "include/StoragePool.h"
+#include "include/BPlusTree.h"
+#include "include/StoragePool.h"
 #include "include/MyString.hpp"
-#include "include/lynstoragepool.h"
-#include "include/lynbpt.h"
+//#include "include/lynstoragepool.h"
+//#include "include/lynbpt.h"
 #include <unordered_set>
 #include <unordered_map>
 #include <algorithm>
