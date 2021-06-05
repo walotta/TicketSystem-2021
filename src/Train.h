@@ -10,9 +10,6 @@
 class Train;
 struct RemainedSeat;
 class Log;
-typedef StorageManger<Train,300,300,300,300,300> TR;
-typedef StorageManger<RemainedSeat,300,300,300,300,300> ST;
-typedef StorageManger<Log,300,300,300,300,300> LG;
 
 class RemainedSeat
 {
@@ -36,7 +33,7 @@ public:
     {
         for(int i=start;i<end;++i) seat_remained[i]-=n;
     }
-    int &operator[](const int &index)
+    int operator[](const int &index) const
     {
         return seat_remained[index];
     }
@@ -46,6 +43,7 @@ public:
         for(int i=0;i<n-1;++i) printf("%d ",seat_remained[i]);
         printf("\n");
     }
+    bool temp(const string &o)const{return o==trainI_Date;}
 };
 
 class Train
@@ -59,16 +57,12 @@ private:
 
         Station()=default;
 
-        void update(str n,int p,int num,const RealTime &t1,const RealTime &t2)
+        void update(str n,int p,const RealTime &t1,const RealTime &t2)
         {
             name=n; price=p;
             arrival=t1; departure=t2;
         }
-        void update(str n,int p,int num)
-        {
-            name=n;
-            price=p;
-        }
+        void update(str n,int p) {name=n;price=p;}
     };
 
     Station station[102];
@@ -78,8 +72,11 @@ private:
     Time startTime;
     Date sale_beg,sale_end;
     bool If_release;
-    char type;
+    char train_type;
+    unsigned long long storage_id;
 
+
+public:
     pair<int,int> get_id(str i,str f) const
     {
         int start=0,end=0;
@@ -98,24 +95,24 @@ private:
         }
         return stationNum;
     }
-public:
+
     Train()=default;
     ~Train()=default;
-    Train(str i,int n,int m,const vecS &s,vecI p,Time x,vecI t,vecI o,Date d_beg,Date d_end,char y):trainID(i),startTime(x),sale_beg(d_beg),sale_end(d_end)
+    Train(str i,int n,int m,const vecS &s,vecI p,Time x,vecI t,vecI o,Date d_beg,Date d_end,char y,unsigned long long id):trainID(i),startTime(x),sale_beg(d_beg),sale_end(d_end),storage_id(id)
     {
         stationNum=n; seatNum=m;
-        type=y; If_release=false;
+        train_type=y; If_release=false;
 
         // Process the name & price & time;
-        station[0].update(s[0],0,m);
+        station[0].update(s[0],0);
         station[0].departure=RealTime(Date(6,1),x);
         for(int pos=0;pos<stationNum-2;++pos)
         {
             RealTime arrival(station[pos].departure+t[pos]);
-            station[pos+1].update(s[pos+1],station[pos].price+p[pos],m,arrival,arrival+o[pos]);
+            station[pos+1].update(s[pos+1],station[pos].price+p[pos],arrival,arrival+o[pos]);
         }
         int last=stationNum-1;
-        station[last].update(s[last],station[last-1].price+p[last-1],m);
+        station[last].update(s[last],station[last-1].price+p[last-1]);
         station[last].arrival=station[last-1].departure+t[last-1];
     }
 
@@ -124,16 +121,18 @@ public:
         return trainID<t.trainID;
     }
 
-    bool if_release() const { return If_release; }
+    unsigned long long storage_pos() const {return storage_id;}
+    bool if_release() const {return If_release;}
+    void release() {If_release=true;}
     string train_id() const {return (string)trainID;}
+    char type() const {return train_type;}
     pair<Date,Date> date() const {return {sale_beg,sale_end};}
     int station_number() const {return stationNum;}
+    int station_price(const int &pos) const {return station[pos].price;}
     string station_name(const int &pos) const {return (string)station[pos].name;}
-    vecS stations() const
+    void stations(vecS &out) const
     {
-        vecS output;
-        for(int i=0;i<stationNum;++i) output.push_back((string)station[i].name);
-        return output;
+        for(int i=0;i<stationNum;++i) out.push_back((string)station[i].name);
     }
     RealTime station_departure(const int &pos) const {return station[pos].departure;}
     RealTime station_arrival(const int &pos) const {return station[pos].arrival;}
@@ -149,72 +148,56 @@ public:
         int id=get_id(station_name);
         return station[id].departure.time();
     }
-    Date date_for_record(str station_name,const Date &d) const
+    Date set_off_date(str station_name,const Date &d) const
     {
         int id=get_id(station_name);
         return d-station[id].departure.date().dayNum();
     }
 
-    bool release(ST &store)
+
+    void query_train(vecS &out,const Date &date,RemainedSeat seat=RemainedSeat()) const
     {
-        if(If_release) return false;
-        If_release=true;
-        for(auto i=sale_beg;i<=sale_end;++i)
+        out.push_back((string)trainID+" "+train_type);
+        for(int k=0; k<stationNum; ++k)
         {
-            string main_key=(string)trainID+" "+i.display();
-            RemainedSeat seat(main_key,stationNum,seatNum);
-            store.insert(main_key,seat);
-        }
-        return true;
-    }
-    vecS query_train(const Date &d,ST &store) const
-    {
-        vecS output;
-        output.push_back((string)trainID+" "+type);
-        auto seat=store.FindByKey((string)trainID+" "+d.display()).first;
-        for(int i=0;i<stationNum;++i)
-        {
-            RealTime arrival(station[i].arrival+RealTime(d));
-            RealTime departure(station[i].departure+RealTime(d));
-            if(station[i].arrival.minutes<0) arrival.minutes=-404;
-            if(station[i].departure.minutes<0) departure.minutes=-404;
-            string temp((string)station[i].name);
+            RealTime arrival(station[k].arrival+RealTime(date));
+            RealTime departure(station[k].departure+RealTime(date));
+            if(station[k].arrival.minutes<0) arrival.minutes=-404;
+            if(station[k].departure.minutes<0) departure.minutes=-404;
+            string temp((string)station[k].name);
             temp+=" "+arrival.display()+" -> "+departure.display();
-            temp+=" "+to_string(station[i].price)+" ";
-            if(i==stationNum-1) temp+="x";
+            temp+=" "+to_string(station[k].price)+" ";
+            if(k==stationNum-1) temp+="x";
             else
             {
                 if(!If_release) temp+=to_string(seatNum);
-                else temp+=to_string(seat[i]);
+                else temp+=to_string(seat[k]);
             }
-            output.push_back(temp);
+            out.push_back(temp);
         }
-        return output;
     }
-    string information(str i,str f,const Date &d,ST &store) const
+    string information(str i,str f,const Date &d,const RemainedSeat &seat) const
     {
         bool If_find_initial=false;
-        int a=0,b=0,seat=seatNum;
-        auto seats=store.FindByKey((string)trainID+" "+date_for_record(i,d).display()).first;
+        int start=0,end=0,seat_num=seatNum;
         for(int j=0;j<stationNum;++j)
         {
             auto &st=station[j];
-            if(i==st.name) {a=j; If_find_initial=true;}
-            if(f==st.name) {b=j; break;}
-            if(If_find_initial) seat=min(seat,seats[j]);
-            //consider: Would un-released train use this function?
-            //          This part could be optimized.
+            if(i==st.name) {start=j; If_find_initial=true;}
+            if(f==st.name) {end=j; break;}
+            if(If_find_initial) seat_num=min(seat_num,seat[j]);
+
         }
-        int price=station[b].price-station[a].price;
-        int time_gap=station[b].arrival-station[a].departure;
-        RealTime departure(d,station[a].departure.time()),arrival(departure+time_gap);
+        int price=station[end].price-station[start].price;
+        int time_gap=station[end].arrival-station[start].departure;
+        RealTime departure(d,station[start].departure.time()),arrival(departure+time_gap);
         string output((string)trainID+" "+i+" "+departure.display());
-        output+=" -> "+f+" "+arrival.display()+" "+to_string(price)+" "+to_string(seat);
+        output+=" -> "+f+" "+arrival.display()+" "+to_string(price)+" "+to_string(seat_num);
         return output;
     }
     bool check_date(const Date &d,str station_name) const
     {
-        auto temp=date_for_record(station_name,d);
+        auto temp=set_off_date(station_name,d);
         if(temp<sale_beg || sale_end<temp) return false;
         return true;
     }
@@ -274,29 +257,21 @@ public:
     }
 
     int seat_number() const {return seatNum;}
-    int check_seat(str i,str f,const Date &d,ST &store) const
+    int check_seat(str i,str f,const Date &d,const RemainedSeat &seat) const
     {
         auto id=get_id(i,f);
         int start=id.first,end=id.second;
-
-        string main_key((string)trainID+" "+d.display());
-        auto seats=store.FindByKey(main_key).first;
-        return seats.min_seat(start,end);
+        return seat.min_seat(start,end);
     }
-    void decrease_seat(str i,str f,const Date &d,int n,ST &store)
+    void decrease_seat(str i,str f,int n,RemainedSeat &seat) const
     {
         auto id=get_id(i,f);
         int start=id.first,end=id.second;
-
-        string main_key((string)trainID+" "+d.display());
-        auto seats=store.FindByKey(main_key).first;
-        seats.de_seat(start,end,n);
-        store.Update(main_key,seats);
+        seat.de_seat(start,end,n);
     }
-    void increase_seat(str i,str f,const Date &d,int n,ST &store)
+    void increase_seat(str i,str f,int n,RemainedSeat &seat)
     {
-        auto date=date_for_record(i,d);
-        decrease_seat(i,f,date,-n,store);
+        decrease_seat(i,f,-n,seat);
     }
 };
 
@@ -327,6 +302,7 @@ public:
     void modify_status(const Status &s) {status=s;}
     string main_key() const {return (string)username+to_string(id);}
     string tag() const {return (string)username;}
+    int serial_number() const {return id;}
     string user() const {return (string)username;}
     Status status_now() const {return status;}
     string status_string() const
@@ -339,6 +315,10 @@ public:
     pair<string,string> stations() const {return {(string)From,(string)To};}
     pair<RealTime,RealTime> times() const {return {departure,arrive};}
     int number() const {return num;}
+    bool operator<(const Log &log) const
+    {
+        return id<log.id;
+    }
 };
 
 

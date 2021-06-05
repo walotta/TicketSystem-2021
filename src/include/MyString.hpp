@@ -2,11 +2,16 @@
 // Created by wzj on 2021/3/26.
 //
 #include <cstring>
+#include <iostream>
+
+using std::string;
+using std::ostream;
+
 class MyString
 {
 private:
     //todo: Add a function that can change the size of this class.
-    char storage[80]{};
+    char storage[60]{};
 public:
     MyString(){storage[0]='\0';}
     MyString(const string &o)

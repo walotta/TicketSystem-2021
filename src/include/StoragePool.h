@@ -8,7 +8,10 @@
 #include <iostream>
 #include <fstream>
 #include "cache.hpp"
-using namespace std;
+using std::string;
+using std::fstream;
+using std::ios;
+
 
 template<class T,class extraBlock,int SizeOfCache>
 class StoragePool
@@ -43,9 +46,11 @@ public:
 
     explicit StoragePool(const string& FileName):StorageFileName(FileName)
     {
-        pool.open(dir+FileName,fstream::in|fstream::out|ios::binary);
+        pool.open(dir+FileName,fstream::in|ios::binary);
         if(pool.fail())
         {
+            pool.clear();
+            pool.close();
             pool.open(dir+FileName,fstream::out|ios::binary);
             pool.close();
             pool.open(dir+FileName,fstream::in|fstream::out|ios::binary);
@@ -184,5 +189,7 @@ public:
         fileClose();
     }
 };
+
+
 
 #endif //BOOKSTORE_STORAGEPOOL_H

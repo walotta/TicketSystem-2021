@@ -6,23 +6,24 @@
 
 bool UserManager::add_user(const string &c,const string &u,const string &p,const string &n,const string &m,int g)
 {
-    if(user.size()==0)
+    if(users.empty())
     {
         if(!logged_users.empty()) return false;
-        if(user.size()!=0) return false;
-        User firstUser(u,p,n,m,10);
-        user.insert(u,firstUser);
+        User first_user(u,p,n,m,10);
+        users.add_user(u,first_user);
+        users.not_empty();
+//        cerr<<users.get_id(u)<<endl;
         return true;
     }
 
     int pri=check_priority(c);
     if(pri==-404 || pri<=g) return false;
 
-    auto tp=user.FindByKey(u);
-    if(tp.second) return false;
+    int id=users.get_id(u);
+    if(id>=0) return false;
 
     User temp(u,p,n,m,g);
-    user.insert(u,temp);
+    users.add_user(u,temp);
     return true;
 }
 
@@ -30,11 +31,12 @@ bool UserManager::login(const string &u,const string &p)
 {
     if(check_priority(u)!=-404) return false;
 
-    auto temp=user.FindByKey(u);
-    if(!temp.second) return false;
-    if(!temp.first.check_pass(p)) return false;
+    int id=users.get_id(u);
+    if(id<0) return false;
+    User user(users.get_user(id));
+    if(!user.check_pass(p)) return false;
 
-    pair<string,pair<int,int>> add(u,pair<int,int>(temp.first.priority(),temp.first.order_number()));
+    pair<string,pair<int,int>> add(u,pair<int,int>(user.priority(),user.order_number()));
     logged_users.insert(add);
     return true;
 }
@@ -52,14 +54,14 @@ string UserManager::query_profile(const string &c,const string &u)
     string fail("-1");
 
     int priority=check_priority(c);
-    if(priority==-404) return fail;// Un-logged user "c".
+    if(priority==-404) return fail;// Un-logged users "c".
 
-    auto tp=user.FindByKey(u);
-    if(!tp.second) return fail;// Nonexistent user.
-    auto &user1=tp.first;
-    if(user1.priority()>priority || (c!=u && user1.priority()==priority)) return fail;// Access denied.
+    int id=users.get_id(u);
+    if(id<0) return fail;// Nonexistent users.
+    User user(users.get_user(id));
+    if(user.priority()>priority || (c!=u && user.priority()==priority)) return fail;// Access denied.
 
-    return user1.display();
+    return user.display();
 }
 
 string UserManager::modify_profile(const string &c,const string &u,const string &p,const string &n,const string &m,int g)
@@ -67,19 +69,19 @@ string UserManager::modify_profile(const string &c,const string &u,const string 
     string fail("-1");
 
     int priority=check_priority(c);
-    if(priority==-404) return fail;// Un-logged user "c".
+    if(priority==-404) return fail;// Un-logged users "c".
 
-    auto tp=user.FindByKey(u);
-    if(!tp.second) return fail; // Nonexistent user "u".
-    auto &user1=tp.first;
-    if(user1.priority()>priority || (c!=u && tp.first.priority()==priority) || g>=priority) return fail;// Access denied.
+    int id=users.get_id(u);
+    if(id<0) return fail; // Nonexistent users "u".
+    User user(users.get_user(id));
+    if(user.priority()>priority || (c!=u && user.priority()==priority) || g>=priority) return fail;// Access denied.
 
-    if(p!="") user1.pass()=p;
-    if(n!="") user1.nam()=n;
-    if(m!="") user1.mail()=m;
-    if(g!=-404) user1.priority()=g;
-    user.Update(u,user1);
-    return user1.display();
+    if(p!="") user.pass()=p;
+    if(n!="") user.nam()=n;
+    if(m!="") user.mail()=m;
+    if(g!=-404) user.priority()=g;
+    users.update(id,user);
+    return user.display();
 }
 
 int UserManager::check_priority(const string &u) const
@@ -91,16 +93,16 @@ int UserManager::check_priority(const string &u) const
 
 bool UserManager::clean()
 {
-    user.clean();
+    users.clean();
     logged_users.clear();
     return true;
 }
 
 int UserManager::query_user_priority(const string &u)
 {
-    auto tp=user.FindByKey(u);
-    if(!tp.second) return -404;
-    return tp.first.priority();
+    int id=users.get_id(u);
+    if(id<0) return -404;
+    return users.get_user(id).priority();
 }
 
 int UserManager::query_order_number(const string &u) const
@@ -111,10 +113,11 @@ int UserManager::query_order_number(const string &u) const
 
 bool UserManager::add_order_number(const string &u)
 {
-    auto t=user.FindByKey(u);
-    if(!t.second) return false;
-    t.first.add_order();
-    user.Update(u,t.first);
+    int id=users.get_id(u);
+    if(id<0) return false;
+    User user(users.get_user(id));
+    user.add_order();
+    users.update(id,user);
 
     auto temp=logged_users.find(u);
     if(logged_users.end()!=temp) temp->second.second++;

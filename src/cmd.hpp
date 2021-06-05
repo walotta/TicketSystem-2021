@@ -11,31 +11,23 @@ class cmd
 private:
     ManagementSystem sys;
     Fourest::separator words;
-    stringstream split;
     int to_int(const string& input)
     {
         int ans=0;
-        for(int i=0; i<input.size(); ++i)
-        {
-            ans*=10;
-            ans+=input[i]-'0';
-        }
+        for(int i=0; i<input.size(); ++i) ans=10*ans+(input[i]-'0');
         return ans;
     }
-    vector<int> to_vector_int(str input)
+    void to_vector_int(str input,vector<int> &out)
     {
-        vector<int> output;
         Fourest::separator ints("|");
         ints.process(input);
-        for(int i=0;i<ints.size();++i) output.push_back(to_int(ints[i]));
-        return output;
+        for(int i=0;i<ints.size();++i) out.push_back(to_int(ints[i]));
     }
-    vector<string> to_vector_str(str input)
+    void to_vector_str(str input,vector<string> &out)
     {
-        vector<int> output;
         Fourest::separator ints("|");
         ints.process(input);
-        return ints.content();
+        out=ints.content();
     }
     Date to_date(str input)
     {
@@ -48,29 +40,6 @@ private:
         Fourest::separator processor(":");
         processor.process(input);
         return Time(to_int(processor[0]),to_int(processor[1]));
-    }
-
-    Date readDate(istream& o)
-    {
-        int month,day;
-        o>>month;
-        o.get();
-        o>>day;
-        Date ans;
-        ans.month=month;
-        ans.day=day;
-        return ans;
-    }
-    Time readTime(istream& o)
-    {
-        int hour,minute;
-        o>>hour;
-        o.get();
-        o>>minute;
-        Time ans;
-        ans.hour=hour;
-        ans.minute=minute;
-        return ans;
     }
 
     template<class T>
@@ -91,6 +60,7 @@ public:
         do
         {
             auto tokens=words.content();
+            if(tokens.empty()) continue;
             auto &command=tokens[0];
             if(command=="add_user")
             {
@@ -162,11 +132,11 @@ public:
                     if(tokens[j]=="-i") i=tokens[j+1];
                     else if(tokens[j]=="-n") n=to_int(tokens[j+1]);
                     else if(tokens[j]=="-m") m=to_int(tokens[j+1]);
-                    else if(tokens[j]=="-s") s=to_vector_str(tokens[j+1]);
-                    else if(tokens[j]=="-p") p=to_vector_int(tokens[j+1]);
+                    else if(tokens[j]=="-s") to_vector_str(tokens[j+1],s);
+                    else if(tokens[j]=="-p") to_vector_int(tokens[j+1],p);
                     else if(tokens[j]=="-x") x=to_time(tokens[j+1]);
-                    else if(tokens[j]=="-t") t=to_vector_int(tokens[j+1]);
-                    else if(tokens[j]=="-o") {if(n>2) o=to_vector_int(tokens[j+1]);}
+                    else if(tokens[j]=="-t") to_vector_int(tokens[j+1],t);
+                    else if(tokens[j]=="-o") {if(n>2) to_vector_int(tokens[j+1],o);}
                     else if(tokens[j]=="-d")
                     {
                         Fourest::separator process("|");
@@ -193,7 +163,9 @@ public:
                     if(tokens[j]=="-i") i=tokens[j+1];
                     else d=to_date(tokens[j+1]);
                 }
-                auto ans=sys.query_train(i,d);
+                static vecS ans;
+                ans.clear();
+                sys.query_train(i,d,ans);
                 print_os(ans,os);
             }
             else if(command=="delete_train")
@@ -218,7 +190,9 @@ public:
                         else p=false;
                     }
                 }
-                auto ans=sys.query_ticket(s,t,d,p);
+                static vecS ans;
+                ans.clear();
+                sys.query_ticket(s,t,d,p,ans);
                 print_os(ans,os);
             }
             else if(command=="query_transfer")
@@ -237,7 +211,9 @@ public:
                         else p=false;
                     }
                 }
-                auto ans=sys.query_transfer(s,t,d,p);
+                static vecS ans;
+                ans.clear();
+                sys.query_transfer(s,t,d,p,ans);
                 print_os(ans,os);
             }
             else if(command=="buy_ticket")
@@ -266,7 +242,9 @@ public:
             {
                 string u("");
                 if(tokens[1]=="-u") u=tokens[2];
-                auto ans=sys.query_order(u);
+                static vecS ans;
+                ans.clear();
+                sys.query_order(u,ans);
                 print_os(ans,os);
             }
             else if(command=="refund_ticket")

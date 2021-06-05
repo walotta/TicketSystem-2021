@@ -24,9 +24,9 @@ bool ManagementSystem::delete_train(const string &i)
     return train.delete_train(i);
 }
 
-vecS ManagementSystem::query_train(const string &i,Date d)
+void ManagementSystem::query_train(const string &i,Date d,vecS &out)
 {
-    return train.query_train(i,d);
+    train.query_train(i,d,out);
 }
 
 bool ManagementSystem::add_user(const string &c,const string &u,const string &p,const string &n,const string &m,int g)
@@ -39,20 +39,20 @@ bool ManagementSystem::add_train(const string &i,int n,int m,const vecS &s,const
     return train.add_train(i,n,m,s,p,x,t,o,d_beg,d_end,y);
 }
 
-vecS ManagementSystem::query_ticket(const string &s,const string &t,Date d,bool If_time)
+void ManagementSystem::query_ticket(const string &s,const string &t,Date d,bool If_time,vecS &out)
 {
-    return train.query_ticket(s,t,d,If_time);
+    train.query_ticket(s,t,d,If_time,out);
 }
 
-vecS ManagementSystem::query_transfer(const string &s,const string &t,Date d,bool If_time)
+void ManagementSystem::query_transfer(const string &s,const string &t,Date d,bool If_time,vecS &out)
 {
-    return train.query_transfer(s,t,d,If_time);
+    train.query_transfer(s,t,d,If_time,out);
 }
 
-vector<string> ManagementSystem::query_order(const string &u)
+void ManagementSystem::query_order(const string &u,vecS &out)
 {
-    if(user.check_priority(u)==-404) return vecS({"-1"});
-    return train.query_order(u);
+    if(user.check_priority(u)==-404) out.push_back("-1");
+    else train.query_order(u,out);
 }
 
 string ManagementSystem::query_profile(const string &c,const string &u)
@@ -69,23 +69,26 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
 {
     bool fail=false,success=true;
     if(user.check_priority(u)==-404) return fail;
-    int number=user.query_order_number(u)+1-n;
-    if(number<=0) return fail;
+    int total_number=user.query_order_number(u);
+    int number=total_number+1-n;
+    if(number<=0 || number>total_number) return fail;
 
-    auto back=train.refund_ticket(u,number);
-    if(back.second==-1) return fail;
+    Date refund_date;
+    auto back=train.refund_ticket(u,number,refund_date);
+    if(back.second==REFUNDED) return fail;
 
-    auto &trainID=back.first;
-    auto orders=order.FindByTag(trainID);
-    if(back.second==0)
+    string &train_id=back.first;
+    vector<ex_index> order_index;
+    orders.get_ids(train_id,order_index);
+    if(back.second==PENDING)
     {
-        for(int i=0; i<orders.size(); ++i)
+        for(int i=0; i<order_index.size(); ++i)
         {
-            if(orders[i].id==number && orders[i].user==u)
+            int id=order_index[i].first;
+            Order order(orders.get_order(id));
+            if(order.id==number && order.user==u)
             {
-                string main_key(to_string(orders[i].serial_number)),tag(trainID);
-                order.RemoveTag(main_key,tag);
-                order.Remove(main_key);
+                orders.remove_order(id,train_id,order.serial_number);
                 break;
             }
         }
@@ -93,19 +96,25 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
     else
     {
         // Process pending after refund.
-        sort(orders.begin(),orders.end());
-        int ll=orders.size();
-        for(int i=0;i<ll;++i)
+        vector<pair<Order,int>> order_list;
+        orders.get_orders(train_id,order_list);
+
+        Train train1=train.get_train(train_id);
+        RemainedSeat seats=train.get_seat(train_id,refund_date);
+        for(int i=0;i<order_list.size();++i)
         {
-            auto &orderI=orders[i];
-            bool If_success=train.re_buy_ticket(trainID,orderI.date,(string)orderI.start,(string)orderI.arrive,orderI.number,orderI.id,(string)orderI.user);
+            Order &order=order_list[i].first;
+            string departure(order.start),arrival(order.arrive),username(order.user);
+            Date date=train1.set_off_date(departure,order.date);
+            if(!(date==refund_date)) continue;
+
+            bool If_success=train.re_buy_ticket(departure,arrival,order.number,order.id,username,train1,seats);
             if(If_success)
             {
-                string main_key(to_string(orderI.serial_number)),tag(trainID);
-                order.RemoveTag(main_key,tag);
-                order.Remove(main_key);
+                orders.remove_order(order_list[i].second,train_id,order.serial_number);
             }
         }
+        train.update_seat(train_id,refund_date,seats);
     }
     return success;
 }
@@ -148,21 +157,11 @@ int ManagementSystem::query_user_priority(const string &u)
     return user.query_user_priority(u);
 }
 
-bool ManagementSystem::buy_ticket(const ManagementSystem::Order &ord)
-{
-    bool If_queue_success=train.re_buy_ticket((string)ord.trainID,ord.date,(string)ord.start,(string)ord.arrive,ord.number,ord.id,(string)ord.user);
-    if(If_queue_success) return true;
-    else return false;
-}
-
 void ManagementSystem::add_order(int id,const string &u,const string &i,const Date &d,const string &f,const string &t,const int &n)
 {
-    auto number=1+order.read_log();
+    auto number=orders.order_number()+1;
     Order new_order(number,id,u,i,d,f,t,n);
-    string main_key(to_string(number));
-    order.insert(main_key,new_order);
-    order.AddTag(main_key,i);
-    order.plus_log();
+    orders.add_order(i,number,new_order);
 }
 
 
