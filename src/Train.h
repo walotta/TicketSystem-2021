@@ -73,7 +73,6 @@ private:
     Date sale_beg,sale_end;
     bool If_release;
     char train_type;
-    unsigned long long storage_id;
 
 
 public:
@@ -87,7 +86,7 @@ public:
         }
         return {start,end};
     }
-    int get_id(str s) const
+    inline int get_id(str s) const
     {
         for(int i=0;i<stationNum;++i)
         {
@@ -98,7 +97,7 @@ public:
 
     Train()=default;
     ~Train()=default;
-    Train(str i,int n,int m,const vecS &s,vecI p,Time x,vecI t,vecI o,Date d_beg,Date d_end,char y,unsigned long long id):trainID(i),startTime(x),sale_beg(d_beg),sale_end(d_end),storage_id(id)
+    Train(str i,int n,int m,const vecS &s,vecI p,const Time &x,vecI t,vecI o,const Date &d_beg,const Date &d_end,char y):trainID(i),startTime(x),sale_beg(d_beg),sale_end(d_end)
     {
         stationNum=n; seatNum=m;
         train_type=y; If_release=false;
@@ -121,21 +120,16 @@ public:
         return trainID<t.trainID;
     }
 
-    unsigned long long storage_pos() const {return storage_id;}
     bool if_release() const {return If_release;}
     void release() {If_release=true;}
     string train_id() const {return (string)trainID;}
-    char type() const {return train_type;}
     pair<Date,Date> date() const {return {sale_beg,sale_end};}
     int station_number() const {return stationNum;}
-    int station_price(const int &pos) const {return station[pos].price;}
     string station_name(const int &pos) const {return (string)station[pos].name;}
     void stations(vecS &out) const
     {
         for(int i=0;i<stationNum;++i) out.push_back((string)station[i].name);
     }
-    RealTime station_departure(const int &pos) const {return station[pos].departure;}
-    RealTime station_arrival(const int &pos) const {return station[pos].arrival;}
     // The "Date" in the parameter represents the date of the train's departure from the departure-station.
     Date departure_date(str station_name,const Date &d) const
     {
@@ -148,12 +142,10 @@ public:
         int id=get_id(station_name);
         return station[id].departure.time();
     }
-    Date set_off_date(str station_name,const Date &d) const
+    inline Date set_off_date(str station_name,const Date &d) const
     {
-        int id=get_id(station_name);
-        return d-station[id].departure.date().dayNum();
+        return d-station[get_id(station_name)].departure.date().dayNum();
     }
-
 
     void query_train(vecS &out,const Date &date,RemainedSeat seat=RemainedSeat()) const
     {
@@ -195,9 +187,9 @@ public:
         output+=" -> "+f+" "+arrival.display()+" "+to_string(price)+" "+to_string(seat_num);
         return output;
     }
-    bool check_date(const Date &d,str station_name) const
+    inline bool check_date(const Date &d,str station_name) const
     {
-        auto temp=set_off_date(station_name,d);
+        Date temp=set_off_date(station_name,d);
         if(temp<sale_beg || sale_end<temp) return false;
         return true;
     }
@@ -269,10 +261,7 @@ public:
         int start=id.first,end=id.second;
         seat.de_seat(start,end,n);
     }
-    void increase_seat(str i,str f,int n,RemainedSeat &seat)
-    {
-        decrease_seat(i,f,-n,seat);
-    }
+    void increase_seat(str i,str f,int n,RemainedSeat &seat) {decrease_seat(i,f,-n,seat);}
 };
 
 enum Status{SUCCESS=1,PENDING=0,REFUNDED=-1};
@@ -300,10 +289,7 @@ public:
         return output;
     }
     void modify_status(const Status &s) {status=s;}
-    string main_key() const {return (string)username+to_string(id);}
-    string tag() const {return (string)username;}
     int serial_number() const {return id;}
-    string user() const {return (string)username;}
     Status status_now() const {return status;}
     string status_string() const
     {
@@ -315,10 +301,7 @@ public:
     pair<string,string> stations() const {return {(string)From,(string)To};}
     pair<RealTime,RealTime> times() const {return {departure,arrive};}
     int number() const {return num;}
-    bool operator<(const Log &log) const
-    {
-        return id<log.id;
-    }
+    bool operator<(const Log &log) const {return id<log.id;}
 };
 
 

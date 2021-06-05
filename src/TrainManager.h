@@ -175,7 +175,7 @@ public:
     TrainManager()=default;
     ~TrainManager()=default;
 
-    bool add_train(str i,int n,int m,const vecS &s,vecI p,Time x,vecI t,vecI o,Date d_beg,Date d_end,char y);
+    bool add_train(str i,int n,int m,const vecS &s,vecI p,const Time &x,vecI t,vecI o,const Date &d_beg,const Date &d_end,char y);
     bool release_train(str i);// Only after we release the train when we could check its seat number.
     void query_train(str i,Date date,vecS &out);
     bool delete_train(str i);

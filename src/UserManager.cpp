@@ -12,15 +12,12 @@ bool UserManager::add_user(const string &c,const string &u,const string &p,const
         User first_user(u,p,n,m,10);
         users.add_user(u,first_user);
         users.not_empty();
-//        cerr<<users.get_id(u)<<endl;
         return true;
     }
 
     int pri=check_priority(c);
     if(pri==-404 || pri<=g) return false;
-
-    int id=users.get_id(u);
-    if(id>=0) return false;
+    if(users.get_id(u)>=0) return false;
 
     User temp(u,p,n,m,g);
     users.add_user(u,temp);
@@ -36,7 +33,8 @@ bool UserManager::login(const string &u,const string &p)
     User user(users.get_user(id));
     if(!user.check_pass(p)) return false;
 
-    pair<string,pair<int,int>> add(u,pair<int,int>(user.priority(),user.order_number()));
+    pair<int,int> p_n(user.priority(),user.order_number());
+    pair<string,pair<int,int>> add(u,p_n);
     logged_users.insert(add);
     return true;
 }
@@ -59,7 +57,7 @@ string UserManager::query_profile(const string &c,const string &u)
     int id=users.get_id(u);
     if(id<0) return fail;// Nonexistent users.
     User user(users.get_user(id));
-    if(user.priority()>priority || (c!=u && user.priority()==priority)) return fail;// Access denied.
+    if(user.priority()>=priority && c!=u) return fail;// Access denied.
 
     return user.display();
 }
@@ -74,7 +72,7 @@ string UserManager::modify_profile(const string &c,const string &u,const string 
     int id=users.get_id(u);
     if(id<0) return fail; // Nonexistent users "u".
     User user(users.get_user(id));
-    if(user.priority()>priority || (c!=u && user.priority()==priority) || g>=priority) return fail;// Access denied.
+    if((user.priority()>=priority && c!=u) || g>=priority) return fail;// Access denied.
 
     if(p!="") user.pass()=p;
     if(n!="") user.nam()=n;

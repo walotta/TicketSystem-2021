@@ -24,11 +24,11 @@ bool TrainManager::clean()
     return true;
 }
 
-bool TrainManager::add_train(const string &i,int n,int m,const vecS &s,const vector<int> &p,Time x,const vector<int> &t,const vector<int> &o,Date d_beg,Date d_end,char y)
+bool TrainManager::add_train(const string &i,int n,int m,const vecS &s,const vector<int> &p,const Time &x,const vector<int> &t,const vector<int> &o,const Date &d_beg,const Date &d_end,char y)
 {
     int id=trains.get_id(i);
     if(id>=0) return false; // If find the train already existed, return false;
-    Train new_train(i,n,m,s,p,x,t,o,d_beg,d_end,y,id);
+    Train new_train(i,n,m,s,p,x,t,o,d_beg,d_end,y);
     trains.add_train(i,new_train);
     return true;
 }
@@ -45,7 +45,6 @@ bool TrainManager::delete_train(const string &i)
 
 void TrainManager::query_train(const string &i,Date date,vecS &out)
 {
-    vecS fail({"-1"});
     int id=trains.get_id(i);
     if(id<0) {out.push_back("-1"); return;}
     Train train(trains.get_train(id));
@@ -73,15 +72,15 @@ void TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_t
     for(int i=0;i<trains1.size();++i) station1.insert(trains1[i].train_id());
     for(int i=0;i<trains2.size();++i)
     {
-        auto &train_t=trains2[i];
-        if(station1.count(train_t.train_id())!=0)
+        auto &train=trains2[i];
+        if(station1.count(train.train_id())!=0)
         {
-            if(train_t.check_date(d,s) && train_t.if_release() && train_t.check_sequence(s,t))
+            if(train.check_date(d,s) && train.if_release() && train.check_sequence(s,t))
             {
                 int value;
-                if(If_time) value=train_t.get_time(s,t);
-                else value=train_t.get_price(s,t);
-                list.push_back({{value,train_t.train_id()},i});
+                if(If_time) value=train.get_time(s,t);
+                else value=train.get_price(s,t);
+                list.push_back({{value,train.train_id()},i});
             }
         }
     }
@@ -117,8 +116,7 @@ bool TrainManager::update_log(const string &u,int id,Status s)
 
 void TrainManager::query_order(const string &u,vecS &out)
 {
-    static vector<Log> temp;
-    temp.clear();
+    vector<Log> temp;
     logs.get_logs(u,temp);
     out.push_back(to_string(temp.size()));
     for(int i=temp.size()-1;i>=0;--i) out.push_back(temp[i].display());
@@ -199,9 +197,9 @@ void TrainManager::query_transfer(const string &s,const string &t,Date d,bool If
 
 lint TrainManager::buy_ticket(const string &i,Date d,const string &f,const string &t,int n,int id,const string &u,bool q)
 {
-    int t_id=trains.get_id(i);
-    if(t_id<0) return -404;
-    Train train(trains.get_train(t_id));
+    int train_id=trains.get_id(i);
+    if(train_id<0) return -404;
+    Train train(trains.get_train(train_id));
     if(!train.if_release()) return -404;
     if(!train.check_date(d,f)) return -404;
     if(!train.check_sequence(f,t)) return -404;

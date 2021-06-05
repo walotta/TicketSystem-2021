@@ -11,12 +11,7 @@ class cmd
 private:
     ManagementSystem sys;
     Fourest::separator words;
-    int to_int(const string& input)
-    {
-        int ans=0;
-        for(int i=0; i<input.size(); ++i) ans=10*ans+(input[i]-'0');
-        return ans;
-    }
+
     void to_vector_int(str input,vector<int> &out)
     {
         Fourest::separator ints("|");
@@ -29,27 +24,15 @@ private:
         ints.process(input);
         out=ints.content();
     }
-    Date to_date(str input)
-    {
-        Fourest::separator processor("-");
-        processor.process(input);
-        return Date(to_int(processor[0]),to_int(processor[1]));
-    }
-    Time to_time(str input)
-    {
-        Fourest::separator processor(":");
-        processor.process(input);
-        return Time(to_int(processor[0]),to_int(processor[1]));
-    }
 
     template<class T>
-    void print_os(const vector<T> &list,ostream& o)
+    void print_os(const vector<T> &list,ostream &ost)
     {
-        int cnt=list.size();
-        for(int i=0;i<cnt;i++)
+        int size=list.size();
+        for(int i=0; i<size; i++)
         {
-            o<<list[i];
-            if(i!=cnt-1)o<<'\n';
+            ost<<list[i];
+            if(i!=size-1) ost<<'\n';
         }
     }
 public:
@@ -89,9 +72,7 @@ public:
             }
             else if(command=="logout")
             {
-                string u("");
-                if(tokens[1]=="-u") u=tokens[2];
-                os<<sys.logout(u)-1;
+                os<<sys.logout(tokens[2])-1;
             }
             else if(command=="query_profile")
             {
@@ -134,15 +115,14 @@ public:
                     else if(tokens[j]=="-m") m=to_int(tokens[j+1]);
                     else if(tokens[j]=="-s") to_vector_str(tokens[j+1],s);
                     else if(tokens[j]=="-p") to_vector_int(tokens[j+1],p);
-                    else if(tokens[j]=="-x") x=to_time(tokens[j+1]);
+                    else if(tokens[j]=="-x") x=Time(tokens[j+1]);
                     else if(tokens[j]=="-t") to_vector_int(tokens[j+1],t);
                     else if(tokens[j]=="-o") {if(n>2) to_vector_int(tokens[j+1],o);}
                     else if(tokens[j]=="-d")
                     {
-                        Fourest::separator process("|");
-                        process.process(tokens[j+1]);
-                        d_beg=to_date(process[0]);
-                        d_end=to_date(process[1]);
+                        string &day=tokens[j+1];
+                        d_beg=Date(day.substr(0,5));
+                        d_end=Date(day.substr(6,5));
                     }
                     else y=tokens[j+1][0];
                 }
@@ -150,9 +130,7 @@ public:
             }
             else if(command=="release_train")
             {
-                string i;
-                if(tokens[1]=="-i") i=tokens[2];
-                os<<sys.release_train(i)-1;
+                os<<sys.release_train(tokens[2])-1;
             }
             else if(command=="query_train")
             {
@@ -161,7 +139,7 @@ public:
                 for(int j=1;j<tokens.size();j+=2)
                 {
                     if(tokens[j]=="-i") i=tokens[j+1];
-                    else d=to_date(tokens[j+1]);
+                    else d=Date(tokens[j+1]);
                 }
                 static vecS ans;
                 ans.clear();
@@ -170,9 +148,7 @@ public:
             }
             else if(command=="delete_train")
             {
-                string i;
-                if(tokens[1]=="-i") i=tokens[2];
-                os<<sys.delete_train(i)-1;
+                os<<sys.delete_train(tokens[2])-1;
             }
             else if(command=="query_ticket")
             {
@@ -183,7 +159,7 @@ public:
                 {
                     if(tokens[j]=="-s") s=tokens[j+1];
                     else if(tokens[j]=="-t") t=tokens[j+1];
-                    else if(tokens[j]=="-d") d=to_date(tokens[j+1]);
+                    else if(tokens[j]=="-d") d=Date(tokens[j+1]);
                     else if(tokens[j]=="-p")
                     {
                         if(tokens[j+1]=="time") p=true;
@@ -204,7 +180,7 @@ public:
                 {
                     if(tokens[j]=="-s") s=tokens[j+1];
                     else if(tokens[j]=="-t") t=tokens[j+1];
-                    else if(tokens[j]=="-d") d=to_date(tokens[j+1]);
+                    else if(tokens[j]=="-d") d=Date(tokens[j+1]);
                     else if(tokens[j]=="-p")
                     {
                         if(tokens[j+1]=="time") p=true;
@@ -226,7 +202,7 @@ public:
                 {
                     if(tokens[j]=="-u") u=tokens[j+1];
                     else if(tokens[j]=="-i") i=tokens[j+1];
-                    else if(tokens[j]=="-d") d=to_date(tokens[j+1]);
+                    else if(tokens[j]=="-d") d=Date(tokens[j+1]);
                     else if(tokens[j]=="-n") n=to_int(tokens[j+1]);
                     else if(tokens[j]=="-f") f=tokens[j+1];
                     else if(tokens[j]=="-t") t=tokens[j+1];
