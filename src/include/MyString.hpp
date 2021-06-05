@@ -2,6 +2,11 @@
 // Created by wzj on 2021/3/26.
 //
 #include <cstring>
+#include <iostream>
+
+using std::string;
+using std::ostream;
+
 class MyString
 {
 private:

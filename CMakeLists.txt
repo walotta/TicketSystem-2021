@@ -12,13 +12,13 @@ add_executable(code
         src/include/BPlusTree.h
         src/include/cache.hpp
         src/include/ErrorMessage.h
-        src/include/StorageManger.h
         src/include/HashMap.cpp
         src/include/HashMap.h
         src/include/MyString.hpp
         src/include/StoragePool.h
         src/include/separator.cpp
         src/include/separator.h
+        src/include/vector.h
 
         src/main.cpp
         src/TrainManager.cpp
