@@ -11,7 +11,7 @@ class MyString
 {
 private:
     //todo: Add a function that can change the size of this class.
-    char storage[80]{};
+    char storage[60]{};
 public:
     MyString(){storage[0]='\0';}
     MyString(const string &o)
