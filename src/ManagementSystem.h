@@ -31,7 +31,7 @@ class ManagementSystem
     {
         struct ints {int value=0; ints()=default; explicit ints(int x):value(x){}};
 
-        BPlusTree<300,300> order_index;
+        BPlusTree<1000,300> order_index;
         StoragePool<Order,ints,300> order_data;
 
     public:
