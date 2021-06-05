@@ -26,7 +26,7 @@ class UserManager
 
         int get_id(str username)
         {
-            vector<index> temp;
+            vector<ex_index> temp;
             user_index.find(username,temp);
             if(temp.empty()) return -404;
             return temp[0].first;

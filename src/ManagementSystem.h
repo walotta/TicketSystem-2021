@@ -29,49 +29,48 @@ class ManagementSystem
     };
     class OrderStorage
     {
+        struct ints {int value=0; ints()=default; explicit ints(int x):value(x){}};
+
         BPlusTree<300,300> order_index;
-        StoragePool<Order,int,300> order_data;
+        StoragePool<Order,ints,300> order_data;
 
     public:
-        OrderStorage():order_index("order_index.dat"),order_data("order_data.dat")
-        {
-            order_data.writeExtraBlock(0);
-        }
+        OrderStorage():order_index("order_index.dat"),order_data("order_data.dat"){}
         ~OrderStorage()=default;
 
         int get_id(str train_id,const int &id)
         {
-            vector<index> temp;
+            vector<ex_index> temp;
             order_index.find(train_id,temp);
             if(temp.empty()) return -404;
             return temp[0].first;
         }
         void add_order(str train_id,const int &number,const Order &order)
         {
-            int id=order_data.add(order);
-            order_data.writeExtraBlock(number);
-            order_index.insert({train_id,number},id);
+            order_data.writeExtraBlock(ints(number));
+            int order_id=order_data.add(order);
+            order_index.insert({train_id,number},order_id);
         }
         void update(const int &order_id,const Order &order) {order_data.update(order_id,order);}
         Order get_order(const int &order_id) {return order_data.get(order_id);}
 
         void get_orders(str train_id,vector<pair<Order,int>> &out)
         {
-            vector<index> temp;
+            vector<ex_index> temp;
             order_index.find(train_id,temp);
             for(int i=0;i<temp.size();++i)
                 out.push_back({order_data.get(temp[i].first),temp[i].first});
             sort(out.begin(),out.end());
             //consider: This place could be optimized
         }
-        int order_number() {return order_data.readExtraBlock();}
-        void remove_order(const int &id,str train_id,const int &number)
+        int order_number() {return order_data.readExtraBlock().value;}
+        void remove_order(const int &order_id,str train_id,const int &number)
         {
-            order_index.remove({train_id,number},id);
-            order_data.remove(id);
+            order_index.remove({train_id,number},order_id);
+            order_data.remove(order_id);
         }
 
-        int get_ids(str train_id,vector<index> &out)
+        int get_ids(str train_id,vector<ex_index> &out)
         {
             order_index.find(train_id,out);
             return out.size();

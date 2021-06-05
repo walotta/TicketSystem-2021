@@ -24,12 +24,12 @@ class TrainManager
 
         int get_id(str train_id)
         {
-            vector<index> temp;
+            vector<ex_index> temp;
             train_single_index.find(train_id,temp);
             if(temp.empty()) return -404;
             return temp[0].first;
         }
-        int get_ids(str station_name,vector<index> &out)
+        int get_ids(str station_name,vector<ex_index> &out)
         {
             train_multi_index.find(station_name,out);
             if(out.empty()) return -404;
@@ -38,7 +38,7 @@ class TrainManager
         Train get_train(const int &id) {return train_data.get(id);}
         void get_trains(str station_name,vector<Train> &out)
         {
-            vector<index> temp;
+            vector<ex_index> temp;
             train_multi_index.find(station_name,temp);
             for(int k=0;k<temp.size();++k)
             {
@@ -63,7 +63,7 @@ class TrainManager
         }
         void delete_train(str train_id)
         {
-            vector<index> key;
+            vector<ex_index> key;
             train_single_index.find(train_id,key);
             int id=key[0].first;
             train_single_index.remove({train_id,id+10086},id);
@@ -91,7 +91,7 @@ class TrainManager
 
         int get_id(str train_id,const Date &date)
         {
-            vector<index> temp;
+            vector<ex_index> temp;
             seat_index.find(get_key(train_id,date),temp);
             if(temp.empty()) return -404;
             return temp[0].first;
@@ -127,7 +127,7 @@ class TrainManager
 
         int get_id(str username,const int &id)
         {
-            vector<index> temp;
+            vector<ex_index> temp;
             log_index.find(username,temp);
             if(temp.empty()) return -404;
             for(int i=0;i<temp.size();++i)
@@ -148,7 +148,7 @@ class TrainManager
 
         void get_logs(str username,vector<Log> &out)
         {
-            vector<index> temp;
+            vector<ex_index> temp;
             log_index.find(username,temp);
             for(int i=0;i<temp.size();++i)
                 out.push_back(log_data.get(temp[i].first));

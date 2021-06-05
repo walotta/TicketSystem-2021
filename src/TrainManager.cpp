@@ -249,6 +249,7 @@ pair<string,int> TrainManager::refund_ticket(const string &u,const int &n,Date &
     auto stations=log.stations();
     auto day=log.times().first.date();
     date=train.set_off_date(stations.first,day);
+
     int seat_id=seats.get_id(train.train_id(),date);
     RemainedSeat seat(seats.get_seats(seat_id));
     train.increase_seat(stations.first,stations.second,log.number(),seat);

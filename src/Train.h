@@ -43,6 +43,7 @@ public:
         for(int i=0;i<n-1;++i) printf("%d ",seat_remained[i]);
         printf("\n");
     }
+    bool temp(const string &o)const{return o==trainI_Date;}
 };
 
 class Train

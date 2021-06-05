@@ -3,7 +3,7 @@
 #include <fstream>
 #include "ErrorMessage.h"
 
-ifstream in("../data/basic_5/9.in");
+ifstream in("../data/basic_6/8.in");
 ofstream out("output.txt");
 
 
@@ -18,7 +18,7 @@ int main(int argc,char *argv[])
     cmd ticketLibrary;
     if(run_with_io)
     {
-        try {ticketLibrary.run(in,out);}
+        try {ticketLibrary.run(cin,cout);}
         catch(error x)
         {
             cout<<x.what()<<endl;

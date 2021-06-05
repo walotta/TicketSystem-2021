@@ -77,9 +77,9 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
     auto back=train.refund_ticket(u,number,refund_date);
     if(back.second==REFUNDED) return fail;
 
-    auto &trainID=back.first;
-    vector<index> order_index;
-    orders.get_ids(trainID,order_index);
+    string &train_id=back.first;
+    vector<ex_index> order_index;
+    orders.get_ids(train_id,order_index);
     if(back.second==PENDING)
     {
         for(int i=0; i<order_index.size(); ++i)
@@ -88,7 +88,7 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
             Order order(orders.get_order(id));
             if(order.id==number && order.user==u)
             {
-                orders.remove_order(id,trainID,order.serial_number);
+                orders.remove_order(id,train_id,order.serial_number);
                 break;
             }
         }
@@ -96,26 +96,25 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
     else
     {
         // Process pending after refund.
-        static vector<pair<Order,int>> order_list;
-        order_list.clear();
-        orders.get_orders(trainID,order_list);
+        vector<pair<Order,int>> order_list;
+        orders.get_orders(train_id,order_list);
 
-        auto train1=train.get_train(trainID);
-        auto seats=train.get_seat(trainID,refund_date);
+        Train train1=train.get_train(train_id);
+        RemainedSeat seats=train.get_seat(train_id,refund_date);
         for(int i=0;i<order_list.size();++i)
         {
-            auto &order=order_list[i].first;
-            auto date=train1.set_off_date((string)order.start,order.date);
+            Order &order=order_list[i].first;
+            string departure(order.start),arrival(order.arrive),username(order.user);
+            Date date=train1.set_off_date(departure,order.date);
             if(!(date==refund_date)) continue;
 
-            bool If_success=train.re_buy_ticket((string)order.start,(string)order.arrive,order.number,order.id,(string)order.user,train1,seats);
+            bool If_success=train.re_buy_ticket(departure,arrival,order.number,order.id,username,train1,seats);
             if(If_success)
             {
-                string serial_key(to_string(order.serial_number)),&tag=trainID;
-                orders.remove_order(order_list[i].second,trainID,order.serial_number);
+                orders.remove_order(order_list[i].second,train_id,order.serial_number);
             }
         }
-        train.update_seat(trainID,refund_date,seats);
+        train.update_seat(train_id,refund_date,seats);
     }
     return success;
 }

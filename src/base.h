@@ -12,9 +12,7 @@
 #include "include/lynbpt.h"
 #include <unordered_set>
 #include <unordered_map>
-#include <set>
 #include <algorithm>
-#include <map>
 #include <string>
 using namespace std;
 
@@ -23,7 +21,7 @@ typedef const string & str;
 typedef const vector<int> & vecI;
 typedef vector<string> vecS;
 typedef long long lint;
-typedef pair<int,lint> index;
+typedef pair<int,lint> ex_index;
 
 struct Time;
 struct Date;
