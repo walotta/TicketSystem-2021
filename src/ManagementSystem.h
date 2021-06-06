@@ -31,8 +31,8 @@ class ManagementSystem
     {
         struct ints {int value=0; ints()=default; explicit ints(int x):value(x){}};
 
-        BPlusTree<1000,1000> order_index;
-        StoragePool<Order,ints,1000> order_data;
+        BPlusTree<1000,500> order_index;
+        StoragePool<Order,ints,500> order_data;
 
     public:
         OrderStorage():order_index("order_index.dat"),order_data("order_data.dat"){}

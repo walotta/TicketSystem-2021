@@ -14,9 +14,9 @@ class TrainManager
 {
     class TrainStorage
     {
-        BPlusTree<1000,1000> train_multi_index;
-        BPlusTree<1000,1000> train_single_index;
-        StoragePool<Train,bool,1000> train_data;
+        BPlusTree<1000,500> train_multi_index;
+        BPlusTree<1000,500> train_single_index;
+        StoragePool<Train,bool,500> train_data;
 
     public:
         TrainStorage():train_multi_index("train_multi_index.dat"),train_single_index("train_single_index.dat"),train_data("train_data.dat"){}
@@ -78,8 +78,8 @@ class TrainManager
     };
     class SeatStorage
     {
-        BPlusTree<1000,1000> seat_index;
-        StoragePool<RemainedSeat,bool,1000> seat_data;
+        BPlusTree<1000,500> seat_index;
+        StoragePool<RemainedSeat,bool,500> seat_data;
 
         string get_key(str train_id,const Date &date) const
         {
@@ -118,8 +118,8 @@ class TrainManager
     };
     class LogStorage
     {
-        BPlusTree<1000,1000> log_index;
-        StoragePool<Log,bool,1000> log_data;
+        BPlusTree<1000,500> log_index;
+        StoragePool<Log,bool,500> log_data;
 
     public:
         LogStorage():log_index("log_index.dat"),log_data("log_data.dat"){}
