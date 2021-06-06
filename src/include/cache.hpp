@@ -2,11 +2,23 @@
 // Created by wzj on 2021/3/26.
 //
 #include "ErrorMessage.h"
+#include <unordered_map>
 template<int cacheSize,class T>
 class cachePool
 {
 private:
-    int id[cacheSize];
+    //int id[cacheSize];
+    struct block
+    {
+        int a=-1;
+        block(int val=-1):a(val){}
+        block& operator=(int &val)
+        {
+            a=val;
+            return *this;
+        }
+    };
+    std::unordered_map<int,block> index;
     T* storage[cacheSize];
     int size;
     int head;
@@ -25,11 +37,7 @@ public:
     }
     int find(int _id)
     {
-        for(int i=0;i<size;i++)
-        {
-            if(id[i]==_id)return i;
-        }
-        return -1;
+        return index[_id].a;
     }
     T operator[](int pos)
     {
@@ -56,13 +64,13 @@ public:
             head%=size;
             delete storage[head];
             storage[head]=new T(other);
-            id[head]=_id;
+            index[_id]=head;
         }else
         {
             head++;
             size++;
             storage[head]=new T(other);
-            id[head]=_id;
+            index[_id]=head;
         }
     }
     void remove(int _id)
@@ -70,7 +78,7 @@ public:
         int pos;
         pos=find(_id);
         if(pos==-1)return;
-        id[pos]=-2;
+        index.erase(_id);
     }
     void clear()
     {
@@ -78,6 +86,7 @@ public:
         {
             delete storage[i];
         }
+        index.clear();
         size=0;
         head=-1;
     }
