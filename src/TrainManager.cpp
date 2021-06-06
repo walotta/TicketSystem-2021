@@ -67,9 +67,9 @@ void TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_t
     trains1.clear(); trains2.clear();
     trains.get_ids(s,trains1);
     trains.get_ids(t,trains2);
-    unordered_set<unsigned long long> station1;
-    vector<pair<pair<int,string>,int>> list; // The first one is value, the second one is id.
-    for(int i=0;i<trains1.size();++i) station1.insert(trains1[i].second);
+    HashMap<unsigned long long,int> station1;
+    vector<std::pair<std::pair<int,string>,int>> list; // The first one is value, the second one is id.
+    for(int i=0;i<trains1.size();++i) station1.insert(trains1[i].second,1);
     for(int i=0;i<trains2.size();++i)
     {
         auto &key=trains2[i];
@@ -89,7 +89,7 @@ void TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_t
     if(list.empty()) {out.push_back("0"); return;}
     sort(list.begin(),list.end());
 
-    out.push_back(to_string(list.size()));
+    out.push_back(std::to_string(list.size()));
     for(int k=0; k<list.size(); ++k)
     {
         int id=trains2[list[k].second].first;
@@ -121,7 +121,7 @@ void TrainManager::query_order(const string &u,vecS &out)
 {
     vector<Log> temp;
     logs.get_logs(u,temp);
-    out.push_back(to_string(temp.size()));
+    out.push_back(std::to_string(temp.size()));
     for(int i=temp.size()-1;i>=0;--i) out.push_back(temp[i].display());
 }
 
@@ -145,12 +145,12 @@ void TrainManager::query_transfer(const string &s,const string &t,Date d,bool If
         auto hash_t1=hash_int(train1.train_id());
         if(!train1.if_release() || !train1.check_date(d,s)) continue;
 
-        unordered_map<unsigned long long,int> stations1;
+        HashMap<unsigned long long,int> stations1;
         bool start_add=false;
         for(int k=0;k<train1.station_number();++k)
         {
             auto hash_name=hash_int(train1.station_name(k));
-            if(start_add) stations1.insert({hash_name,k});
+            if(start_add) stations1.insert(hash_name,k);
             if(hash_name==hash_s) start_add=true;
         }
 
@@ -238,9 +238,9 @@ lint TrainManager::buy_ticket(const string &i,Date d,const string &f,const strin
     }
 }
 
-pair<string,int> TrainManager::refund_ticket(const string &u,const int &n,Date &date)
+std::pair<string,int> TrainManager::refund_ticket(const string &u,const int &n,Date &date)
 {
-    pair<string,int> output("fail",-1);
+    std::pair<string,int> output("fail",-1);
 
     int log_id=logs.get_id(u,n);
     if(log_id<0) return output;

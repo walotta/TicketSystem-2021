@@ -4,9 +4,8 @@
 
 
 #include <iostream>
-#include <vector>
 #include <string>
-#include <unordered_set>
+#include "STL.h"
 
 namespace Fourest
 {
@@ -15,31 +14,24 @@ namespace Fourest
     class separator
     {
         std::string source;
-        std::vector<str> words;
-        std::vector<str> wordsBeBaned;
-        std::unordered_set<char> blackList;
+        vector<str> words;
+        char ban_word;
 
         void process();
-        static int toInt(const str &);
-
     public:
         separator()=default;
-        explicit separator(const str &);
+        explicit separator(const char &y):ban_word(y){}
         ~separator();
 
         int size() const;
-        void ban(const str &);
         void clear();
         void process(const str &);
         bool readLine(std::istream &);
-        std::vector<str> &content();
+        vector<str> &content();
 
         str &operator[](int);
         bool empty() const {return words.empty();}
-
     };
-
-    double toNumber(const str &);
 }
 
 #endif //FOUREST_SEPARATOR_H

@@ -31,8 +31,8 @@ class ManagementSystem
     {
         struct ints {int value=0; ints()=default; explicit ints(int x):value(x){}};
 
-        BPlusTree<100,300> order_index;
-        StoragePool<Order,ints,30> order_data;
+        BPlusTree<100,200> order_index;
+        StoragePool<Order,ints,20> order_data;
 
     public:
         OrderStorage():order_index("order_index.dat"),order_data("order_data.dat"){}
@@ -61,7 +61,7 @@ class ManagementSystem
             order_data.remove(order_id);
         }
 
-        void get_ids(str train_id,vector<pair<lint,int>> &out)
+        void get_ids(str train_id,vector<std::pair<lint,int>> &out)
         {
             vector<ex_index> temp;
             order_index.find(train_id,temp);

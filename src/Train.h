@@ -26,7 +26,7 @@ public:
     int min_seat(const int &start,const int &end) const
     {
         int output=seat_remained[start];
-        for(int i=start;i<end;++i) output=min(output,seat_remained[i]);
+        for(int i=start;i<end;++i) output=std::min(output,seat_remained[i]);
         return output;
     }
     void de_seat(const int &start,const int &end,const int &n)
@@ -76,7 +76,7 @@ private:
 
 
 public:
-    inline pair<int,int> get_id(str i,str f) const
+    inline std::pair<int,int> get_id(str i,str f) const
     {
         auto hash_i=hash_int(i),hash_f=hash_int(f);
         int start=-404,end=-404;
@@ -105,7 +105,7 @@ public:
         train_type=y; If_release=false;
 
         // Process the name & price & time;
-        station[0].update(s[0],0);
+        station[0].update(s[0],0); 
         station[0].departure=RealTime(Date(6,1),x);
         for(int pos=0;pos<stationNum-2;++pos)
         {
@@ -125,7 +125,7 @@ public:
     bool if_release() const {return If_release;}
     void release() {If_release=true;}
     string train_id() const {return (string)trainID;}
-    pair<Date,Date> date() const {return {sale_beg,sale_end};}
+    std::pair<Date,Date> date() const {return {sale_beg,sale_end};}
     int station_number() const {return stationNum;}
     string station_name(const int &pos) const {return (string)station[pos].name;}
     void stations(vecS &out) const
@@ -160,12 +160,12 @@ public:
             if(station[k].departure.minutes<0) departure.minutes=-404;
             string temp((string)station[k].name);
             temp+=" "+arrival.display()+" -> "+departure.display();
-            temp+=" "+to_string(station[k].price)+" ";
+            temp+=" "+std::to_string(station[k].price)+" ";
             if(k==stationNum-1) temp+="x";
             else
             {
-                if(!If_release) temp+=to_string(seatNum);
-                else temp+=to_string(seat[k]);
+                if(!If_release) temp+=std::to_string(seatNum);
+                else temp+=std::to_string(seat[k]);
             }
             out.push_back(temp);
         }
@@ -179,14 +179,14 @@ public:
             auto &st=station[j];
             if(i==st.name) {start=j; If_find_initial=true;}
             if(f==st.name) {end=j; break;}
-            if(If_find_initial) seat_num=min(seat_num,seat[j]);
+            if(If_find_initial) seat_num=std::min(seat_num,seat[j]);
 
         }
         int price=station[end].price-station[start].price;
         int time_gap=station[end].arrival-station[start].departure;
         RealTime departure(d,station[start].departure.time()),arrival(departure+time_gap);
         string output((string)trainID+" "+i+" "+departure.display());
-        output+=" -> "+f+" "+arrival.display()+" "+to_string(price)+" "+to_string(seat_num);
+        output+=" -> "+f+" "+arrival.display()+" "+std::to_string(price)+" "+std::to_string(seat_num);
         return output;
     }
     inline bool check_date(const Date &d,str station_name) const
@@ -195,30 +195,30 @@ public:
         if(temp<sale_beg || sale_end<temp) return false;
         return true;
     }
-    bool check_sequence(const pair<int,int> &input) const
+    bool check_sequence(const std::pair<int,int> &input) const
     {
         const int &start=input.first,&end=input.second;
         if(start<0 || end<0 || start>=end) return false;
         return true;
     }
-    lint get_price(const pair<int,int> &input,int n=1) const
+    lint get_price(const std::pair<int,int> &input,int n=1) const
     {
         const auto &id=input;
         return (station[id.second].price-station[id.first].price)*lint(n);
     }// Only for comparing the cost.
-    int get_time(const pair<int,int> &input) const
+    int get_time(const std::pair<int,int> &input) const
     {
         const auto &id=input;
         return station[id.second].arrival-station[id.first].departure;
     } // Use for comparing the cost.
 
     // pair<time_cost_between_transfer,transfer_date>
-    pair<RealTime,RealTime> obtain_time(const pair<int,int> &input,const Date &d)
+    std::pair<RealTime,RealTime> obtain_time(const std::pair<int,int> &input,const Date &d)
     {
         const int &start=input.first,&end=input.second;
         return {station[start].departure+RealTime(d),station[end].arrival+RealTime(d)};
     }
-    pair<int,Date> check_if_later(const Train &train,const Date &start_date,str start_station,str transfer_station) const
+    std::pair<int,Date> check_if_later(const Train &train,const Date &start_date,str start_station,str transfer_station) const
     {
         auto ids=get_id(start_station,transfer_station);
         int date_gap=station[ids.second].arrival.date()-station[ids.first].departure.date();
@@ -240,17 +240,17 @@ public:
     }
 
     int seat_number() const {return seatNum;}
-    int check_seat(const pair<int,int> &input,const RemainedSeat &seat) const
+    int check_seat(const std::pair<int,int> &input,const RemainedSeat &seat) const
     {
         const int &start=input.first,&end=input.second;
         return seat.min_seat(start,end);
     }
-    void decrease_seat(const pair<int,int> &input,int n,RemainedSeat &seat) const
+    void decrease_seat(const std::pair<int,int> &input,int n,RemainedSeat &seat) const
     {
         const int &start=input.first,&end=input.second;
         seat.de_seat(start,end,n);
     }
-    void increase_seat(const pair<int,int> &id,int n,RemainedSeat &seat) {decrease_seat(id,-n,seat);}
+    void increase_seat(const std::pair<int,int> &id,int n,RemainedSeat &seat) {decrease_seat(id,-n,seat);}
 };
 
 enum Status{SUCCESS=1,PENDING=0,REFUNDED=-1};
@@ -274,7 +274,7 @@ public:
     {
         string output("["+status_string()+"] "+(string)trainID+" "+(string)From+" ");
         output+=departure.display()+" -> "+(string)To+" "+arrive.display()+" ";
-        output+=to_string(price)+" "+to_string(num);
+        output+=std::to_string(price)+" "+std::to_string(num);
         return output;
     }
     void modify_status(const Status &s) {status=s;}
@@ -287,8 +287,8 @@ public:
         return "refunded";
     }
     string train() const {return (string)trainID;}
-    pair<string,string> stations() const {return {(string)From,(string)To};}
-    pair<RealTime,RealTime> times() const {return {departure,arrive};}
+    std::pair<string,string> stations() const {return {(string)From,(string)To};}
+    std::pair<RealTime,RealTime> times() const {return {departure,arrive};}
     int number() const {return num;}
     bool operator<(const Log &log) const {return id<log.id;}
 };

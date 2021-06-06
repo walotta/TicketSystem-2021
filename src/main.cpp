@@ -3,8 +3,9 @@
 #include <fstream>
 #include "ErrorMessage.h"
 
-//ifstream in("../data/basic_6/10.in");
-//ofstream out("output.txt");
+
+//std::ifstream in("../data/basic_1/1.in");
+//std::ofstream out("output.txt");
 
 
 
@@ -19,16 +20,16 @@ int main(int argc,char *argv[])
     if(run_with_io)
     {
         std::ios::sync_with_stdio(false);
-        try {ticketLibrary.run(cin,cout);}
+        try {ticketLibrary.run(std::cin,std::cout);}
         catch(error x)
         {
-            cout<<x.what()<<endl;
+            std::cout<<x.what()<<std::endl;
             return 0;
         }
     }
     else
     {
-        stringstream sin,sout;
+        std::stringstream sin,sout;
         ticketLibrary.run(sin,sout);
     }
 }

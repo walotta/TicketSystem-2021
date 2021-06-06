@@ -15,7 +15,7 @@ class UserManager
         struct ints{int value; ints():value(0){} explicit ints(int x):value(x){}};
 
         StoragePool<User,ints,100> user_data;
-        BPlusTree<100,300> user_index;
+        BPlusTree<100,200> user_index;
         bool if_empty=true;
     public:
         UserStorage():user_data("user_data.dat"),user_index("user_index.dat")
@@ -42,7 +42,7 @@ class UserManager
 
         bool empty() {return if_empty;}
         void not_empty() {user_data.writeExtraBlock(ints(1)); if_empty=false;}
-        void clean()
+        void clean() 
         {
             user_data.clearAll();
             user_index.clean();
@@ -50,7 +50,7 @@ class UserManager
     };
     UserStorage users;
     // map<username,pair<priority,orderNum>>
-    unordered_map<string,pair<int,int>> logged_users;
+    HashMap<string,std::pair<int,int>> logged_users;
 
 public:
     UserManager(){}

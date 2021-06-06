@@ -33,17 +33,16 @@ bool UserManager::login(const string &u,const string &p)
     User user(users.get_user(id));
     if(!user.check_pass(p)) return false;
 
-    pair<int,int> p_n(user.priority(),user.order_number());
-    pair<string,pair<int,int>> add(u,p_n);
-    logged_users.insert(add);
+    std::pair<int,int> p_n(user.priority(),user.order_number());
+    logged_users.insert(u,p_n); 
     return true;
 }
 
 bool UserManager::logout(const string &u)
 {
     auto temp=logged_users.find(u);
-    if(temp==logged_users.end()) return false;
-    logged_users.erase(temp);
+    if(temp==nullptr) return false;
+    logged_users.erase(u);
     return true;
 }
 
@@ -85,8 +84,8 @@ string UserManager::modify_profile(const string &c,const string &u,const string 
 int UserManager::check_priority(const string &u) const
 {
     auto tpp=logged_users.find(u);
-    if(tpp==logged_users.end()) return -404;
-    return tpp->second.first;
+    if(tpp==nullptr) return -404;
+    return tpp->first;
 }
 
 bool UserManager::clean()
@@ -106,7 +105,7 @@ int UserManager::query_user_priority(const string &u)
 int UserManager::query_order_number(const string &u) const
 {
     auto temp=logged_users.find(u);
-    return temp->second.second;
+    return temp->second;
 }
 
 bool UserManager::add_order_number(const string &u)
@@ -118,26 +117,7 @@ bool UserManager::add_order_number(const string &u)
     users.update(id,user);
 
     auto temp=logged_users.find(u);
-    if(logged_users.end()!=temp) temp->second.second++;
+    if(temp!=nullptr) temp->second++;
     return true;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

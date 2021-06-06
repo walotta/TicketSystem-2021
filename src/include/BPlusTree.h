@@ -8,7 +8,7 @@
 #define No_Block_Merge_off
 #define Debug_Mode_off
 
-#include <vector>
+#include "STL.h"
 #include <cstring>
 #include "StoragePool.h"
 #include "ErrorMessage.h"
@@ -503,7 +503,7 @@ private:
         }
     }
 
-    void dp_find(int now,const unsigned long long &key,std::vector<std::pair<int,long long>>& res)const
+    void dp_find(int now,const unsigned long long &key,vector<std::pair<int,long long>>& res)const
     {
         BStore nowBlock=storage->get(now);
         if(nowBlock.IfLeaves)
@@ -661,7 +661,7 @@ public:
         }
     }
 
-    void find(const string &_key,std::vector<std::pair<int,long long>>& res)const
+    void find(const string &_key,vector<std::pair<int,long long>>& res)const
     {
         unsigned long long key=hash(_key);
         if(root==-1)

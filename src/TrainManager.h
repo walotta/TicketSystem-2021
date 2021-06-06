@@ -14,9 +14,9 @@ class TrainManager
 {
     class TrainStorage
     {
-        BPlusTree<100,300> train_multi_index;
-        BPlusTree<100,300> train_single_index;
-        StoragePool<Train,bool,30> train_data;
+        BPlusTree<100,200> train_multi_index;
+        BPlusTree<100,200> train_single_index;
+        StoragePool<Train,bool,20> train_data;
 
     public:
         TrainStorage():train_multi_index("train_multi_index.dat"),train_single_index("train_single_index.dat"),train_data("train_data.dat"){}
@@ -74,8 +74,8 @@ class TrainManager
     };
     class SeatStorage
     {
-        BPlusTree<100,300> seat_index;
-        StoragePool<RemainedSeat,bool,30> seat_data;
+        BPlusTree<100,200> seat_index;
+        StoragePool<RemainedSeat,bool,20> seat_data;
 
         string get_key(str train_id,const Date &date) const
         {
@@ -114,8 +114,8 @@ class TrainManager
     };
     class LogStorage
     {
-        BPlusTree<100,300> log_index;
-        StoragePool<Log,bool,30> log_data;
+        BPlusTree<100,200> log_index;
+        StoragePool<Log,bool,20> log_data;
 
     public:
         LogStorage():log_index("log_index.dat"),log_data("log_data.dat"){}
@@ -177,7 +177,7 @@ public:
     void query_transfer(str s,str t,Date d,bool If_time,vecS &out);
     void query_order(str u,vecS &out); // If query failed, return an empty vector.
     lint buy_ticket(str i,Date d,str f,str t,int n,int id,str u,bool q);// If but_ticket failed, return 0; If no such train, return -404;
-    pair<string,int> refund_ticket(str u,const int &n,Date &date);
+    std::pair<string,int> refund_ticket(str u,const int &n,Date &date);
     bool clean();
 
     bool re_buy_ticket(str f,str t,int n,int id,str u,const Train &train1,RemainedSeat &seat);// If success, return true;

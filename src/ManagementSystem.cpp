@@ -80,7 +80,7 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
     string &train_id=back.first;
     auto hash_u=hash_int(u);
 
-    vector<pair<lint,int>> order_index;
+    vector<std::pair<lint,int>> order_index;
     orders.get_ids(train_id,order_index);
 
     if(back.second==PENDING)
@@ -132,7 +132,7 @@ string ManagementSystem::buy_ticket(const string &u,const string &i,const Date &
     if(cost>0)
     {
         user.add_order_number(u);
-        return to_string(cost);
+        return std::to_string(cost);
     }
     else
     {

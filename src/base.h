@@ -8,18 +8,18 @@
 #include "include/BPlusTree.h"
 #include "include/StoragePool.h"
 #include "include/MyString.hpp"
-#include <unordered_set>
-#include <unordered_map>
+#include "include/STL.h"
+//#include <unordered_set>
+//#include <unordered_map>
 #include <algorithm>
 #include <string>
-using namespace std;
 
 
 typedef const string & str;
 typedef const vector<int> & vecI;
 typedef vector<string> vecS;
 typedef long long lint;
-typedef pair<int,lint> ex_index;
+typedef std::pair<int,lint> ex_index;
 
 struct Time;
 struct Date;
@@ -79,7 +79,7 @@ struct Time
 
     string display() const
     {
-        string h=to_string(hour),m=to_string(minute);
+        string h=std::to_string(hour),m=std::to_string(minute);
         if(h.size()==1) h="0"+h;
         if(m.size()==1) m="0"+m;
         return h+":"+m;
@@ -103,7 +103,7 @@ struct Date
 
     string display() const
     {
-        string m=to_string(month),d=to_string(day);
+        string m=std::to_string(month),d=std::to_string(day);
         if(m.size()==1) m="0"+m;
         if(d.size()==1) d="0"+d;
         return m+"-"+d;

@@ -12,15 +12,15 @@ private:
     ManagementSystem sys;
     Fourest::separator words;
 
-    void to_vector_int(str input,vector<int> &out)
+    static void to_vector_int(str input,vector<int> &out)
     {
-        Fourest::separator ints("|");
+        Fourest::separator ints('|');
         ints.process(input);
         for(int i=0;i<ints.size();++i) out.push_back(to_int(ints[i]));
     }
-    void to_vector_str(str input,vector<string> &out)
+    static void to_vector_str(str input,vector<string> &out)
     {
-        Fourest::separator ints("|");
+        Fourest::separator ints('|');
         ints.process(input);
         out=ints.content();
     }
@@ -36,17 +36,18 @@ private:
         }
     }
 public:
-    cmd():words(" "){}
+    cmd():words(' '){}
     void run(std::istream &is, std::ostream &os)
     {
         words.readLine(is);
         do
         {
             if(words.empty()) continue;
+//            std::cerr<<"[Debug]"<<words[0]<<std::endl;
             auto &command=words[0];
             if(command=="add_user")
             {
-                string c(""),u(""),p(""),n(""),m("");
+                std::string c(""),u(""),p(""),n(""),m("");
                 int g=-404;
                 for(int i=1; i<words.size(); i+=2)
                 {
@@ -61,7 +62,7 @@ public:
             }
             else if(command=="login")
             {
-                string u(""),p("");
+                std::string u(""),p("");
                 for(int i=1; i<words.size(); i+=2)
                 {
                     if(words[i]=="-u") u=words[i+1];
@@ -75,7 +76,7 @@ public:
             }
             else if(command=="query_profile")
             {
-                string c(""),u("");
+                std::string c(""),u("");
                 for(int i=1; i<words.size(); i+=2)
                 {
                     if(words[i]=="-c") c=words[i+1];
@@ -85,7 +86,7 @@ public:
             }
             else if(command=="modify_profile")
             {
-                string c(""),u(""),p(""),n(""),m("");
+                std::string c(""),u(""),p(""),n(""),m("");
                 int g=-404;
                 for(int i=1; i<words.size(); i+=2)
                 {
@@ -240,7 +241,7 @@ public:
             }
             else if(command=="exit")
             {
-                os<<"bye"<<endl;
+                os<<"bye"<<std::endl;
                 os.flush();
                 break;
             }
