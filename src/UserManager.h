@@ -14,8 +14,8 @@ class UserManager
     {
         struct ints{int value; ints():value(0){} explicit ints(int x):value(x){}};
 
-        StoragePool<User,ints,300> user_data;
-        BPlusTree<1000,300> user_index;
+        StoragePool<User,ints,1000> user_data;
+        BPlusTree<1000,1000> user_index;
         bool if_empty=true;
     public:
         UserStorage():user_data("user_data.dat"),user_index("user_index.dat")
