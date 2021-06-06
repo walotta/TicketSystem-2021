@@ -34,6 +34,14 @@ inline int to_int(const string& input)
     return ans;
 }
 
+static unsigned long long hash_int(str input)
+{
+    unsigned long long res=0;
+    for(auto it:input) res=(res<<16)+res+(unsigned int)it;
+    return res;
+}
+
+
 struct Time
 {
     int hour=0,minute=0;

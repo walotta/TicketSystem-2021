@@ -48,9 +48,10 @@ class TrainManager
         void update(const int &id,const Train &train) {train_data.update(id,train);}
         void release(const int &id,const Train &train)
         {
+            auto key=hash_int(train.train_id());
             for(int i=0;i<train.station_number();++i)
             {
-                train_multi_index.insert({train.station_name(i),id+10086},id);//todo: get serial_number
+                train_multi_index.insert({train.station_name(i),key},id);//todo: get serial_number
             }
             train_data.update(id,train);
         }

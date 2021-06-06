@@ -62,19 +62,20 @@ void TrainManager::query_train(const string &i,Date date,vecS &out)
 
 void TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_time,vecS &out)
 {
-    static vector<Train> trains1;
-    static vector<Train> trains2;
+    static vector<ex_index> trains1;
+    static vector<ex_index> trains2;
     trains1.clear(); trains2.clear();
-    trains.get_trains(s,trains1);
-    trains.get_trains(t,trains2);
-    unordered_set<string> station1;
+    trains.get_ids(s,trains1);
+    trains.get_ids(t,trains2);
+    unordered_set<unsigned long long> station1;
     vector<pair<pair<int,string>,int>> list; // The first one is value, the second one is id.
-    for(int i=0;i<trains1.size();++i) station1.insert(trains1[i].train_id());
+    for(int i=0;i<trains1.size();++i) station1.insert(trains1[i].second);
     for(int i=0;i<trains2.size();++i)
     {
-        auto &train=trains2[i];
-        if(station1.count(train.train_id())!=0)
+        auto &key=trains2[i];
+        if(station1.count(key.second)!=0)
         {
+            Train train(trains.get_train(key.first));
             if(train.check_date(d,s) && train.if_release() && train.check_sequence(s,t))
             {
                 int value;
@@ -90,7 +91,8 @@ void TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_t
     out.push_back(to_string(list.size()));
     for(int k=0; k<list.size(); ++k)
     {
-        Train &train=trains2[list[k].second];
+        int id=trains2[list[k].second].first;
+        Train train(trains.get_train(id));
         Date date=train.set_off_date(s,d);
         int seat_id=seats.get_id(train.train_id(),date);
         RemainedSeat seat(seats.get_seats(seat_id));
