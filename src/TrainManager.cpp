@@ -39,7 +39,7 @@ bool TrainManager::delete_train(const string &i)
     if(id<0) return false; // If find the train do not existed, return false;
     Train train(trains.get_train(id));
     if(train.if_release()) return false;
-    trains.delete_train(i);
+    trains.delete_train(i,id);
     return true;
 }
 
@@ -48,7 +48,8 @@ void TrainManager::query_train(const string &i,Date date,vecS &out)
     int id=trains.get_id(i);
     if(id<0) {out.push_back("-1"); return;}
     Train train(trains.get_train(id));
-    if(date<train.date().first || train.date().second<date) {out.push_back("-1"); return;}
+    auto day=train.date();
+    if(date<day.first || day.second<date) {out.push_back("-1"); return;}
 
     if(train.if_release())
     {
@@ -57,7 +58,6 @@ void TrainManager::query_train(const string &i,Date date,vecS &out)
        train.query_train(out,date,seat);
     }
     else train.query_train(out,date);
-
 }
 
 void TrainManager::query_ticket(const string &s,const string &t,Date d,bool If_time,vecS &out)

@@ -20,7 +20,7 @@ namespace Fourest
         words.clear();
     }
 
-    str separator::operator[](int _pos) const
+    str &separator::operator[](int _pos)
     {
         if(_pos<0 || _pos>=words.size()) throw "ERROR";
         return words[_pos];
