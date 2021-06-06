@@ -128,9 +128,7 @@ class TrainManager
             if(temp.empty()) return -404;
             for(int i=0;i<temp.size();++i)
             {
-                int pos=temp[i].first;
-                Log log(log_data.get(pos));
-                if(log.serial_number()==id) return pos;
+                if(temp[i].second==id) return temp[i].first;
             }
             return -404;
         }
