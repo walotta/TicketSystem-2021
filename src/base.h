@@ -8,8 +8,6 @@
 #include "include/BPlusTree.h"
 #include "include/StoragePool.h"
 #include "include/MyString.hpp"
-//#include "include/lynstoragepool.h"
-//#include "include/lynbpt.h"
 #include <unordered_set>
 #include <unordered_map>
 #include <algorithm>
@@ -29,15 +27,30 @@ struct RealTime;
 const int base_mon=6;
 constexpr static int days[4]={30,31,31,30};
 
+inline unsigned long long to_int(const string& input)
+{
+    unsigned long long ans=0;
+    for(int i=0; i<input.size(); ++i) ans=10*ans+(input[i]-'0');
+    return ans;
+}
+
+static unsigned long long hash_int(str input)
+{
+    unsigned long long res=0;
+    for(auto it:input) res=(res<<16)+res+(unsigned long long)it;
+    return res;
+}
+
 
 struct Time
 {
-    int day=0,hour=0,minute=0;
+    int hour=0,minute=0;
 
     Time()=default;
     ~Time()=default;
     explicit Time(int h,int m):hour(h),minute(m){}
     Time(const Time &t)=default;
+    explicit Time(str t):hour(to_int(t.substr(0,2))),minute(to_int(t.substr(3,2))){}
 
     Time &operator+=(int m)
     {
@@ -47,11 +60,7 @@ struct Time
             hour+=minute/60;
             minute%=60;
         }
-        if(hour>=24)
-        {
-            day+=hour/24;
-            hour%=24;
-        }
+        hour%=24;
         return *this;
     }
     Time operator+(int m) const
@@ -63,7 +72,6 @@ struct Time
     Time &operator=(const Time &t)
     {
         if(this==&t) return *this;
-        day=t.day;
         hour=t.hour;
         minute=t.minute;
         return *this;
@@ -91,6 +99,7 @@ struct Date
     ~Date()=default;
     explicit Date(int m,int d):month(m),day(d){}
     Date(const Date &d)=default;
+    explicit Date(str date):month(to_int(date.substr(0,2))),day(to_int(date.substr(3,2))){}
 
     string display() const
     {
@@ -209,17 +218,6 @@ struct RealTime
     long long operator-(const RealTime &r) const
     {
         return minutes-r.minutes;
-    }
-
-    RealTime &add_day(int d=1)
-    {
-        minutes+=d*24*60;
-        return *this;
-    }
-    RealTime &add_hour(int h=1)
-    {
-        minutes+=h*60;
-        return *this;
     }
 
     bool operator< (const RealTime &t) const {return minutes<t.minutes;}

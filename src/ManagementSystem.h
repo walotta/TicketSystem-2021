@@ -31,8 +31,8 @@ class ManagementSystem
     {
         struct ints {int value=0; ints()=default; explicit ints(int x):value(x){}};
 
-        BPlusTree<1000,400> order_index;
-        StoragePool<Order,ints,200> order_data;
+        BPlusTree<100,300> order_index;
+        StoragePool<Order,ints,30> order_data;
 
     public:
         OrderStorage():order_index("order_index.dat"),order_data("order_data.dat"){}
@@ -54,15 +54,6 @@ class ManagementSystem
         void update(const int &order_id,const Order &order) {order_data.update(order_id,order);}
         Order get_order(const int &order_id) {return order_data.get(order_id);}
 
-        void get_orders(str train_id,vector<pair<Order,int>> &out)
-        {
-            vector<ex_index> temp;
-            order_index.find(train_id,temp);
-            for(int i=0;i<temp.size();++i)
-                out.push_back({order_data.get(temp[i].first),temp[i].first});
-            sort(out.begin(),out.end());
-            //consider: This place could be optimized
-        }
         int order_number() {return order_data.readExtraBlock().value;}
         void remove_order(const int &order_id,str train_id,const int &number)
         {
@@ -70,10 +61,12 @@ class ManagementSystem
             order_data.remove(order_id);
         }
 
-        int get_ids(str train_id,vector<ex_index> &out)
+        void get_ids(str train_id,vector<pair<lint,int>> &out)
         {
-            order_index.find(train_id,out);
-            return out.size();
+            vector<ex_index> temp;
+            order_index.find(train_id,temp);
+            for(int i=0;i<temp.size();++i) out.push_back({temp[i].second,temp[i].first});
+            sort(out.begin(),out.end());
         }
 
         void clean()

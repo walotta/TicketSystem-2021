@@ -2,19 +2,12 @@
 // Created by wzj on 2021/3/26.
 //
 #include "ErrorMessage.h"
-#include <unordered_map>
 template<int cacheSize,class T>
 class cachePool
 {
 private:
-    //int id[cacheSize];
-    struct block
-    {
-        int a=-1;
-        block(int val=-1):a(val){}
-    };
-    std::unordered_map<int,block> index;
-    std::pair<int,T*> storage[cacheSize];
+    int id[cacheSize];
+    T* storage[cacheSize];
     int size;
     int head;
 public:
@@ -27,17 +20,21 @@ public:
     {
         for(int i=0;i<size;i++)
         {
-            delete storage[i].second;
+            delete storage[i];
         }
     }
     int find(int _id)
     {
-        return index[_id].a;
+        for(int i=0;i<size;i++)
+        {
+            if(id[i]==_id)return i;
+        }
+        return -1;
     }
     T operator[](int pos)
     {
         if(pos<0||pos>=size)throw error("cache operator[] error");
-        return *(storage[pos].second);
+        return *(storage[pos]);
     }
     void update(int _id,const T& other)
     {
@@ -47,8 +44,8 @@ public:
             insert(_id,other);
         }else
         {
-            delete storage[pos].second;
-            storage[pos].second=new T(other);
+            delete storage[pos];
+            storage[pos]=new T(other);
         }
     }
     void insert(int _id,const T& other)
@@ -57,18 +54,15 @@ public:
         {
             head++;
             head%=size;
-            delete storage[head].second;
-            storage[head].second=new T(other);
-            index.erase(storage[head].first);
-            storage[head].first=_id;
-            index[_id]=head;
+            delete storage[head];
+            storage[head]=new T(other);
+            id[head]=_id;
         }else
         {
             head++;
             size++;
-            storage[head].second=new T(other);
-            storage[head].first=_id;
-            index[_id]=head;
+            storage[head]=new T(other);
+            id[head]=_id;
         }
     }
     void remove(int _id)
@@ -76,15 +70,14 @@ public:
         int pos;
         pos=find(_id);
         if(pos==-1)return;
-        index.erase(_id);
+        id[pos]=-2;
     }
     void clear()
     {
         for(int i=0;i<size;i++)
         {
-            delete storage[i].second;
+            delete storage[i];
         }
-        index.clear();
         size=0;
         head=-1;
     }

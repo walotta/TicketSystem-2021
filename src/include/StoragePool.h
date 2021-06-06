@@ -24,7 +24,7 @@ private:
     //const string dir="StorageFile/";
     const string dir="";
     const string StorageFileName;
-    cachePool<1000,T> cache;
+    cachePool<SizeOfCache,T> cache;
 
     inline void fileOpen()
     {

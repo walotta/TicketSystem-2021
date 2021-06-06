@@ -34,7 +34,8 @@ namespace Fourest
         bool readLine(std::istream &);
         std::vector<str> &content();
 
-        str operator[](int) const;
+        str &operator[](int);
+        bool empty() const {return words.empty();}
 
     };
 

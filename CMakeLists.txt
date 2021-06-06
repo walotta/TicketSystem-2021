@@ -3,7 +3,7 @@ project(code)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_compile_options(-std=c++14 -Ofast -g)
+add_compile_options(-std=c++14 -Ofast)
 
 include_directories(src)
 include_directories(src/include)
@@ -22,11 +22,9 @@ add_executable(code
         src/TrainManager.cpp
         src/TrainManager.h
         src/User.h
-        src/User.cpp
         src/UserManager.h
         src/UserManager.cpp
         src/Train.h
-        src/Train.cpp
         src/ManagementSystem.h
         src/ManagementSystem.cpp
         src/base.h

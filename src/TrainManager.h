@@ -14,9 +14,9 @@ class TrainManager
 {
     class TrainStorage
     {
-        BPlusTree<1000,400> train_multi_index;
-        BPlusTree<1000,400> train_single_index;
-        StoragePool<Train,bool,200> train_data;
+        BPlusTree<100,300> train_multi_index;
+        BPlusTree<100,300> train_single_index;
+        StoragePool<Train,bool,30> train_data;
 
     public:
         TrainStorage():train_multi_index("train_multi_index.dat"),train_single_index("train_single_index.dat"),train_data("train_data.dat"){}
@@ -48,11 +48,10 @@ class TrainManager
         void update(const int &id,const Train &train) {train_data.update(id,train);}
         void release(const int &id,const Train &train)
         {
-            vecS stations;
-            train.stations(stations);
-            for(int i=0;i<stations.size();++i)
+            auto key=hash_int(train.train_id());
+            for(int i=0;i<train.station_number();++i)
             {
-                train_multi_index.insert({stations[i],id+10086},id);//todo: get serial_number
+                train_multi_index.insert({train.station_name(i),key},id);//todo: get serial_number
             }
             train_data.update(id,train);
         }
@@ -61,11 +60,8 @@ class TrainManager
             int id=train_data.add(train);
             train_single_index.insert({train_id,id+10086},id);//todo: get serial_number
         }
-        void delete_train(str train_id)
+        void delete_train(str train_id,const int &id)
         {
-            vector<ex_index> key;
-            train_single_index.find(train_id,key);
-            int id=key[0].first;
             train_single_index.remove({train_id,id+10086},id);
             train_data.remove(id);
         }
@@ -78,12 +74,12 @@ class TrainManager
     };
     class SeatStorage
     {
-        BPlusTree<1000,300> seat_index;
-        StoragePool<RemainedSeat,bool,300> seat_data;
+        BPlusTree<100,300> seat_index;
+        StoragePool<RemainedSeat,bool,30> seat_data;
 
         string get_key(str train_id,const Date &date) const
         {
-            return train_id+" "+date.display();
+            return train_id+date.display();
         }
     public:
         SeatStorage():seat_index("seat_index.dat"),seat_data("seat_data.dat"){}
@@ -106,7 +102,7 @@ class TrainManager
                 string main_key(get_key(train_id,date));
                 RemainedSeat seat(main_key,train.station_number(),train.seat_number());
                 int id=seat_data.add(seat);
-                seat_index.insert({main_key,id+10086},id);//todo: get serial-number
+                seat_index.insert({main_key,id+10086},id);
             }
         }
         void update(const int &id,const RemainedSeat &seat) {seat_data.update(id,seat);}
@@ -118,8 +114,8 @@ class TrainManager
     };
     class LogStorage
     {
-        BPlusTree<1000,400> log_index;
-        StoragePool<Log,bool,200> log_data;
+        BPlusTree<100,300> log_index;
+        StoragePool<Log,bool,30> log_data;
 
     public:
         LogStorage():log_index("log_index.dat"),log_data("log_data.dat"){}
@@ -132,9 +128,7 @@ class TrainManager
             if(temp.empty()) return -404;
             for(int i=0;i<temp.size();++i)
             {
-                int pos=temp[i].first;
-                Log log(log_data.get(pos));
-                if(log.serial_number()==id) return pos;
+                if(temp[i].second==id) return temp[i].first;
             }
             return -404;
         }
@@ -175,7 +169,7 @@ public:
     TrainManager()=default;
     ~TrainManager()=default;
 
-    bool add_train(str i,int n,int m,const vecS &s,vecI p,Time x,vecI t,vecI o,Date d_beg,Date d_end,char y);
+    bool add_train(str i,int n,int m,const vecS &s,vecI p,const Time &x,vecI t,vecI o,const Date &d_beg,const Date &d_end,char y);
     bool release_train(str i);// Only after we release the train when we could check its seat number.
     void query_train(str i,Date date,vecS &out);
     bool delete_train(str i);
@@ -187,9 +181,10 @@ public:
     bool clean();
 
     bool re_buy_ticket(str f,str t,int n,int id,str u,const Train &train1,RemainedSeat &seat);// If success, return true;
-    Train get_train(str i);
-    RemainedSeat get_seat(str i,const Date &date);
-    void update_seat(str train_id,const Date &date,const RemainedSeat &seat);
+    Train get_train(str train_id);
+    RemainedSeat get_seat(const int &seat_id);
+    void update_seat(const int &seat_id,const RemainedSeat &seat);
+    int get_seat_id(str i,const Date &date);
 };
 
 
