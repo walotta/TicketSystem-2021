@@ -87,7 +87,7 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
     {
         for(int i=0; i<order_index.size(); ++i)
         {
-            int id=order_index[i].first;
+            int id=order_index[i].second;
             Order order(orders.get_order(id));
             if(order.id==number && hash_int((string)order.user)==hash_u)
             {
@@ -99,13 +99,6 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
     else
     {
         // Process pending after refund.
-        vector<pair<Order,int>> order_list;
-        for(int i=0;i<order_index.size();++i)
-        {
-            int order_id=order_index[i].first;
-            order_list.push_back({orders.get_order(order_id),order_id});
-        }
-
         Train train1=train.get_train(train_id);
         int seat_id=train.get_seat_id(train_id,refund_date);
         RemainedSeat seats=train.get_seat(seat_id);
