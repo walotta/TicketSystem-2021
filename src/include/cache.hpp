@@ -12,14 +12,9 @@ private:
     {
         int a=-1;
         block(int val=-1):a(val){}
-        block& operator=(int &val)
-        {
-            a=val;
-            return *this;
-        }
     };
     std::unordered_map<int,block> index;
-    T* storage[cacheSize];
+    std::pair<int,T*> storage[cacheSize];
     int size;
     int head;
 public:
@@ -32,7 +27,7 @@ public:
     {
         for(int i=0;i<size;i++)
         {
-            delete storage[i];
+            delete storage[i].second;
         }
     }
     int find(int _id)
@@ -42,7 +37,7 @@ public:
     T operator[](int pos)
     {
         if(pos<0||pos>=size)throw error("cache operator[] error");
-        return *(storage[pos]);
+        return *(storage[pos].second);
     }
     void update(int _id,const T& other)
     {
@@ -52,8 +47,8 @@ public:
             insert(_id,other);
         }else
         {
-            delete storage[pos];
-            storage[pos]=new T(other);
+            delete storage[pos].second;
+            storage[pos].second=new T(other);
         }
     }
     void insert(int _id,const T& other)
@@ -62,14 +57,17 @@ public:
         {
             head++;
             head%=size;
-            delete storage[head];
-            storage[head]=new T(other);
+            delete storage[head].second;
+            storage[head].second=new T(other);
+            index.erase(storage[head].first);
+            storage[head].first=_id;
             index[_id]=head;
         }else
         {
             head++;
             size++;
-            storage[head]=new T(other);
+            storage[head].second=new T(other);
+            storage[head].first=_id;
             index[_id]=head;
         }
     }
@@ -84,7 +82,7 @@ public:
     {
         for(int i=0;i<size;i++)
         {
-            delete storage[i];
+            delete storage[i].second;
         }
         index.clear();
         size=0;
