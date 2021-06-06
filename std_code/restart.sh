@@ -1,0 +1,3 @@
+make
+rm *.bin
+./code
