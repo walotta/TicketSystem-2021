@@ -126,40 +126,42 @@ void TrainManager::query_order(const string &u,vecS &out)
 
 void TrainManager::query_transfer(const string &s,const string &t,Date d,bool If_time,vecS &out)
 {
-    static vector<Train> trains1;
-    static vector<Train> trains2;
+    static vector<ex_index> trains1;
+    static vector<ex_index> trains2;
     trains1.clear(); trains2.clear();
-    trains.get_trains(s,trains1);
-    trains.get_trains(t,trains2);
+    trains.get_ids(s,trains1);
+    trains.get_ids(t,trains2);
 
     bool If_find=false;
     int cost_minimal=-1,train1_id,train2_id,cost_time_1=-1;
     string transfer_station;
     Date date_of_transfer;
+    auto hash_s=hash_int(s),hash_t=hash_int(t);
 
     for(int i=0;i<trains1.size();++i)
     {
-        auto &train1=trains1[i];
+        Train train1(trains.get_train(trains1[i].first));
         if(!train1.if_release() || !train1.check_date(d,s)) continue;
 
-        unordered_map<string,int> stations1;
+        unordered_map<unsigned long long,int> stations1;
         bool start_add=false;
-        for(int k=0;k<trains1[i].station_number();++k)
+        for(int k=0;k<train1.station_number();++k)
         {
-            auto station_name=trains1[i].station_name(k);
-            if(start_add) stations1.insert({station_name,k});
-            if(station_name==s) start_add=true;
+            auto hash_name=hash_int(train1.station_name(k));
+            if(start_add) stations1.insert({hash_name,k});
+            if(hash_name==hash_s) start_add=true;
         }
 
         for(int j=0;j<trains2.size();++j)
         {
-            auto &train2=trains2[j];
+            Train train2(trains.get_train(trains2[j].first));
             if(!train2.if_release() || train1.train_id()==train2.train_id()) continue;
-            for(int k=0;k<trains2[j].station_number();++k)
+            for(int k=0;k<train2.station_number();++k)
             {
-                const string &st=trains2[j].station_name(k);
-                if(st==t) break;
-                if(stations1.count(st)!=0)
+                const string &st=train2.station_name(k);
+                auto hash_st=hash_int(st);
+                if(hash_st==hash_t) break;
+                if(stations1.count(hash_st)!=0)
                 {
                     auto temp=train1.check_if_later(train2,d,s,st);
                     if(temp.first<0) continue;
@@ -184,13 +186,13 @@ void TrainManager::query_transfer(const string &s,const string &t,Date d,bool If
 
     if(!If_find) {out.push_back("0"); return;}
 
-    Train &train1=trains1[train1_id];
+    Train train1(trains.get_train(trains1[train1_id].first));
     Date date1=train1.set_off_date(s,d);
     int seat_id1=seats.get_id(train1.train_id(),date1);
     RemainedSeat seat1(seats.get_seats(seat_id1));
     out.push_back(train1.information(s,transfer_station,d,seat1));
 
-    Train &train2=trains2[train2_id];
+    Train train2(trains.get_train(trains2[train2_id].first));
     Date date2=train2.set_off_date(transfer_station,date_of_transfer);
     int seat_id2=seats.get_id(train2.train_id(),date2);
     RemainedSeat seat2(seats.get_seats(seat_id2));

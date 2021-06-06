@@ -27,9 +27,9 @@ struct RealTime;
 const int base_mon=6;
 constexpr static int days[4]={30,31,31,30};
 
-inline int to_int(const string& input)
+inline unsigned long long to_int(const string& input)
 {
-    int ans=0;
+    unsigned long long ans=0;
     for(int i=0; i<input.size(); ++i) ans=10*ans+(input[i]-'0');
     return ans;
 }
@@ -37,7 +37,7 @@ inline int to_int(const string& input)
 static unsigned long long hash_int(str input)
 {
     unsigned long long res=0;
-    for(auto it:input) res=(res<<16)+res+(unsigned int)it;
+    for(auto it:input) res=(res<<16)+res+(unsigned long long)it;
     return res;
 }
 
