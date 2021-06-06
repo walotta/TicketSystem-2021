@@ -76,13 +76,15 @@ private:
 
 
 public:
-    pair<int,int> get_id(str i,str f) const
+    inline pair<int,int> get_id(str i,str f) const
     {
-        int start=0,end=0;
+        auto hash_i=hash_int(i),hash_f=hash_int(f);
+        int start=-404,end=-404;
         for(int k=0;k<stationNum;++k)
         {
-            if(station[k].name==i) start=k;
-            if(station[k].name==f) {end=k; break;}
+            auto hash_k=hash_int((string)station[k].name);
+            if(hash_k==hash_i) start=k;
+            if(hash_k==hash_f) {end=k; break;}
         }
         return {start,end};
     }
@@ -193,33 +195,27 @@ public:
         if(temp<sale_beg || sale_end<temp) return false;
         return true;
     }
-    bool check_sequence(str i,str f) const
+    bool check_sequence(const pair<int,int> &input) const
     {
-        int start=-404,end=-404;
-        for(int k=0;k<stationNum;++k)
-        {
-            if(station[k].name==f) {end=k; break;}
-            if(station[k].name==i) start=k;
-        }
+        const int &start=input.first,&end=input.second;
         if(start<0 || end<0 || start>=end) return false;
         return true;
     }
-    lint get_price(str i,str f,int n=1) const
+    lint get_price(const pair<int,int> &input,int n=1) const
     {
-        auto id=get_id(i,f);
+        const auto &id=input;
         return (station[id.second].price-station[id.first].price)*lint(n);
     }// Only for comparing the cost.
-    int get_time(str i,str f) const
+    int get_time(const pair<int,int> &input) const
     {
-        auto id=get_id(i,f);
+        const auto &id=input;
         return station[id.second].arrival-station[id.first].departure;
     } // Use for comparing the cost.
 
     // pair<time_cost_between_transfer,transfer_date>
-    pair<RealTime,RealTime> obtain_time(str i,str f,const Date &d)
+    pair<RealTime,RealTime> obtain_time(const pair<int,int> &input,const Date &d)
     {
-        auto id=get_id(i,f);
-        int start=id.first,end=id.second;
+        const int &start=input.first,&end=input.second;
         return {station[start].departure+RealTime(d),station[end].arrival+RealTime(d)};
     }
     pair<int,Date> check_if_later(const Train &train,const Date &start_date,str start_station,str transfer_station) const
@@ -234,12 +230,7 @@ public:
         auto d_time=train.departure_time(transfer_station);
 
         if(RealTime(last_sale_date,d_time)<=arrival) return {-1,Date()};
-//        if(last_sale_date<arrival_date) return {-1,Date()};
-//        if(arrival_date==last_sale_date && d_time<arrival_time) return {-1,Date()};
-
         auto first_sale_date=train.departure_date(transfer_station,train.sale_beg);
-
-//        printf("[Debug]: In function (check_if_later), train1=%s, train2=%s, transfer_station=%s, first_sale_date=%s, last_sale_date=%s\n",train_id().c_str(),train.train_id().c_str(),transfer_station.c_str(),first_sale_date.display().c_str(),last_sale_date.display().c_str());
         for(auto day=first_sale_date; day<=last_sale_date; ++day)
         {
             RealTime temp(day,d_time);
@@ -249,19 +240,17 @@ public:
     }
 
     int seat_number() const {return seatNum;}
-    int check_seat(str i,str f,const Date &d,const RemainedSeat &seat) const
+    int check_seat(const pair<int,int> &input,const RemainedSeat &seat) const
     {
-        auto id=get_id(i,f);
-        int start=id.first,end=id.second;
+        const int &start=input.first,&end=input.second;
         return seat.min_seat(start,end);
     }
-    void decrease_seat(str i,str f,int n,RemainedSeat &seat) const
+    void decrease_seat(const pair<int,int> &input,int n,RemainedSeat &seat) const
     {
-        auto id=get_id(i,f);
-        int start=id.first,end=id.second;
+        const int &start=input.first,&end=input.second;
         seat.de_seat(start,end,n);
     }
-    void increase_seat(str i,str f,int n,RemainedSeat &seat) {decrease_seat(i,f,-n,seat);}
+    void increase_seat(const pair<int,int> &id,int n,RemainedSeat &seat) {decrease_seat(id,-n,seat);}
 };
 
 enum Status{SUCCESS=1,PENDING=0,REFUNDED=-1};
