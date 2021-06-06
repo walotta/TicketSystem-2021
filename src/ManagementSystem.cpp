@@ -78,10 +78,11 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
     if(back.second==REFUNDED) return fail;
 
     string &train_id=back.first;
-    vector<ex_index> order_index;
-    orders.get_ids(train_id,order_index);
+
     if(back.second==PENDING)
     {
+        vector<ex_index> order_index;
+        orders.get_ids(train_id,order_index);
         for(int i=0; i<order_index.size(); ++i)
         {
             int id=order_index[i].first;
