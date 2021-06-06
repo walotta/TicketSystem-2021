@@ -183,9 +183,10 @@ public:
     bool clean();
 
     bool re_buy_ticket(str f,str t,int n,int id,str u,const Train &train1,RemainedSeat &seat);// If success, return true;
-    Train get_train(str i);
-    RemainedSeat get_seat(str i,const Date &date);
-    void update_seat(str train_id,const Date &date,const RemainedSeat &seat);
+    Train get_train(str train_id);
+    RemainedSeat get_seat(const int &seat_id);
+    void update_seat(const int &seat_id,const RemainedSeat &seat);
+    int get_seat_id(str i,const Date &date);
 };
 
 

@@ -3,7 +3,7 @@
 #include <fstream>
 #include "ErrorMessage.h"
 
-ifstream in("../data/basic_6/10.in");
+ifstream in("../data/basic_6/1.in");
 ofstream out("output.txt");
 
 

@@ -272,22 +272,24 @@ bool TrainManager::re_buy_ticket(const string &f,const string &t,int n,int id,co
     return false;
 }
 
-Train TrainManager::get_train(const string &i)
+Train TrainManager::get_train(const string &train_id)
 {
-    int id=trains.get_id(i);
-    return trains.get_train(id);
+    return trains.get_train(trains.get_id(train_id));
 }
 
-RemainedSeat TrainManager::get_seat(const string &i,const Date &date)
+RemainedSeat TrainManager::get_seat(const int &seat_id)
 {
-    int seat_id=seats.get_id(i,date);
     return seats.get_seats(seat_id);
 }
 
-void TrainManager::update_seat(str train_id,const Date &date,const RemainedSeat &seat)
+void TrainManager::update_seat(const int &seat_id,const RemainedSeat &seat)
 {
-    int seat_id=seats.get_id(train_id,date);
     seats.update(seat_id,seat);
+}
+
+int TrainManager::get_seat_id(str i,const Date &date)
+{
+    return seats.get_id(i,date);
 }
 
 

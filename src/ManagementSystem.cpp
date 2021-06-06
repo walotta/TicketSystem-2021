@@ -78,6 +78,7 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
     if(back.second==REFUNDED) return fail;
 
     string &train_id=back.first;
+    auto hash_u=hash_int(u);
 
     if(back.second==PENDING)
     {
@@ -87,7 +88,7 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
         {
             int id=order_index[i].first;
             Order order(orders.get_order(id));
-            if(order.id==number && order.user==u)
+            if(order.id==number && hash_int((string)order.user)==hash_u)
             {
                 orders.remove_order(id,train_id,order.serial_number);
                 break;
@@ -101,7 +102,8 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
         orders.get_orders(train_id,order_list);
 
         Train train1=train.get_train(train_id);
-        RemainedSeat seats=train.get_seat(train_id,refund_date);
+        int seat_id=train.get_seat_id(train_id,refund_date);
+        RemainedSeat seats=train.get_seat(seat_id);
         for(int i=0;i<order_list.size();++i)
         {
             Order &order=order_list[i].first;
@@ -115,7 +117,7 @@ bool ManagementSystem::refund_ticket(const string &u,int n)
                 orders.remove_order(order_list[i].second,train_id,order.serial_number);
             }
         }
-        train.update_seat(train_id,refund_date,seats);
+        train.update_seat(seat_id,seats);
     }
     return success;
 }
